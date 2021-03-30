@@ -4,33 +4,58 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
 
     public static Scanner scanner = new Scanner(System.in);
+    public static final String TEXT_RED = "\u001B[31m";
+    public static final String TEXT_RESET = "\u001B[0m";
+
 
     public static void main(String[] args) {
+
+
 	// write your code here
         while (true) {
 
             System.out.print("Krypton >> ");
-            String line = scanner.nextLine();
+            String line = scanner.nextLine().trim();
 
             Parser parser = new Parser(line);
-            Expression result = parser.parse();
+            Expression result = parser.parseTerm();
 //
             // PrettyPrint(result) in form of a tree
             // ├──
             // │
             // └──
 //            result.prettyPrint("");
-            System.out.println(result.evaluate());
+//            parser.printTokens();
+            try {
+
+                if (parser._diagnostics.size() > 0) {
+                    // Print the errors and continue with our loop
+                    for(String diagnostic : parser._diagnostics)
+                        System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
+
+                    continue;
+                }
+                result.prettyPrint("");
+
+                int answer = (int) result.evaluate();
+                System.out.println(answer);
+            } catch (Exception e1) {
+                System.out.println(e1.toString());
+            }
         }
     }
 
 
 
 }
+
+// Adding parser diagnostics
 
 
 // Make a token type enum
@@ -52,12 +77,16 @@ class Token
 // Parse strings and return Tokens
 
 class Lexer {
+    // Care about lexer errors
     String _line;
     int _position;
+
+    List<String> _diagnostics;
 
     Lexer(String line) {
         _line = line;
         _position = 0;
+        _diagnostics = new ArrayList<String>();
     }
 
     Token nextToken() {
@@ -77,7 +106,9 @@ class Lexer {
         }
 
         // Reject spaces
+        // GIving bugs... fix this error now
         if(_line.charAt(_position) == ' ') {
+//            System.out.println("Found space");
             while(_line.charAt(_position) == ' ') {
                 _position++;
             }
@@ -99,6 +130,8 @@ class Lexer {
             return new Token(TokenType.DivToken, "/", null);
         }
 
+        // Add an error here
+        _diagnostics.add("Invalid token : " + _line.charAt(_position));
 
         return new Token(TokenType.ErrorToken, ""+ _line.charAt(_position++), null);
 
@@ -125,7 +158,7 @@ class Expression {
         return _type;
     }
 
-    int evaluate() {return 0;}
+    Object evaluate() throws Exception {return 0;}
 
     void prettyPrint(String indent) {}
 
@@ -144,11 +177,12 @@ class NumberExpression extends Expression {
 
     @Override
     void prettyPrint(String indent) {
+//        System.out.print("|");
         System.out.println(_value);
     }
 
     @Override
-    int evaluate() {
+    Object evaluate() {
         return _value;
     }
 
@@ -172,21 +206,29 @@ class BinaryExpression extends Expression {
         System.out.println(_operatorToken);
         System.out.println(indent + "|");
         System.out.print(indent + "├──"); _left.prettyPrint(indent + "    ");
+        // Add some long lines here
+        System.out.println(indent + "|");
+
         System.out.print(indent + "└──"); _right.prettyPrint(indent + "    ");
 
     }
 
     @Override
-    int evaluate() {
+    Object evaluate() throws Exception {
         if(_operatorToken == TokenType.AddToken)
-            return (_left.evaluate() + _right.evaluate());
+            return ((int) _left.evaluate() + (int) _right.evaluate());
 
         else if(_operatorToken == TokenType.SubToken) {
-            return (_left.evaluate() - _right.evaluate());
+            return ((int)_left.evaluate() - (int)_right.evaluate());
         }
-
+        else if(_operatorToken == TokenType.MultToken) {
+            return ((int)_left.evaluate() * (int)_right.evaluate());
+        }
+        else if(_operatorToken  == TokenType.DivToken) {
+            return ((int)_left.evaluate() / (int)_right.evaluate());
+        }
         else {
-            return 0;
+            throw new Exception("Unknown binary operator" + _operatorToken);
         }
     }
 
@@ -197,6 +239,9 @@ class Parser {
     private List<Token> _tokens;
     private int _position;
 
+    // Make diagnostics for parser as well
+    List<String> _diagnostics = new ArrayList<String>();
+
     Parser(String text) {
         lexer = new Lexer(text);
         _tokens = new ArrayList<>();
@@ -206,47 +251,94 @@ class Parser {
 
         do {
             newToken = lexer.nextToken();
-            System.out.println(newToken._lexeme);
             _tokens.add(newToken);
         } while(newToken._type != TokenType.EndOfLineToken);
+
+        // Append lexer diagnostics with parser diagnostics
+        _diagnostics.addAll(lexer._diagnostics);
     }
 
-    Expression parse() {
-        Expression left = parsePrimaryExp();
+    Expression parseTerm() {
+        Expression left = parseFactor();
 
-        if(left == null)
-            return null;
+        // position == 0
 
-        _position++;
 
-        while(_tokens.get(_position)._type == TokenType.AddToken ||
-                _tokens.get(_position)._type == TokenType.SubToken) {
+        while(_tokens.get(_position + 1)._type == TokenType.AddToken ||
+                _tokens.get(_position + 1)._type == TokenType.SubToken)
+        {
 
-            TokenType operatorToken = _tokens.get(_position)._type;
             _position++;
-            Expression right = parsePrimaryExp();
+            TokenType operatorToken = _tokens.get(_position)._type; // +
+            ++_position; // 2
+//            System.out.println();
 
+            Expression right = parseFactor();
 
-
-            // Create a binary operation
             left = new BinaryExpression(left, operatorToken, right);
 
-            _position++;
+            // Why is it not breaking right now
+            if(_position >= _tokens.size() - 1)
+                break;
+
         }
 
-        System.out.println("Final left value = " + left);
 
         return left;
 
     }
 
-    private Expression parsePrimaryExp() {
-        if(_tokens.get(_position)._type == TokenType.IntToken) {
-            return new NumberExpression((int) _tokens.get(_position)._value);
+    public Expression parseFactor() {
+        Expression left = parsePrimaryExp();
+
+// Position = 2
+        // (position == 2)
+        while(_tokens.get(_position + 1)._type == TokenType.MultToken ||
+                _tokens.get(_position + 1)._type == TokenType.DivToken)
+        {
+            ++_position;
+            TokenType operatorToken = _tokens.get(_position)._type;
+
+
+
+            ++_position; // 2
+            Expression right = parsePrimaryExp();
+
+            left = new BinaryExpression(left, operatorToken, right);
+
+            // Why is it not breaking right now
+            if(_position >= _tokens.size() - 1)
+                break;
+
         }
-//
-        // Since this is not a primary exp .. go and deal with this
-        return null;
+
+
+        return left;
+    }
+
+
+    private Token match(TokenType type) {
+        // If type matches the next token, then return the current token
+        // else return newly generated token
+        if(_position < _tokens.size() && _tokens.get(_position)._type == type)
+            return _tokens.get(_position);
+
+        _diagnostics.add("Expected " + type + ", Got : " + _tokens.get(_position)._type);
+
+        return new Token(type, null, null);
+    }
+
+
+
+    // precedence fix is required --> yay boi
+
+    private Expression parsePrimaryExp() {
+//        System.out.println("In parsePrimearyExp method");
+        Token currentToken = match(TokenType.IntToken);
+
+        int value = (currentToken._value == null) ? Integer.MIN_VALUE : (int) currentToken._value;
+
+        return new NumberExpression(value); // creating nullPoint Exception
     }
 
 
