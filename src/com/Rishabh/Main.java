@@ -59,7 +59,7 @@ public class Main {
 
 
 // Make a token type enum
-enum TokenType {IntToken, AddToken, EndOfLineToken, SubToken, MultToken, DivToken, ErrorToken;}
+enum TokenType {IntToken, AddToken, EndOfLineToken, SubToken, MultToken, DivToken, ErrorToken, OpenParensToken, ClosedParensToken;}
 
 class Token
 {
@@ -128,7 +128,17 @@ class Lexer {
         } else if(_line.charAt(_position) == '/') {
             _position++;
             return new Token(TokenType.DivToken, "/", null);
+        } else if(_line.charAt(_position) == '(') {
+            ++_position;
+            return new Token(TokenType.OpenParensToken, "(", null);
         }
+        else if(_line.charAt(_position) == ')') {
+            ++_position;
+            return new Token(TokenType.ClosedParensToken, ")", null);
+
+        }
+
+
 
         // Add an error here
         _diagnostics.add("Invalid token : " + _line.charAt(_position));
@@ -144,7 +154,7 @@ class Lexer {
 
 }
 
-enum ExpressionType {BinaryExpression, IntExpression}
+enum ExpressionType {BinaryExpression, ParensExpression, IntExpression}
 
 class Expression {
     ExpressionType _type;
@@ -234,6 +244,29 @@ class BinaryExpression extends Expression {
 
 }
 
+class ParensExpression extends Expression {
+    Expression _body;
+    Token _openParens, _closedParens;
+
+    ParensExpression(Token openParens, Expression body, Token closedParens) {
+        super(ExpressionType.ParensExpression);
+        _openParens = openParens;
+        _closedParens = closedParens;
+        _body = body;
+    }
+
+
+    @Override
+    public Object evaluate() throws Exception {
+        return _body.evaluate();
+    }
+
+    @Override
+    public void prettyPrint(String indent) {
+        _body.prettyPrint(indent);
+    }
+}
+
 class Parser {
     private Lexer lexer;
     private List<Token> _tokens;
@@ -268,6 +301,7 @@ class Parser {
                 _tokens.get(_position + 1)._type == TokenType.SubToken)
         {
 
+            // pos = 1
             _position++;
             TokenType operatorToken = _tokens.get(_position)._type; // +
             ++_position; // 2
@@ -291,14 +325,16 @@ class Parser {
     public Expression parseFactor() {
         Expression left = parsePrimaryExp();
 
-// Position = 2
-        // (position == 2)
+        // Check if left recieved was generated, if yes, then return the token
+
+        if(_tokens.get(_position)._type == TokenType.EndOfLineToken)
+            return left;
+
         while(_tokens.get(_position + 1)._type == TokenType.MultToken ||
                 _tokens.get(_position + 1)._type == TokenType.DivToken)
         {
             ++_position;
             TokenType operatorToken = _tokens.get(_position)._type;
-
 
 
             ++_position; // 2
@@ -316,6 +352,8 @@ class Parser {
         return left;
     }
 
+// Tomorrow refactor the whole code
+    // Think why 5 + is not working ... parser should be traced
 
     private Token match(TokenType type) {
         // If type matches the next token, then return the current token
@@ -334,6 +372,20 @@ class Parser {
 
     private Expression parsePrimaryExp() {
 //        System.out.println("In parsePrimearyExp method");
+        if(_tokens.get(_position)._type == TokenType.OpenParensToken) {
+            // return a tree for parens
+            Token left = _tokens.get(_position);
+            ++_position;
+            Expression body = parseTerm();
+
+            ++_position;// recursive decent
+            Token right = match(TokenType.ClosedParensToken);
+
+
+            System.out.println("Reached here");
+            return new ParensExpression(left, body, right);
+        }
+
         Token currentToken = match(TokenType.IntToken);
 
         int value = (currentToken._value == null) ? Integer.MIN_VALUE : (int) currentToken._value;
