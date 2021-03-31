@@ -1,11 +1,12 @@
 package com.Rishabh;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 class Parser {
     private Lexer lexer;
-    private List<Token> _tokens;
+    private Token[] _tokens;
     private int _position;
 
     // Make diagnostics for parser as well
@@ -13,41 +14,56 @@ class Parser {
 
     Parser(String text) {
         lexer = new Lexer(text);
-        _tokens = new ArrayList<>();
         _position = 0;
 
-        Token newToken = null;
+        _tokens = tokenizeLine();
 
-        do {
-            newToken = lexer.nextToken();
-            _tokens.add(newToken);
-        } while (newToken._type != TokenType.EndOfLineToken);
+        System.out.println(_tokens);
 
         // Append lexer diagnostics with parser diagnostics
         _diagnostics.addAll(lexer._diagnostics);
     }
 
+
+    void printTokens() {
+        for (Token token : _tokens) {
+            System.out.println(token._type.toString() + "    " + token._lexeme);
+        }
+    }
+
+    private Token CurrentToken() {
+        return _tokens[_position];
+    }
+
+    private Token Peek(int places) {
+        int destIdx = _position + places;
+        if(destIdx >= _tokens.length)
+            return _tokens[_tokens.length - 1];
+
+        return _tokens[destIdx];
+    }
+
+    private Token NextToken() {
+        return _tokens[++_position];
+    }
+
+
     Expression parseTerm() {
-        Expression left = parseFactor();
-
-        // position == 0
+        Expression left = parseFactor(); // Why did the position change during this
 
 
-        while (_tokens.get(_position + 1)._type == TokenType.AddToken ||
-                _tokens.get(_position + 1)._type == TokenType.SubToken) {
+        while (Peek(1)._type == TokenType.AddToken ||
+                Peek(1)._type == TokenType.SubToken) {
 
-            // pos = 1
-            _position++;
-            TokenType operatorToken = _tokens.get(_position)._type; // +
-            ++_position; // 2
-//            System.out.println();
+            TokenType operatorToken = NextToken()._type; // _position == 1
 
+            ++_position;
             Expression right = parseFactor();
 
             left = new BinaryExpression(left, operatorToken, right);
 
             // Why is it not breaking right now
-            if (_position >= _tokens.size() - 1)
+            if (_position >= _tokens.length - 1)
                 break;
 
         }
@@ -61,23 +77,23 @@ class Parser {
         Expression left = parsePrimaryExp();
 
         // Check if left recieved was generated, if yes, then return the token
-
-        if (_tokens.get(_position)._type == TokenType.EndOfLineToken)
+        if (CurrentToken()._type == TokenType.EndOfLineToken)
             return left;
 
-        while (_tokens.get(_position + 1)._type == TokenType.MultToken ||
-                _tokens.get(_position + 1)._type == TokenType.DivToken) {
+
+
+        while (Peek(1)._type == TokenType.MultToken ||
+                Peek(1)._type == TokenType.DivToken) {
+
+            TokenType operatorToken = NextToken()._type;
+
             ++_position;
-            TokenType operatorToken = _tokens.get(_position)._type;
-
-
-            ++_position; // 2
             Expression right = parsePrimaryExp();
 
             left = new BinaryExpression(left, operatorToken, right);
 
             // Why is it not breaking right now
-            if (_position >= _tokens.size() - 1)
+            if (_position >= _tokens.length - 1)
                 break;
 
         }
@@ -89,37 +105,53 @@ class Parser {
 // Tomorrow refactor the whole code
     // Think why 5 + is not working ... parser should be traced
 
+    private Token[] tokenizeLine() {
+        Token newToken;
+
+        List<Token> listTokens = new ArrayList<>();
+
+        do {
+            newToken = lexer.nextToken();
+            listTokens.add(newToken);
+        } while (newToken._type != TokenType.EndOfLineToken);
+
+        Token[] result = new Token[listTokens.size()];
+        result = listTokens.toArray(result);
+
+        return result;
+
+    }
+
     private Token match(TokenType type) {
         // If type matches the next token, then return the current token
         // else return newly generated token
-        if (_position < _tokens.size() && _tokens.get(_position)._type == type)
-            return _tokens.get(_position);
+        if (_position < _tokens.length && CurrentToken()._type == type)
+            return CurrentToken();
 
-        _diagnostics.add("Expected " + type + ", Got : " + _tokens.get(_position)._type);
+        _diagnostics.add("Expected " + type + ", Got : " + CurrentToken()._type);
 
         return new Token(type, null, null);
     }
+
 
 
     // precedence fix is required --> yay boi
 
     private Expression parsePrimaryExp() {
 //        System.out.println("In parsePrimearyExp method");
-        if (_tokens.get(_position)._type == TokenType.OpenParensToken) {
+        if (CurrentToken()._type == TokenType.OpenParensToken) {
             // return a tree for parens
-            Token left = _tokens.get(_position);
+            Token left = CurrentToken(); // Next Token -->
             ++_position;
             Expression body = parseTerm();
 
-            ++_position;// recursive decent
+          ++_position;// recursive decent
             Token right = match(TokenType.ClosedParensToken);
 
-
-            System.out.println("Reached here");
             return new ParensExpression(left, body, right);
         }
 
-        Token currentToken = match(TokenType.IntToken);
+        Token currentToken = match(TokenType.IntToken); // it does
 
         int value = (currentToken._value == null) ? Integer.MIN_VALUE : (int) currentToken._value;
 
@@ -127,9 +159,7 @@ class Parser {
     }
 
 
-    void printTokens() {
-        for (Token token : _tokens) {
-            System.out.println(token._type.toString() + "    " + token._lexeme);
-        }
-    }
+
 }
+
+// replace get with a[i]
