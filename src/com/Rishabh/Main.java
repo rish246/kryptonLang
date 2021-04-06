@@ -13,6 +13,8 @@ public class Main {
 
     public static void main(String[] args) {
 
+        boolean displayParseTree = false;
+
 
 	// write your code here
         while (true) {
@@ -20,8 +22,13 @@ public class Main {
             System.out.print("Krypton >> ");
             String line = scanner.nextLine().trim();
 
+            if(line.equals("#dispTree")) {
+                displayParseTree = !displayParseTree;
+                continue;
+            }
+
             Parser parser = new Parser(line);
-            Expression result = parser.parseTerm();
+            Expression result = parser.parse(0);
 
             try {
 
@@ -32,7 +39,9 @@ public class Main {
 
                     continue;
                 }
-                result.prettyPrint("");
+                
+                if(displayParseTree) 
+                    result.prettyPrint("");
 
                 int answer = (int) result.evaluate();
                 System.out.println(answer);

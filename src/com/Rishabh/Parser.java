@@ -44,62 +44,9 @@ class Parser {
     }
 
     private Token NextToken() {
-        return _tokens[++_position];
-    }
-
-
-    Expression parseTerm() {
-        Expression left = parseFactor(); // Why did the position change during this
-
-
-        while (Peek(1)._type == TokenType.AddToken ||
-                Peek(1)._type == TokenType.SubToken) {
-
-            TokenType operatorToken = NextToken()._type; // _position == 1
-
-            ++_position;
-            Expression right = parseFactor();
-
-            left = new BinaryExpression(left, operatorToken, right);
-
-            // Why is it not breaking right now
-            if (_position >= _tokens.length - 1)
-                break;
-
-        }
-
-
-        return left;
-
-    }
-
-    public Expression parseFactor() {
-        Expression left = parsePrimaryExp();
-
-        // Check if left recieved was generated, if yes, then return the token
-        if (CurrentToken()._type == TokenType.EndOfLineToken)
-            return left;
-
-
-
-        while (Peek(1)._type == TokenType.MultToken ||
-                Peek(1)._type == TokenType.DivToken) {
-
-            TokenType operatorToken = NextToken()._type;
-
-            ++_position;
-            Expression right = parsePrimaryExp();
-
-            left = new BinaryExpression(left, operatorToken, right);
-
-            // Why is it not breaking right now
-            if (_position >= _tokens.length - 1)
-                break;
-
-        }
-
-
-        return left;
+        Token currentToken = CurrentToken();
+        _position++;
+        return currentToken;
     }
 
 // Tomorrow refactor the whole code
@@ -126,7 +73,8 @@ class Parser {
         // If type matches the next token, then return the current token
         // else return newly generated token
         if (_position < _tokens.length && CurrentToken()._type == type)
-            return CurrentToken();
+            return NextToken();
+
 
         _diagnostics.add("Expected " + type + ", Got : " + CurrentToken()._type);
 
@@ -134,6 +82,62 @@ class Parser {
     }
 
 
+    public int getBinaryOperatorPrecedence(TokenType binOperator) {
+        switch(binOperator) {
+            case MultToken:
+            case DivToken:
+                return 2;
+
+            case AddToken:
+            case SubToken:
+                return 1;
+
+                default:
+                    return 0;
+        }
+
+    }
+
+    public int getUnaryOperatorPrecedence(TokenType unaryOperator) {
+        switch(unaryOperator) {
+            case AddToken:
+            case SubToken:
+                return 3;
+
+            default:
+                return 0;
+        }
+    }
+
+    public Expression parse(int parentPrecedence) {
+        Expression left;
+
+        int unaryOperatorPrec = getUnaryOperatorPrecedence(CurrentToken()._type);
+        System.out.println(unaryOperatorPrec);
+        if (unaryOperatorPrec != 0)
+            left = new UnaryExpression(NextToken()._type, parse(unaryOperatorPrec));
+        else
+            left = parsePrimaryExp();
+
+        while(CurrentToken()._type != TokenType.EndOfLineToken) {
+            int curPrecedence = getBinaryOperatorPrecedence(CurrentToken()._type);
+
+            if (curPrecedence <= parentPrecedence || curPrecedence == 0)
+                break;
+
+
+            TokenType binOperator = NextToken()._type;
+
+            Expression right = parse(curPrecedence);
+
+            left = new BinaryExpression(left, binOperator, right);
+
+        }
+
+        return left;
+
+//        return null;
+    }
 
     // precedence fix is required --> yay boi
 
@@ -141,11 +145,10 @@ class Parser {
 //        System.out.println("In parsePrimearyExp method");
         if (CurrentToken()._type == TokenType.OpenParensToken) {
             // return a tree for parens
-            Token left = CurrentToken(); // Next Token -->
-            ++_position;
-            Expression body = parseTerm();
+            Token left = NextToken();
 
-          ++_position;// recursive decent
+            Expression body = parse(0);
+
             Token right = match(TokenType.ClosedParensToken);
 
             return new ParensExpression(left, body, right);

@@ -29,17 +29,17 @@ class BinaryExpression extends Expression {
 
     @Override
     Object evaluate() throws Exception {
-        if (_operatorToken == TokenType.AddToken)
-            return ((int) _left.evaluate() + (int) _right.evaluate());
-
-        else if (_operatorToken == TokenType.SubToken) {
-            return ((int) _left.evaluate() - (int) _right.evaluate());
-        } else if (_operatorToken == TokenType.MultToken) {
-            return ((int) _left.evaluate() * (int) _right.evaluate());
-        } else if (_operatorToken == TokenType.DivToken) {
-            return ((int) _left.evaluate() / (int) _right.evaluate());
-        } else {
-            throw new Exception("Unknown binary operator" + _operatorToken);
+        switch (_operatorToken) {
+            case AddToken:
+                return ((int) _left.evaluate() + (int) _right.evaluate());
+            case SubToken:
+                return ((int) _left.evaluate() - (int) _right.evaluate());
+            case MultToken:
+                return ((int) _left.evaluate() * (int) _right.evaluate());
+            case DivToken:
+                return ((int) _left.evaluate() / (int) _right.evaluate());
+            default:
+                throw new Exception("Unknown binary operator" + _operatorToken);
         }
     }
 
