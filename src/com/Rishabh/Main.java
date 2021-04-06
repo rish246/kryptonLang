@@ -1,6 +1,9 @@
 package com.Rishabh;
 
 
+import com.Rishabh.Expression.Expression;
+
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -22,6 +25,9 @@ public class Main {
             System.out.print("Krypton >> ");
             String line = scanner.nextLine().trim();
 
+            if(line.equals(""))
+                continue;
+
             if(line.equals("#dispTree")) {
                 displayParseTree = !displayParseTree;
                 continue;
@@ -32,8 +38,11 @@ public class Main {
 
             try {
 
+//                result.prettyPrint("");
+
                 if (parser._diagnostics.size() > 0) {
                     // Print the errors and continue with our loop
+//                    parser._diagnostics.addAll(runtimeDiagnostics);
                     for(String diagnostic : parser._diagnostics)
                         System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
 
@@ -43,10 +52,22 @@ public class Main {
                 if(displayParseTree)
                     result.prettyPrint("");
 
-                Object answer = result.evaluate();
-                System.out.println(answer);
+                EvalResult answer = result.evaluate();
+                List<String> runtimeDiagnostics = result.getDiagnostics();
+                
+                if(runtimeDiagnostics.size() > 0) {
+                    for(String diagnostic : runtimeDiagnostics) {
+                        System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
+                    }
+                    continue;
+                }
+
+
+                System.out.println(answer._value + ", " + answer._type);
             } catch (Exception e1) {
+
                 System.out.println(e1.toString());
+
             }
 //
         }
@@ -55,9 +76,4 @@ public class Main {
 
 
 }
-
-// Adding parser diagnostics
-
-
-// Parse strings and return Tokens
 

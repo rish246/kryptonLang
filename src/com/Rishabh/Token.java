@@ -1,6 +1,6 @@
 package com.Rishabh;
 
-class Token {
+public class Token {
     TokenType _type;
     String _lexeme;
     Object _value;

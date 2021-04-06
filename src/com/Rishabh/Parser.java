@@ -1,7 +1,8 @@
 package com.Rishabh;
 
+import com.Rishabh.Expression.*;
+
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 class Parser {
@@ -18,7 +19,6 @@ class Parser {
 
         _tokens = tokenizeLine();
 
-        printTokens();
         // Append lexer diagnostics with parser diagnostics
         _diagnostics.addAll(lexer._diagnostics);
     }
@@ -124,7 +124,7 @@ class Parser {
             left = parsePrimaryExp();
 
 
-        while(CurrentToken()._type != TokenType.EndOfLineToken) {
+        while(CurrentToken()._type != TokenType.EndOfLineToken && left != null) {
             int curPrecedence = getBinaryOperatorPrecedence(CurrentToken()._type);
 
             if (curPrecedence <= parentPrecedence || curPrecedence == 0)
@@ -138,6 +138,7 @@ class Parser {
             left = new BinaryExpression(left, binOperator, right);
 
         }
+
 
         return left;
 
@@ -161,7 +162,6 @@ class Parser {
             case IntToken: {
                 Token currentToken = match(TokenType.IntToken); // it does
 
-
                 int value = (currentToken._value == null) ? Integer.MIN_VALUE : (int) currentToken._value;
 
                 return new NumberExpression(value); // creating nullPoint Exception
@@ -170,11 +170,16 @@ class Parser {
             case BoolTokenKeyword: {
                 Token currentToken = match(TokenType.BoolTokenKeyword); // it does
 
-
                 boolean value = (boolean) currentToken._value;
 
-                return new BoolExpression(value);
+                return new BoolExperssion(value);
             }
+
+            default:
+                _diagnostics.add("Unexpected primary expression " + CurrentToken()._lexeme);
+
+
+
         }
 
 
