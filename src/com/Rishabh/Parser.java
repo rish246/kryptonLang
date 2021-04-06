@@ -20,6 +20,7 @@ class Parser {
         _tokens = tokenizeLine();
 
         // Append lexer diagnostics with parser diagnostics
+        printTokens();
         _diagnostics.addAll(lexer._diagnostics);
     }
 
@@ -85,16 +86,19 @@ class Parser {
         switch(binOperator) {
             case MultToken:
             case DivToken:
-                return 4;
+                return 5;
 
             case AddToken:
             case SubToken:
-                return 3;
+                return 4;
 
             case LogicalAndToken:
-                return 2;
+                return 3;
 
             case LogicalOrToken:
+                return 2;
+
+            case EqualityToken:
                 return 1;
 
                 default:
@@ -107,7 +111,10 @@ class Parser {
         switch(unaryOperator) {
             case AddToken:
             case SubToken:
-                return 5;
+            case LogicalNotToken:
+                return 6;
+
+
 
             default:
                 return 0;

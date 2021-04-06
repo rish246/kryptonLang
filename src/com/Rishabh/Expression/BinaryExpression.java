@@ -88,6 +88,11 @@ public class BinaryExpression extends Expression {
                 return new EvalResult(((boolean) leftRes._value || (boolean) rightRes._value), "boolean");
         }
 
+        if (_operatorToken == TokenType.EqualityToken
+            && leftType.equals(rightType)) {
+            return new EvalResult(leftRes._value == rightRes._value, "boolean");
+        }
+
         _diagnostics.add("Undefined operator " + _operatorToken + " for types " + leftType + " and " + rightType);
         return null;
 

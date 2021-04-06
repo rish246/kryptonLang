@@ -46,6 +46,11 @@ public class UnaryExpression extends Expression {
                     return new EvalResult(-((int)bodyRes._value), "int");
                 }
                 break;
+            case LogicalNotToken:
+                if(bodyResType.equals("boolean")) {
+                    return new EvalResult(!(boolean) bodyRes._value, "boolean");
+                }
+                break;
             default:
                 throw new Exception("Unknown binary operator" + _operatorToken);
         }

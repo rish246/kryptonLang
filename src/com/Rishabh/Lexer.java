@@ -82,6 +82,10 @@ class Lexer {
                 ++_position;
                 return new Token(TokenType.ClosedParensToken, ")", null);
 
+            case '!':
+                ++_position;
+                return new Token(TokenType.LogicalNotToken, "!", null);
+
             case '|':
                 if (_line.charAt(_position + 1) == '|') {
                     _position += 2;
@@ -95,6 +99,13 @@ class Lexer {
                 }
 
                 break;
+            case '=':
+                if(_line.charAt(_position  + 1) == '=') {
+                    _position += 2;
+                    return new Token(TokenType.EqualityToken, "==", null);
+                }
+                break;
+
 
 
         }

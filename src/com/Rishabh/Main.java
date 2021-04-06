@@ -35,14 +35,15 @@ public class Main {
 
             Parser parser = new Parser(line);
             Expression result = parser.parse(0);
+            if(displayParseTree)
+                result.prettyPrint("");
 
             try {
 
 //                result.prettyPrint("");
 
                 if (parser._diagnostics.size() > 0) {
-                    // Print the errors and continue with our loop
-//                    parser._diagnostics.addAll(runtimeDiagnostics);
+
                     for(String diagnostic : parser._diagnostics)
                         System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
 
@@ -54,7 +55,7 @@ public class Main {
 
                 EvalResult answer = result.evaluate();
                 List<String> runtimeDiagnostics = result.getDiagnostics();
-                
+
                 if(runtimeDiagnostics.size() > 0) {
                     for(String diagnostic : runtimeDiagnostics) {
                         System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
