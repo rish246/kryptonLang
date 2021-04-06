@@ -1,11 +1,11 @@
 package com.Rishabh;
 
-class NumberExpression extends Expression {
-    int _value;
+class BoolExpression extends Expression {
+    boolean  _value;
 //    ExpressionType _type;
 
-    NumberExpression(int value) {
-        super(ExpressionType.IntExpression);
+    BoolExpression(boolean value) {
+        super(ExpressionType.BoolExpression);
         _value = value;
 //        super(ExpressionType.BinaryExpression);
     }

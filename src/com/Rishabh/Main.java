@@ -39,15 +39,16 @@ public class Main {
 
                     continue;
                 }
-                
-                if(displayParseTree) 
+
+                if(displayParseTree)
                     result.prettyPrint("");
 
-                int answer = (int) result.evaluate();
+                Object answer = result.evaluate();
                 System.out.println(answer);
             } catch (Exception e1) {
                 System.out.println(e1.toString());
             }
+//
         }
     }
 

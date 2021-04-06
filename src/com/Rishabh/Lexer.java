@@ -31,6 +31,26 @@ class Lexer {
 
         }
 
+
+        // If it is a letter --> return new LetterToken
+        if(Character.isLetter(_line.charAt(_position))) {
+            while ((_position < _line.length()) && Character.isLetter(_line.charAt(_position)))
+                _position++;
+
+            // Create a new Lexeme
+            String lexeme = _line.substring(start, _position);
+
+            // If keyword
+            switch (lexeme) {
+                case "true":
+                case "false":
+                    return new Token(TokenType.BoolTokenKeyword, lexeme, Boolean.parseBoolean(lexeme));
+
+                    default:
+                        return new Token(TokenType.IdentifierToken, lexeme, null);
+            }
+        }
+
         // Reject spaces
         // GIving bugs... fix this error now
         if (_line.charAt(_position) == ' ') {
@@ -42,24 +62,40 @@ class Lexer {
             return nextToken();
         }
 
-        if (_line.charAt(_position) == '+') {
-            _position++;
-            return new Token(TokenType.AddToken, "+", null);
-        } else if (_line.charAt(_position) == '-') {
-            _position++;
-            return new Token(TokenType.SubToken, "-", null);
-        } else if (_line.charAt(_position) == '*') {
-            _position++;
-            return new Token(TokenType.MultToken, "*", null);
-        } else if (_line.charAt(_position) == '/') {
-            _position++;
-            return new Token(TokenType.DivToken, "/", null);
-        } else if (_line.charAt(_position) == '(') {
-            ++_position;
-            return new Token(TokenType.OpenParensToken, "(", null);
-        } else if (_line.charAt(_position) == ')') {
-            ++_position;
-            return new Token(TokenType.ClosedParensToken, ")", null);
+        switch (_line.charAt(_position)) {
+            case '+':
+                _position++;
+                return new Token(TokenType.AddToken, "+", null);
+            case '-':
+                _position++;
+                return new Token(TokenType.SubToken, "-", null);
+            case '*':
+                _position++;
+                return new Token(TokenType.MultToken, "*", null);
+            case '/':
+                _position++;
+                return new Token(TokenType.DivToken, "/", null);
+            case '(':
+                ++_position;
+                return new Token(TokenType.OpenParensToken, "(", null);
+            case ')':
+                ++_position;
+                return new Token(TokenType.ClosedParensToken, ")", null);
+
+            case '|':
+                if (_line.charAt(_position + 1) == '|') {
+                    _position += 2;
+                    return new Token(TokenType.LogicalOrToken, "||", null);
+                }
+                break;
+            case '&':
+                if(_line.charAt(_position + 1) == '&') {
+                    _position += 2;
+                    return new Token(TokenType.LogicalAndToken, "&&", null);
+                }
+
+                break;
+
 
         }
 

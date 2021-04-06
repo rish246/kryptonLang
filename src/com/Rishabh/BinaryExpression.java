@@ -38,6 +38,10 @@ class BinaryExpression extends Expression {
                 return ((int) _left.evaluate() * (int) _right.evaluate());
             case DivToken:
                 return ((int) _left.evaluate() / (int) _right.evaluate());
+            case LogicalAndToken:
+                return (boolean) _left.evaluate() && (boolean) _right.evaluate();
+            case LogicalOrToken:
+                return (boolean) _left.evaluate() || (boolean) _right.evaluate();
             default:
                 throw new Exception("Unknown binary operator" + _operatorToken);
         }

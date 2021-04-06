@@ -6,7 +6,7 @@ class UnaryExpression extends Expression {
 //    ExpressionType _type;
 
     UnaryExpression(TokenType operatorToken, Expression body) {
-        super(ExpressionType.BinaryExpression);
+        super(ExpressionType.UnaryExpression);
         _operatorToken = operatorToken;
         _body = body;
     }

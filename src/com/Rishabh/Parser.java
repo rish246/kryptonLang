@@ -18,8 +18,7 @@ class Parser {
 
         _tokens = tokenizeLine();
 
-        System.out.println(_tokens);
-
+        printTokens();
         // Append lexer diagnostics with parser diagnostics
         _diagnostics.addAll(lexer._diagnostics);
     }
@@ -86,10 +85,16 @@ class Parser {
         switch(binOperator) {
             case MultToken:
             case DivToken:
-                return 2;
+                return 4;
 
             case AddToken:
             case SubToken:
+                return 3;
+
+            case LogicalAndToken:
+                return 2;
+
+            case LogicalOrToken:
                 return 1;
 
                 default:
@@ -102,7 +107,7 @@ class Parser {
         switch(unaryOperator) {
             case AddToken:
             case SubToken:
-                return 3;
+                return 5;
 
             default:
                 return 0;
@@ -113,11 +118,11 @@ class Parser {
         Expression left;
 
         int unaryOperatorPrec = getUnaryOperatorPrecedence(CurrentToken()._type);
-        System.out.println(unaryOperatorPrec);
-        if (unaryOperatorPrec != 0)
+        if (unaryOperatorPrec != 0 && unaryOperatorPrec >= parentPrecedence)
             left = new UnaryExpression(NextToken()._type, parse(unaryOperatorPrec));
         else
             left = parsePrimaryExp();
+
 
         while(CurrentToken()._type != TokenType.EndOfLineToken) {
             int curPrecedence = getBinaryOperatorPrecedence(CurrentToken()._type);
@@ -143,22 +148,37 @@ class Parser {
 
     private Expression parsePrimaryExp() {
 //        System.out.println("In parsePrimearyExp method");
-        if (CurrentToken()._type == TokenType.OpenParensToken) {
-            // return a tree for parens
-            Token left = NextToken();
+        switch (CurrentToken()._type) {
+            case OpenParensToken:
+                // return a tree for parens
+                Token left = NextToken();
 
-            Expression body = parse(0);
+                Expression body = parse(0);
 
-            Token right = match(TokenType.ClosedParensToken);
+                Token right = match(TokenType.ClosedParensToken);
 
-            return new ParensExpression(left, body, right);
+                return new ParensExpression(left, body, right);
+            case IntToken: {
+                Token currentToken = match(TokenType.IntToken); // it does
+
+
+                int value = (currentToken._value == null) ? Integer.MIN_VALUE : (int) currentToken._value;
+
+                return new NumberExpression(value); // creating nullPoint Exception
+
+            }
+            case BoolTokenKeyword: {
+                Token currentToken = match(TokenType.BoolTokenKeyword); // it does
+
+
+                boolean value = (boolean) currentToken._value;
+
+                return new BoolExpression(value);
+            }
         }
 
-        Token currentToken = match(TokenType.IntToken); // it does
 
-        int value = (currentToken._value == null) ? Integer.MIN_VALUE : (int) currentToken._value;
-
-        return new NumberExpression(value); // creating nullPoint Exception
+        return null;
     }
 
 
