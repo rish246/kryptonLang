@@ -19,6 +19,8 @@ public class Main {
         boolean displayParseTree = false;
 
 
+
+
 	// write your code here
         while (true) {
 
@@ -64,7 +66,7 @@ public class Main {
                 }
 
 
-                System.out.println(answer._value + ", " + answer._type);
+                System.out.println(answer._value);
             } catch (Exception e1) {
 
                 System.out.println(e1.toString());

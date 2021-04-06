@@ -62,6 +62,7 @@ class Lexer {
             return nextToken();
         }
 
+        // Tokens
         switch (_line.charAt(_position)) {
             case '+':
                 _position++;
@@ -82,10 +83,6 @@ class Lexer {
                 ++_position;
                 return new Token(TokenType.ClosedParensToken, ")", null);
 
-            case '!':
-                ++_position;
-                return new Token(TokenType.LogicalNotToken, "!", null);
-
             case '|':
                 if (_line.charAt(_position + 1) == '|') {
                     _position += 2;
@@ -104,7 +101,38 @@ class Lexer {
                     _position += 2;
                     return new Token(TokenType.EqualityToken, "==", null);
                 }
-                break;
+                else {
+                    _position += 1;
+                    return new Token(TokenType.AssignmentToken, "=", null);
+                }
+            case '<':
+                if(_line.charAt(_position  + 1) == '=') {
+                    _position += 2;
+                    return new Token(TokenType.LessThanEqualToken, "<=", null);
+                }
+                else {
+                    _position += 1;
+                    return new Token(TokenType.LessThanToken, "<", null);
+                }
+
+            case '>':
+                if(_line.charAt(_position  + 1) == '=') {
+                    _position += 2;
+                    return new Token(TokenType.GreaterThanEqualToken, ">=", null);
+                }
+                else {
+                    _position += 1;
+                    return new Token(TokenType.GreaterThanToken, ">", null);
+                }
+            case '!':
+                if(_line.charAt(_position  + 1) == '=') {
+                    _position += 2;
+                    return new Token(TokenType.NotEqualsToken, ">=", null);
+                }
+                else {
+                    ++_position;
+                    return new Token(TokenType.LogicalNotToken, "!", null);
+                }
 
 
 

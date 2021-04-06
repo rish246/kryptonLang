@@ -93,6 +93,30 @@ public class BinaryExpression extends Expression {
             return new EvalResult(leftRes._value == rightRes._value, "boolean");
         }
 
+        if (_operatorToken == TokenType.NotEqualsToken
+                && leftType.equals(rightType)) {
+            return new EvalResult(leftRes._value != rightRes._value, "boolean");
+        }
+
+        if (_operatorToken == TokenType.LessThanToken
+                && leftType.equals("int") && rightType.equals("int")) {
+            return new EvalResult(((int) leftRes._value < (int) rightRes._value), "boolean");
+        }
+
+        if (_operatorToken == TokenType.LessThanEqualToken &&
+                leftType.equals("int") && rightType.equals("int")) {
+            return new EvalResult(((int) leftRes._value <= (int) rightRes._value), "boolean");
+        }
+
+        if (_operatorToken == TokenType.GreaterThanToken &&
+                leftType.equals("int") && rightType.equals("int")) {
+            return new EvalResult(((int) leftRes._value > (int) rightRes._value), "boolean");
+        }
+
+        if (_operatorToken == TokenType.GreaterThanEqualToken &&
+                leftType.equals("int") && rightType.equals("int")) {
+            return new EvalResult(((int) leftRes._value >= (int) rightRes._value), "boolean");
+        }
         _diagnostics.add("Undefined operator " + _operatorToken + " for types " + leftType + " and " + rightType);
         return null;
 
