@@ -125,12 +125,31 @@ class Parser {
         }
     }
 
-    public Expression parse(int parentPrecedence) {
+    public Expression parse() {
+        // ParseAssignment Expression
+        // check if currentToken == Identifier
+        // next is assignment
+        if(CurrentToken()._type == TokenType.IdentifierToken
+            && Peek(1)._type == TokenType.AssignmentToken) {
+            // This is an assignment exp
+            Token left = NextToken();
+            TokenType operatorToken = NextToken()._type;
+            Expression right = parse();
+
+            // Add an entry in the environment and get the result
+            return new AssignmentExpression(left, operatorToken, right);
+
+        }
+        return parseBinaryExpression(0);
+    }
+
+
+    private Expression parseBinaryExpression(int parentPrecedence) {
         Expression left;
 
         int unaryOperatorPrec = getUnaryOperatorPrecedence(CurrentToken()._type);
         if (unaryOperatorPrec != 0 && unaryOperatorPrec >= parentPrecedence)
-            left = new UnaryExpression(NextToken()._type, parse(unaryOperatorPrec));
+            left = new UnaryExpression(NextToken()._type, parseBinaryExpression(unaryOperatorPrec));
         else
             left = parsePrimaryExp();
 
@@ -144,7 +163,7 @@ class Parser {
 
             TokenType binOperator = NextToken()._type;
 
-            Expression right = parse(curPrecedence);
+            Expression right = parseBinaryExpression(curPrecedence);
 
             left = new BinaryExpression(left, binOperator, right);
 
@@ -165,7 +184,7 @@ class Parser {
                 // return a tree for parens
                 Token left = NextToken();
 
-                Expression body = parse(0);
+                Expression body = parseBinaryExpression(0);
 
                 Token right = match(TokenType.ClosedParensToken);
 
@@ -185,6 +204,18 @@ class Parser {
 
                 return new BoolExperssion(value);
             }
+
+            case IdentifierToken: {
+                Token currentToken = match(TokenType.IdentifierToken);
+
+                // Get value and type from the env
+
+                // For now just make a value of 1
+                return new IdentifierExpression(currentToken._lexeme,1, "int"); // just value of 1
+            }
+
+
+
 
             default:
                 _diagnostics.add("Unexpected primary expression " + CurrentToken()._lexeme);

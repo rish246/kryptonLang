@@ -3,6 +3,7 @@ package com.Rishabh.Expression;
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.TokenType;
+import com.Rishabh.Utilities.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +44,12 @@ public class BinaryExpression extends Expression {
 
 
     @Override
-    public EvalResult evaluate() throws Exception {
+    public EvalResult evaluate(Environment env) throws Exception {
 
-        EvalResult leftRes = _left.evaluate();
+        EvalResult leftRes = _left.evaluate(env);
         _diagnostics.addAll(_left.getDiagnostics());
 
-        EvalResult rightRes = _right.evaluate();
+        EvalResult rightRes = _right.evaluate(env);
         _diagnostics.addAll(_right.getDiagnostics());
 
         if(_diagnostics.size() > 0)

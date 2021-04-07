@@ -3,6 +3,7 @@ package com.Rishabh.Expression;
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Token;
+import com.Rishabh.Utilities.Environment;
 
 import java.util.List;
 
@@ -19,8 +20,8 @@ public class ParensExpression extends Expression {
 
 
     @Override
-    public EvalResult evaluate() throws Exception {
-        return _body.evaluate();
+    public EvalResult evaluate(Environment env) throws Exception {
+        return _body.evaluate(env);
     }
 
     @Override

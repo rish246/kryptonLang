@@ -2,6 +2,7 @@ package com.Rishabh;
 
 
 import com.Rishabh.Expression.Expression;
+import com.Rishabh.Utilities.Environment;
 
 import java.util.List;
 import java.util.Scanner;
@@ -18,8 +19,8 @@ public class Main {
 
         boolean displayParseTree = false;
 
-
-
+        // Create an environment here
+        Environment parentEnv = new Environment();
 
 	// write your code here
         while (true) {
@@ -35,11 +36,15 @@ public class Main {
                 continue;
             }
 
+            if(line.startsWith("#"))
+                continue;
+
             Parser parser = new Parser(line);
-            Expression result = parser.parse(0);
+            parser.printTokens();
+            Expression result = parser.parse();
             if(displayParseTree)
                 result.prettyPrint("");
-
+//
             try {
 
 //                result.prettyPrint("");
@@ -55,7 +60,7 @@ public class Main {
                 if(displayParseTree)
                     result.prettyPrint("");
 
-                EvalResult answer = result.evaluate();
+                EvalResult answer = result.evaluate(parentEnv);
                 List<String> runtimeDiagnostics = result.getDiagnostics();
 
                 if(runtimeDiagnostics.size() > 0) {

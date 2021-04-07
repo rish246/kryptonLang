@@ -3,6 +3,7 @@ package com.Rishabh.Expression;
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.TokenType;
+import com.Rishabh.Utilities.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,8 @@ public class UnaryExpression extends Expression {
     }
 
     @Override
-    public EvalResult evaluate() throws Exception {
-        EvalResult bodyRes = _body.evaluate();
+    public EvalResult evaluate(Environment env) throws Exception {
+        EvalResult bodyRes = _body.evaluate(env);
         String bodyResType = bodyRes._type;
 
 

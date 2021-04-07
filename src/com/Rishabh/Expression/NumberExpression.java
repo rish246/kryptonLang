@@ -2,6 +2,7 @@ package com.Rishabh.Expression;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
+import com.Rishabh.Utilities.Environment;
 
 public class NumberExpression extends Expression {
     int _value;
@@ -20,7 +21,7 @@ public class NumberExpression extends Expression {
     }
 
     @Override
-    public EvalResult evaluate() {
+    public EvalResult evaluate(Environment env) {
         return new EvalResult(_value, "int");
     }
 

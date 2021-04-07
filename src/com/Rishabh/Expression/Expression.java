@@ -2,6 +2,7 @@ package com.Rishabh.Expression;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
+import com.Rishabh.Utilities.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class Expression {
         return _type;
     }
 
-    public EvalResult evaluate() throws Exception {
+    public EvalResult evaluate(Environment env) throws Exception {
         return null;
     }
 
