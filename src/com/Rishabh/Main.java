@@ -4,6 +4,7 @@ package com.Rishabh;
 import com.Rishabh.Expression.Expression;
 import com.Rishabh.Utilities.Environment;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -20,13 +21,38 @@ public class Main {
         boolean displayParseTree = false;
 
         // Create an environment here
-        Environment parentEnv = new Environment();
+        Environment parentEnv = new Environment(null);
 
 	// write your code here
         while (true) {
 
             System.out.print("Krypton >> ");
             String line = scanner.nextLine().trim();
+//            int LineNumber = 1;
+
+
+            boolean isValidInput = hasValidParens(line);
+            while(!isValidInput) {
+                System.out.print(">>>\t");
+                String nextLine = scanner.nextLine().trim();
+                line = line + nextLine;
+                isValidInput = hasValidParens(line);
+            }
+
+            // ExpressionBlock -> {ListOfExpressions separated by newLine}
+            // SplitByNewLine_.
+            // List<Expression>
+            // For Each Expression, Evaluate() and printErrors()
+            // {, }, ;
+            // {
+            //   --> (SplitTerms and then Parse)
+            //   --> (ParseStatement)
+            //   --> Create a new Env with parent as provided env()
+            //   ==> // ParseBlock ({  ListOfExpressions  })
+            //      --> New Kind of Exp -> Block Expression
+            //      --> Block And The Parse Expression -->
+            // }
+
 
             if(line.equals(""))
                 continue;
@@ -77,10 +103,29 @@ public class Main {
                 System.out.println(e1.toString());
 
             }
-//
+
+        }
+    }
+
+
+
+    public static boolean hasValidParens(String inputLine) {
+        int netRes = 0;
+        // Take ( == 1 and ) == -1.. after exec, the netRes should be 0
+        HashMap<Character, Integer> score = new HashMap<Character, Integer>();
+        score.put('(', 1);
+        score.put(')', -1);
+        score.put('{', 2);
+        score.put('}', -2);
+
+
+        char[] nextLine = inputLine.toCharArray();
+        for(char ch : nextLine) {
+            if(score.containsKey(ch))
+                netRes += score.get(ch);
         }
 
-
+        return (netRes == 0);
     }
 
 

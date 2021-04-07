@@ -121,13 +121,24 @@ class Lexer {
                     return new Token(TokenType.LogicalNotToken, "!", null);
                 }
 
+            case '{':
+                ++_position;
+                return new Token(TokenType.OpenBracketToken, "{", null);
 
+            case '}':
+                ++_position;
+
+                return new Token(TokenType.ClosedBracket, "}", null);
+
+            case ';':
+                ++_position;
+
+                return new Token(TokenType.SemiColonToken, ";", null);
 
         }
 
-
         // Add an error here
-        _diagnostics.add("Invalid token : " + _line.charAt(_position));
+        _diagnostics.add("Invalid token : " + _line.charAt(_position) + " at location " + _position);
 
         return new Token(TokenType.ErrorToken, "" + _line.charAt(_position++), null);
 
@@ -169,3 +180,8 @@ class Lexer {
 
 
 }
+
+
+// Multiple statements ---> if the statement is not complete, We are not waiting for a second prompt
+// (calcParens... if Parens are not balanced... go for another prompt
+// Else submit

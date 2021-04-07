@@ -11,7 +11,7 @@ import java.util.List;
 public class UnaryExpression extends Expression {
     Expression _body;
     TokenType _operatorToken;
-    List<String> _diagnostics = new ArrayList();
+    List<String> _diagnostics = new ArrayList<>();
 //    ExpressionType _type;
 
     public UnaryExpression(TokenType operatorToken, Expression body) {
@@ -38,19 +38,16 @@ public class UnaryExpression extends Expression {
 
         switch (_operatorToken) {
             case AddToken:
-                if(bodyResType.equals("int")) {
-                    return bodyRes;
-                }
+                if (bodyResType.equals("int")) return bodyRes;
                 break;
             case SubToken:
-                if(bodyResType.equals("int")) {
-                    return new EvalResult(-((int)bodyRes._value), "int");
-                }
+                if (bodyResType.equals("int"))
+                    return new EvalResult(-((int) bodyRes._value), "int");
                 break;
             case LogicalNotToken:
-                if(bodyResType.equals("boolean")) {
+                if (bodyResType.equals("boolean"))
                     return new EvalResult(!(boolean) bodyRes._value, "boolean");
-                }
+
                 break;
             default:
                 throw new Exception("Unknown binary operator" + _operatorToken);
@@ -68,3 +65,4 @@ public class UnaryExpression extends Expression {
     }
 
 }
+//  A better error reporting in the Lexer ... Yay boi

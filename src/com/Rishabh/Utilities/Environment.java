@@ -6,6 +6,11 @@ import java.util.HashMap;
 
 public class Environment {
     private final HashMap<String, Symbol> table = new HashMap<>();
+    private final Environment _ParentEnv;
+
+    public Environment(Environment env) {
+        _ParentEnv = env;
+    }
 
     public Symbol addEntry(String lexeme, Symbol entry) {
         table.put(lexeme, entry);
@@ -15,9 +20,21 @@ public class Environment {
     }
 
     public Symbol getEntry(String lexeme) {
-        if (table.containsKey(lexeme)) {
-            return table.get(lexeme);
-        }
+        if (table.containsKey(lexeme)) return table.get(lexeme);
+
+        if(_ParentEnv != null)
+            return _ParentEnv.getEntry(lexeme);
         return null;
+    }
+
+    public void printEnv() {
+        System.out.println("{");
+
+        for(String key : table.keySet()) {
+            System.out.println("{ " + key + " : <" + table.get(key)._value + ">}");
+        }
+
+        System.out.println("}");
+
     }
 }

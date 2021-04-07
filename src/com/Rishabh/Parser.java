@@ -55,6 +55,7 @@ class Parser {
         Token newToken;
 
         List<Token> listTokens = new ArrayList<>();
+        System.out.println("Lexing Tokens");
 
         do {
             newToken = lexer.nextToken();
@@ -154,7 +155,8 @@ class Parser {
             left = parsePrimaryExp();
 
 
-        while(CurrentToken()._type != TokenType.EndOfLineToken && left != null) {
+        while(CurrentToken()._type == TokenType.SemiColonToken
+                || CurrentToken()._type != TokenType.EndOfLineToken) {
             int curPrecedence = getBinaryOperatorPrecedence(CurrentToken()._type);
 
             if (curPrecedence <= parentPrecedence || curPrecedence == 0)
@@ -208,16 +210,26 @@ class Parser {
             case IdentifierToken: {
                 Token currentToken = match(TokenType.IdentifierToken);
 
-
                 return new IdentifierExpression(currentToken._lexeme); // just value of 1
             }
 
+            case OpenBracketToken: {
+                TokenType openParensToken = NextToken()._type;
+                List<Expression> parsedExpressions = new ArrayList<>();
 
-
+                // While !match with }
+                while(CurrentToken()._type != TokenType.ClosedBracket) {
+                    Expression nextExpression = parse();
+                    parsedExpressions.add(nextExpression);
+                    _position++;
+                }
+                // Now ParseSecondExpression
+                return new BlockExpression(parsedExpressions);
+            }
 
 
             default:
-                _diagnostics.add("Unexpected primary expression " + CurrentToken()._lexeme + " at token : " + (_position + 1));
+                _diagnostics.add("Unexpected primary expression ... Instead got : " + CurrentToken()._lexeme);
 
 
 
