@@ -13,7 +13,7 @@ public class IdentifierExpression extends Expression {
     List<String> _diagnostics = new ArrayList<>();
 //    ExpressionType _type;
 
-    public IdentifierExpression(String lexeme, Object value, String type) {
+    public IdentifierExpression(String lexeme) {
         super(ExpressionType.IdentifierExpression);
         _lexeme = lexeme;
     }
@@ -37,7 +37,6 @@ public class IdentifierExpression extends Expression {
         }
 
         return new EvalResult(res._value, res._type);
-
 
 
     }

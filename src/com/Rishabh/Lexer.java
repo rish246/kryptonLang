@@ -3,6 +3,10 @@ package com.Rishabh;
 import java.util.ArrayList;
 import java.util.List;
 
+interface Condition {
+    public boolean isOk(char curChar);
+}
+
 class Lexer {
     // Care about lexer errors
     String _line;
@@ -21,40 +25,21 @@ class Lexer {
             return new Token(TokenType.EndOfLineToken, null, null);
         // if current char is a digit
         int start = _position;
-        if (Character.isDigit(_line.charAt(_position))) {
-            while ((_position < _line.length()) && Character.isDigit(_line.charAt(_position)))
-                _position++;
 
-            // Create a new Lexeme
-            String lexeme = _line.substring(start, _position);
-            return new Token(TokenType.IntToken, lexeme, Integer.parseInt(lexeme));
+        // if isDigit .. go with IntToken
+        if (Character.isDigit(currentChar()))
+            return getIntToken(start);
+            
+        // if isLetter.. go for word
+        if(Character.isLetter(currentChar()))
+            return getWordToken(start);
 
-        }
-
-
-        // If it is a letter --> return new LetterToken
-        if(Character.isLetter(_line.charAt(_position))) {
-            while ((_position < _line.length()) && Character.isLetter(_line.charAt(_position)))
-                _position++;
-
-            // Create a new Lexeme
-            String lexeme = _line.substring(start, _position);
-
-            // If keyword
-            switch (lexeme) {
-                case "true":
-                case "false":
-                    return new Token(TokenType.BoolTokenKeyword, lexeme, Boolean.parseBoolean(lexeme));
-                default:
-                    return new Token(TokenType.IdentifierToken, lexeme, lexeme);
-            }
-        }
 
         // Reject spaces
         // GIving bugs... fix this error now
-        if (_line.charAt(_position) == ' ') {
+        if (currentChar() == ' ') {
 //            System.out.println("Found space");
-            while (_line.charAt(_position) == ' ') {
+            while (currentChar() == ' ') {
                 _position++;
             }
 
@@ -62,7 +47,7 @@ class Lexer {
         }
 
         // Tokens
-        switch (_line.charAt(_position)) {
+        switch (currentChar()) {
             case '+':
                 _position++;
                 return new Token(TokenType.AddToken, "+", null);
@@ -75,6 +60,9 @@ class Lexer {
             case '/':
                 _position++;
                 return new Token(TokenType.DivToken, "/", null);
+            case '%':
+                _position++;
+                return new Token(TokenType.ModuloToken, "%", null);
             case '(':
                 ++_position;
                 return new Token(TokenType.OpenParensToken, "(", null);
@@ -143,6 +131,40 @@ class Lexer {
 
         return new Token(TokenType.ErrorToken, "" + _line.charAt(_position++), null);
 
+    }
+
+    private char currentChar() {
+        return _line.charAt(_position);
+    }
+
+    private Token getWordToken(int start) {
+        Condition isLetterCondition = (Character::isLetter);
+        String lexeme = getToken(start, isLetterCondition);
+
+        // If keyword
+        switch (lexeme) {
+            case "true":
+            case "false":
+                return new Token(TokenType.BoolTokenKeyword, lexeme, Boolean.parseBoolean(lexeme));
+            case "type":
+                return new Token(TokenType.TypeToken, lexeme, null);
+            default:
+                return new Token(TokenType.IdentifierToken, lexeme, lexeme);
+        }
+    }
+
+    private Token getIntToken (int start) {
+        Condition isDigitCondition = (Character::isDigit);
+        String lexeme = getToken(start, isDigitCondition);
+        return new Token(TokenType.IntToken, lexeme, Integer.parseInt(lexeme));
+    }
+
+    private String getToken(int start, Condition cond) {
+        while ((_position < _line.length()) && cond.isOk(_line.charAt(_position )))
+            _position++;
+
+        // Create a new Lexeme
+        return _line.substring(start, _position);
     }
 
 

@@ -5,6 +5,7 @@ import com.Rishabh.Expression.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 class Parser {
     private Lexer lexer;
     private Token[] _tokens;
@@ -84,6 +85,7 @@ class Parser {
         switch(binOperator) {
             case MultToken:
             case DivToken:
+            case ModuloToken:
                 return 6;
 
             case AddToken:
@@ -126,9 +128,7 @@ class Parser {
     }
 
     public Expression parse() {
-        // ParseAssignment Expression
-        // check if currentToken == Identifier
-        // next is assignment
+
         if(CurrentToken()._type == TokenType.IdentifierToken
             && Peek(1)._type == TokenType.AssignmentToken) {
             // This is an assignment exp
@@ -208,17 +208,16 @@ class Parser {
             case IdentifierToken: {
                 Token currentToken = match(TokenType.IdentifierToken);
 
-                // Get value and type from the env
 
-                // For now just make a value of 1
-                return new IdentifierExpression(currentToken._lexeme,1, "int"); // just value of 1
+                return new IdentifierExpression(currentToken._lexeme); // just value of 1
             }
 
 
 
 
+
             default:
-                _diagnostics.add("Unexpected primary expression " + CurrentToken()._lexeme);
+                _diagnostics.add("Unexpected primary expression " + CurrentToken()._lexeme + " at token : " + (_position + 1));
 
 
 

@@ -5,6 +5,7 @@ import com.Rishabh.ExpressionType;
 import com.Rishabh.Utilities.Environment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Expression {
@@ -26,7 +27,7 @@ public class Expression {
     }
 
     public List<String> getDiagnostics() {
-        return new ArrayList();
+        return List.of();
     }
 
 }

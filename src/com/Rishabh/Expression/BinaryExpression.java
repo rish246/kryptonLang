@@ -60,64 +60,49 @@ public class BinaryExpression extends Expression {
         String leftType = leftRes._type;
         String rightType = rightRes._type;
 
+        if (leftType.equals("int") && rightType.equals("int")) {
+            switch (_operatorToken) {
+                case AddToken:
+                    return new EvalResult(((int) leftRes._value + (int) rightRes._value), "int");
+                case SubToken:
+                    return new EvalResult(((int) leftRes._value - (int) rightRes._value), "int");
+                case MultToken:
+                    return new EvalResult(((int) leftRes._value * (int) rightRes._value), "int");
+                case DivToken:
+                    return new EvalResult(((int) leftRes._value / (int) rightRes._value), "int");
+                case ModuloToken:
+                    return new EvalResult(((int) leftRes._value % (int) rightRes._value), "int");
+                case LessThanToken:
+                    return new EvalResult(((int) leftRes._value < (int) rightRes._value), "boolean");
+                case LessThanEqualToken:
+                    return new EvalResult(((int) leftRes._value <= (int) rightRes._value), "boolean");
+                case GreaterThanToken:
+                    return new EvalResult(((int) leftRes._value > (int) rightRes._value), "boolean");
+                case GreaterThanEqualToken:
+                    return new EvalResult(((int) leftRes._value >= (int) rightRes._value), "boolean");
+                case EqualityToken:
+                    return new EvalResult(leftRes._value == rightRes._value, "boolean");
+                case NotEqualsToken:
+                    return new EvalResult(leftRes._value != rightRes._value, "boolean");
+            }
 
-        if (_operatorToken == TokenType.AddToken &&
-                leftType.equals("int") && rightType.equals("int")) {
-                return new EvalResult(((int) leftRes._value + (int) rightRes._value), "int");
-        }
-        if (_operatorToken == TokenType.SubToken &&
-                leftType.equals("int") && rightType.equals("int")) {
-            return new EvalResult(((int) leftRes._value - (int) rightRes._value), "int");
-        }
 
-        if (_operatorToken == TokenType.MultToken &&
-            leftType.equals("int") && rightType.equals("int")) {
-                return new EvalResult(((int) leftRes._value * (int) rightRes._value), "int");
         }
-
-        if (_operatorToken == TokenType.DivToken
-                && leftType.equals("int") && rightType.equals("int")) {
-                return new EvalResult(((int) leftRes._value / (int) rightRes._value), "int");
-        }
-
-        if (_operatorToken == TokenType.LogicalAndToken
-                && leftType.equals("boolean") && rightType.equals("boolean")) {
-                return new EvalResult(((boolean) leftRes._value && (boolean) rightRes._value), "boolean");
-        }
-        if (_operatorToken == TokenType.LogicalOrToken
-                && leftType.equals("boolean") && rightType.equals("boolean")) {
-                return new EvalResult(((boolean) leftRes._value || (boolean) rightRes._value), "boolean");
-        }
-
-        if (_operatorToken == TokenType.EqualityToken
-            && leftType.equals(rightType)) {
-            return new EvalResult(leftRes._value == rightRes._value, "boolean");
-        }
-
-        if (_operatorToken == TokenType.NotEqualsToken
-                && leftType.equals(rightType)) {
-            return new EvalResult(leftRes._value != rightRes._value, "boolean");
-        }
-
-        if (_operatorToken == TokenType.LessThanToken
-                && leftType.equals("int") && rightType.equals("int")) {
-            return new EvalResult(((int) leftRes._value < (int) rightRes._value), "boolean");
+        else if (leftType.equals("boolean") && rightType.equals("boolean")) {
+            switch (_operatorToken) {
+                case LogicalAndToken:
+                    return new EvalResult(((boolean) leftRes._value && (boolean) rightRes._value), "boolean");
+                case LogicalOrToken:
+                    return new EvalResult(((boolean) leftRes._value || (boolean) rightRes._value), "boolean");
+                case EqualityToken:
+                    return new EvalResult(leftRes._value == rightRes._value, "boolean");
+                case NotEqualsToken:
+                    return new EvalResult(leftRes._value != rightRes._value, "boolean");
+            }
         }
 
-        if (_operatorToken == TokenType.LessThanEqualToken &&
-                leftType.equals("int") && rightType.equals("int")) {
-            return new EvalResult(((int) leftRes._value <= (int) rightRes._value), "boolean");
-        }
+        
 
-        if (_operatorToken == TokenType.GreaterThanToken &&
-                leftType.equals("int") && rightType.equals("int")) {
-            return new EvalResult(((int) leftRes._value > (int) rightRes._value), "boolean");
-        }
-
-        if (_operatorToken == TokenType.GreaterThanEqualToken &&
-                leftType.equals("int") && rightType.equals("int")) {
-            return new EvalResult(((int) leftRes._value >= (int) rightRes._value), "boolean");
-        }
         _diagnostics.add("Undefined operator " + _operatorToken + " for types " + leftType + " and " + rightType);
         return null;
 

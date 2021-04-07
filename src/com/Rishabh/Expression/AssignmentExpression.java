@@ -18,7 +18,7 @@ public class AssignmentExpression extends Expression {
     List<String> _diagnostics = new ArrayList<>();
 
     public AssignmentExpression(Token left, TokenType operatorToken, Expression right) {
-        super(ExpressionType.BinaryExpression);
+        super(ExpressionType.AssignmentExpression);
         _left = left;
         _operatorToken = operatorToken;
         _right = right;
@@ -46,14 +46,18 @@ public class AssignmentExpression extends Expression {
     }
 
 
-
-//    @Override
     public EvalResult evaluate(Environment env) throws Exception {
         // Create an entry in the environment
         // evaluate right under env
         // Create a new IdentifierExpression -> (value and type of right's res)
         // Create an entry in env
         EvalResult rightRes = _right.evaluate(env);
+        _diagnostics.addAll(_right.getDiagnostics());
+
+        if(_diagnostics.size() > 0)
+            return null;
+
+
         String rightType = rightRes._type;
         Object rightValue = rightRes._value;
 

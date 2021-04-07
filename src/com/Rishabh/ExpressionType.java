@@ -1,6 +1,6 @@
 package com.Rishabh;
 
-public enum ExpressionType {BinaryExpression, ParensExpression, IntExpression, UnaryExpression, BoolExpression, IdentifierExpression;
+public enum ExpressionType {BinaryExpression, ParensExpression, IntExpression, UnaryExpression, BoolExpression, IdentifierExpression, TypeOfExpression, AssignmentExpression;
 
 
 }
