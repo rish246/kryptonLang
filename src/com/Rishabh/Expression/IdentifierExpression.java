@@ -30,7 +30,7 @@ public class IdentifierExpression extends Expression {
     @Override
     public EvalResult evaluate(Environment env) {
 //        return new EvalResult(_value, _type);
-        Symbol res = env.getEntry(_lexeme);
+        Symbol res = env.get(_lexeme);
         if(res == null) {
             _diagnostics.add("Undefined variable : " + _lexeme);
             return null;

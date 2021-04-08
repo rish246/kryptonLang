@@ -55,7 +55,6 @@ class Parser {
         Token newToken;
 
         List<Token> listTokens = new ArrayList<>();
-        System.out.println("Lexing Tokens");
 
         do {
             newToken = lexer.nextToken();
@@ -227,6 +226,18 @@ class Parser {
                 return new BlockExpression(parsedExpressions);
             }
 
+            case IfKeywordToken: {
+                NextToken();
+                Expression condBranch = parse();
+                Expression thenBranch = parse();
+                Expression elseBranch = null;
+//                System.out.println(CurrentToken()._lexeme);
+                if(Peek(1)._type == TokenType.ElseKeywordToken) {
+                    _position += 2;
+                    elseBranch = parse();
+                }
+                return new IfExpression(condBranch, thenBranch, elseBranch);
+            }
 
             default:
                 _diagnostics.add("Unexpected primary expression ... Instead got : " + CurrentToken()._lexeme);

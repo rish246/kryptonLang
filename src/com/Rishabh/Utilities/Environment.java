@@ -1,7 +1,5 @@
 package com.Rishabh.Utilities;
 
-import com.Rishabh.Expression.IdentifierExpression;
-
 import java.util.HashMap;
 
 public class Environment {
@@ -12,18 +10,25 @@ public class Environment {
         _ParentEnv = env;
     }
 
-    public Symbol addEntry(String lexeme, Symbol entry) {
+    public Symbol set(String lexeme, Symbol entry) {
+        // If entry already exists in the parent scope, update that ... else add a new entry
+        for(Environment curEnv = this; curEnv != null; curEnv = curEnv._ParentEnv) {
+            if(curEnv.table.containsKey(lexeme)) {
+                // Update the entry in the curEnv
+                curEnv.table.put(lexeme, entry);
+                return entry;
+            }
+        }
+
         table.put(lexeme, entry);
-//        System.out.println(entry);
         return entry;
-        // else create a new one and return that
     }
 
-    public Symbol getEntry(String lexeme) {
-        if (table.containsKey(lexeme)) return table.get(lexeme);
-
-        if(_ParentEnv != null)
-            return _ParentEnv.getEntry(lexeme);
+    public Symbol get(String lexeme) {
+        for(Environment curEnv = this; curEnv != null; curEnv = curEnv._ParentEnv) {
+            if(curEnv.table.containsKey(lexeme))
+                return curEnv.table.get(lexeme);
+        }
         return null;
     }
 
@@ -38,3 +43,6 @@ public class Environment {
 
     }
 }
+
+
+// Debugging the Interpreter: I Am All Alone IIIIIIIIIAMALLLYOURSYOUTEASINGME

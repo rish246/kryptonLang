@@ -159,6 +159,10 @@ class Lexer {
                 return new Token(TokenType.BoolTokenKeyword, lexeme, Boolean.parseBoolean(lexeme));
             case "type":
                 return new Token(TokenType.TypeToken, lexeme, null);
+            case "if":
+                return new Token(TokenType.IfKeywordToken, "if", null);
+            case "else":
+                return new Token(TokenType.ElseKeywordToken, "else", null);
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }

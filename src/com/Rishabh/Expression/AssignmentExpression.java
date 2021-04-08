@@ -61,7 +61,7 @@ public class AssignmentExpression extends Expression {
         String rightType = rightRes._type;
         Object rightValue = rightRes._value;
 
-        Symbol res = env.addEntry(_left._lexeme, new Symbol(_left._lexeme, rightValue, rightType));
+        Symbol res = env.set(_left._lexeme, new Symbol(_left._lexeme, rightValue, rightType));
 //        System.out.println(res._value); // res is null here
         return new EvalResult(res._value, res._type);
 

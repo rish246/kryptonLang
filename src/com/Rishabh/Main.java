@@ -66,11 +66,11 @@ public class Main {
                 continue;
 
             Parser parser = new Parser(line);
-            parser.printTokens();
+//            parser.printTokens();
             Expression result = parser.parse();
             if(displayParseTree)
                 result.prettyPrint("");
-//
+////
             try {
 
 //                result.prettyPrint("");
