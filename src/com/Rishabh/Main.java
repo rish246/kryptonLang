@@ -14,6 +14,7 @@ public class Main {
     public static Scanner scanner = new Scanner(System.in);
     public static final String TEXT_RED = "\u001B[31m";
     public static final String TEXT_RESET = "\u001B[0m";
+    public static final String TEXT_GREEN = "\u001B[32m";
 
 
     public static void main(String[] args) {
@@ -42,16 +43,11 @@ public class Main {
             // ExpressionBlock -> {ListOfExpressions separated by newLine}
             // SplitByNewLine_.
             // List<Expression>
-            // For Each Expression, Evaluate() and printErrors()
-            // {, }, ;
-            // {
-            //   --> (SplitTerms and then Parse)
-            //   --> (ParseStatement)
-            //   --> Create a new Env with parent as provided env()
-            //   ==> // ParseBlock ({  ListOfExpressions  })
-            //      --> New Kind of Exp -> Block Expression
-            //      --> Block And The Parse Expression -->
-            // }
+            // WhileExpression (condStatement) parse();
+            // Evaluate --> _evaluate(condStatement)
+            //
+            //    while( _condStatement.evaluate(env)._value.equal(_true))
+            //      _body.evaluate();
 
 
             if(line.equals(""))
@@ -96,17 +92,20 @@ public class Main {
                     continue;
                 }
 
+                if (answer == null || answer._value == null)
+                    continue;
 
-                System.out.println(answer._value);
+                System.out.println(TEXT_GREEN + answer._value + TEXT_RESET);
             } catch (Exception e1) {
-
                 System.out.println(e1.toString());
 
             }
-
         }
     }
 
+    // Next are string ... String has a giant token
+    // "---" ->
+    // // StringToken -> new StringExpression --> 
 
 
     public static boolean hasValidParens(String inputLine) {

@@ -35,6 +35,21 @@ class Lexer {
             return getWordToken(start);
 
 
+        if(currentChar() == '"') {
+            // This is going to be a Krypton String
+            _position++;
+
+            while(currentChar() != '"') {
+                _position++;
+            }
+
+            String inputStr = _line.substring(start + 1, _position);
+            _position++;
+
+            return new Token(TokenType.StringConstToken, inputStr, inputStr);
+        }
+
+
         // Reject spaces
         // GIving bugs... fix this error now
         if (currentChar() == ' ') {
@@ -163,6 +178,10 @@ class Lexer {
                 return new Token(TokenType.IfKeywordToken, "if", null);
             case "else":
                 return new Token(TokenType.ElseKeywordToken, "else", null);
+            case "while":
+                return new Token(TokenType.WhileKeywordToken, "while", null);
+            case "print":
+                return new Token(TokenType.PrintExpToken, "print", null);
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }

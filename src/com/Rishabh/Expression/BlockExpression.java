@@ -23,10 +23,6 @@ public class BlockExpression extends Expression{
             _diagnostics.addAll(exp.getDiagnostics());
         }
 
-        // Print the Environment
-        currentBlockEnv.printEnv();
-
-
         return new EvalResult(null, "Statement block");
     }
 

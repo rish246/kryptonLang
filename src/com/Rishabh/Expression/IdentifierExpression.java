@@ -31,6 +31,7 @@ public class IdentifierExpression extends Expression {
     public EvalResult evaluate(Environment env) {
 //        return new EvalResult(_value, _type);
         Symbol res = env.get(_lexeme);
+
         if(res == null) {
             _diagnostics.add("Undefined variable : " + _lexeme);
             return null;

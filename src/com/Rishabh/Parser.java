@@ -153,14 +153,20 @@ class Parser {
         else
             left = parsePrimaryExp();
 
+        // left => 1 binOperator == * .. Parse(right)
 
-        while(CurrentToken()._type == TokenType.SemiColonToken
-                || CurrentToken()._type != TokenType.EndOfLineToken) {
+
+        while(_position < _tokens.length
+        && CurrentToken()._type != TokenType.EndOfLineToken) {
+
+            // This is probably causing the arguements
+            if(CurrentToken()._type == TokenType.SemiColonToken)
+                break;
+
             int curPrecedence = getBinaryOperatorPrecedence(CurrentToken()._type);
 
             if (curPrecedence <= parentPrecedence || curPrecedence == 0)
                 break;
-
 
             TokenType binOperator = NextToken()._type;
 
@@ -170,16 +176,12 @@ class Parser {
 
         }
 
-
         return left;
 
-//        return null;
     }
 
-    // precedence fix is required --> yay boi
 
     private Expression parsePrimaryExp() {
-//        System.out.println("In parsePrimearyExp method");
         switch (CurrentToken()._type) {
             case OpenParensToken:
                 // return a tree for parens
@@ -198,6 +200,10 @@ class Parser {
                 return new NumberExpression(value); // creating nullPoint Exception
 
             }
+            case StringConstToken: {
+                return new StringExpression((String) NextToken()._value);
+            }
+
             case BoolTokenKeyword: {
                 Token currentToken = match(TokenType.BoolTokenKeyword); // it does
 
@@ -213,7 +219,7 @@ class Parser {
             }
 
             case OpenBracketToken: {
-                TokenType openParensToken = NextToken()._type;
+                TokenType openBracketToken = NextToken()._type;
                 List<Expression> parsedExpressions = new ArrayList<>();
 
                 // While !match with }
@@ -230,19 +236,35 @@ class Parser {
                 NextToken();
                 Expression condBranch = parse();
                 Expression thenBranch = parse();
+
                 Expression elseBranch = null;
 //                System.out.println(CurrentToken()._lexeme);
-                if(Peek(1)._type == TokenType.ElseKeywordToken) {
+
+                if(_tokens.length > _position
+                        && (Peek(1)._type == TokenType.ElseKeywordToken ||  Peek(0)._type == TokenType.ElseKeywordToken)) {
                     _position += 2;
                     elseBranch = parse();
                 }
                 return new IfExpression(condBranch, thenBranch, elseBranch);
             }
 
+            case WhileKeywordToken: {
+                NextToken();
+                Expression condition = parse();
+                Expression whileBody = parse();
+
+                return new WhileExpression(condition, whileBody);
+            }
+
+            case PrintExpToken: {
+                NextToken();
+                Expression printExpBody = parse();
+                return new PrintExpression(printExpBody);
+            }
+
+
             default:
                 _diagnostics.add("Unexpected primary expression ... Instead got : " + CurrentToken()._lexeme);
-
-
 
         }
 
@@ -254,4 +276,4 @@ class Parser {
 
 }
 
-// replace get with a[i]
+// check for if expressions, they are posing great problems

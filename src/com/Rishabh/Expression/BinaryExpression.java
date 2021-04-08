@@ -52,8 +52,10 @@ public class BinaryExpression extends Expression {
         EvalResult rightRes = _right.evaluate(env);
         _diagnostics.addAll(_right.getDiagnostics());
 
-        if(_diagnostics.size() > 0)
+        if(leftRes == null || rightRes == null) {
+            _diagnostics.add("Error in the Binary Expression");
             return null;
+        }
 
 
         // Get the Types of the leftRes and rightRes
@@ -98,6 +100,17 @@ public class BinaryExpression extends Expression {
                     return new EvalResult(leftRes._value == rightRes._value, "boolean");
                 case NotEqualsToken:
                     return new EvalResult(leftRes._value != rightRes._value, "boolean");
+            }
+        }
+
+        else if(leftType.equals("string")) {
+            switch(_operatorToken) {
+                case AddToken:
+                    return new EvalResult(leftRes._value + rightRes._value.toString(), "string");
+                case EqualityToken:
+                    return new EvalResult(leftRes._value.equals(rightRes._value), "boolean");
+                case NotEqualsToken:
+                    return new EvalResult(!leftRes._value.equals(rightRes._value), "boolean");
             }
         }
 
