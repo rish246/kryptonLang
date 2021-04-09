@@ -30,6 +30,7 @@ public class WhileExpression extends Expression {
 
         while((boolean) _conditionalBranch.evaluate(env)._value) {
             _body.evaluate(env);
+            _diagnostics.addAll(_body.getDiagnostics());
         }
 
         return new EvalResult(null, "whileExpression");

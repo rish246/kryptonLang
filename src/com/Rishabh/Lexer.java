@@ -136,6 +136,13 @@ class Lexer {
                     return new Token(TokenType.LogicalNotToken, "!", null);
                 }
 
+            case '#': {
+                while(_line.charAt(_position  + 1) != '#')
+                    _position += 1;
+                _position += 2;
+                return nextToken();
+            }
+
             case '{':
                 ++_position;
                 return new Token(TokenType.OpenBracketToken, "{", null);

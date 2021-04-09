@@ -19,8 +19,8 @@
 
         }
     }
-}
 
+}
 
 
 myAge = 2;
@@ -76,7 +76,51 @@ while ( i < 10) {
 
 
 
+#nested ifs check
+x = 1;
+if ( x > 0) {
+    print ("Greater than 0");
+    if ( x < 5) {
+        print("Less than 5");
+    }
+} else {
+    print("Less than equal to 0");
+}
 
+
+
+### Print second Star Pattern
+        *
+       ***
+      ***** for n = 3
+
+nRows = 3;
+iRow = 0;
+
+while (iRow < nRows) {
+
+    curRow = "";
+
+    # First print the spaces #
+    nSpaces = nRows - iRow - 1;
+    iSpace = 0;
+    while (iSpace < nSpaces) {
+        curRow = curRow + " ";
+        iSpace = iSpace + 1;
+    }
+
+    # Now add the stars in the row #
+    nStars = 2 * iRow + 1;
+    iStar = 0;
+    while (iStar < nStars) {
+        curRow = curRow + "* ";
+        iStar = iStar + 1;
+    }
+
+    # print the row finally #
+    print(curRow);
+    iRow = iRow + 1;
+}
 
 
 

@@ -58,8 +58,6 @@ public class Main {
                 continue;
             }
 
-            if(line.startsWith("#"))
-                continue;
 
             Parser parser = new Parser(line);
 //            parser.printTokens();

@@ -44,7 +44,7 @@ public class IfExpression extends Expression {
         boolean condBranchOutput = (boolean) condBranchResult._value;
         EvalResult ifExpResult = null;
 
-        if (condBranchOutput == true) {
+        if (condBranchOutput) {
             ifExpResult = _thenBranch.evaluate(env);
             _diagnostics.addAll(_thenBranch.getDiagnostics());
         }
