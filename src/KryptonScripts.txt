@@ -18,6 +18,8 @@
             print ("Current mid = " + mid);
 
         }
+    }
+}
 
 
 
@@ -53,6 +55,16 @@ while (iRow <= nRows) {
 }
 
 
+
+a = 0;
+b = 1;
+i = 2;
+while ( i < 100 ) {
+    print(b);
+    b = a + b;
+    a = b - a;
+    i = i + 1;
+}
 
 
 
