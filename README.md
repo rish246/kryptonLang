@@ -29,6 +29,7 @@ while ( lo < hi ) {
 }
 
 ```
+![plot](./Program%20outputs/BinarySearch.png)
 
 
 *Program for printing star pattern in krypton*
@@ -51,5 +52,6 @@ while (iRow <= nRows) {
     iRow = iRow + 1;
 }
 ```
+![plot](./Program%20outputs/StarPattern.png)
 
 
