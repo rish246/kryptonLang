@@ -100,6 +100,8 @@ iRow = 0;
 while (iRow < nRows) {
 
     curRow = "";
+
+    # First print the spaces #
     nSpaces = nRows - iRow - 1;
     iSpace = 0;
     while (iSpace < nSpaces) {
@@ -107,6 +109,7 @@ while (iRow < nRows) {
         iSpace = iSpace + 1;
     }
 
+    # Now add the stars in the row #
     nStars = 2 * iRow + 1;
     iStar = 0;
     while (iStar < nStars) {
@@ -114,6 +117,7 @@ while (iRow < nRows) {
         iStar = iStar + 1;
     }
 
+    # print the row finally #
     print(curRow);
     iRow = iRow + 1;
 }
@@ -122,10 +126,30 @@ while (iRow < nRows) {
 
 
 
+# for Exp in krypton #
+for (i = 0; i < 3; i = i + 1) {
+    print ("x");
+}
 
 
+nRows = 3;
+for (iRow = 0; iRow < nRows; iRow = iRow + 1) {
+    curRow = "";
+    for(iCol = 0; iCol <= iRow; iCol = iCol + 1) {
+        curRow = curRow + "* ";
+    }
+    print(curRow);
+}
 
 
+nRows = 3;
+for (iRow = 0; iRow < nRows; iRow = iRow + 1) {
+    curRow = "";
+    for(iCol = 0; iCol <= iRow; iCol = iCol + 1) {
+        curRow = curRow + "* ";
+    }
+    print(curRow);
+}
 
 
 

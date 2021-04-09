@@ -33,6 +33,12 @@ public class UnaryExpression extends Expression {
     @Override
     public EvalResult evaluate(Environment env) throws Exception {
         EvalResult bodyRes = _body.evaluate(env);
+        _diagnostics.addAll(_body.getDiagnostics());
+
+        if(_diagnostics.size() > 0) {
+            return null;
+        }
+
         String bodyResType = bodyRes._type;
 
 

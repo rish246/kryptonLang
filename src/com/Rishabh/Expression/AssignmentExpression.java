@@ -47,14 +47,11 @@ public class AssignmentExpression extends Expression {
 
 
     public EvalResult evaluate(Environment env) throws Exception {
-        // Create an entry in the environment
-        // evaluate right under env
-        // Create a new IdentifierExpression -> (value and type of right's res)
-        // Create an entry in env
+
         EvalResult rightRes = _right.evaluate(env);
         _diagnostics.addAll(_right.getDiagnostics());
 
-        if(_diagnostics.size() > 0)
+        if(rightRes == null)
             return null;
 
 

@@ -234,7 +234,8 @@ class Parser {
                     parsedExpressions.add(nextExpression);
                     if(nextExpression.getType() == ExpressionType.IfExpression
                     || nextExpression.getType() == ExpressionType.BlockExpression
-                    || nextExpression.getType() == ExpressionType.WhileExpression)
+                    || nextExpression.getType() == ExpressionType.WhileExpression
+                        || nextExpression.getType() == ExpressionType.ForLoopExpression)
                     {
                         _position++;
                         continue;
@@ -275,6 +276,23 @@ class Parser {
                 Expression whileBody = parse();
 
                 return new WhileExpression(condition, whileBody);
+            }
+
+            case ForKeywordToken: {
+                match(TokenType.ForKeywordToken);
+                match(TokenType.OpenParensToken);
+                // parse the conditions
+                Expression initCondition = parse();
+                match(TokenType.SemiColonToken);
+
+                Expression haltingCondtion = parse();
+                match(TokenType.SemiColonToken);
+
+                Expression progressExp = parse();
+                match(TokenType.ClosedParensToken);
+                Expression forBody = parse();
+
+                return new ForExpression(initCondition, haltingCondtion, progressExp, forBody);
             }
 
             case PrintExpToken: {

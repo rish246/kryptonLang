@@ -189,6 +189,8 @@ class Lexer {
                 return new Token(TokenType.WhileKeywordToken, "while", null);
             case "print":
                 return new Token(TokenType.PrintExpToken, "print", null);
+            case "for":
+                return new Token(TokenType.ForKeywordToken, "for", null);
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }
