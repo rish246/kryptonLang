@@ -34,22 +34,14 @@ while ( lo < hi ) {
 
 *Program for printing star pattern in krypton*
 ```java
+
 nRows = 3;
-iRow = 1;
-
-while (iRow <= nRows) {
-    iCol = 1;
-    print(" ");
-
+for (iRow = 0; iRow < nRows; iRow = iRow + 1) {
     curRow = "";
-
-    while (iCol <= iRow) {
+    for(iCol = 0; iCol <= iRow; iCol = iCol + 1) {
         curRow = curRow + "* ";
-        iCol = iCol + 1;
     }
-
     print(curRow);
-    iRow = iRow + 1;
 }
 ```
 ![plot](./Program%20outputs/StarPattern.png)
