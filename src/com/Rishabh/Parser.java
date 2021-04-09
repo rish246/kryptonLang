@@ -232,8 +232,15 @@ class Parser {
                     Expression nextExpression = parse();
 
                     parsedExpressions.add(nextExpression);
+                    if(nextExpression.getType() == ExpressionType.IfExpression
+                    || nextExpression.getType() == ExpressionType.BlockExpression
+                    || nextExpression.getType() == ExpressionType.WhileExpression)
+                    {
+                        _position++;
+                        continue;
+                    }
 
-                    _position += 1;
+                    match(TokenType.SemiColonToken);
 
                 }
 
