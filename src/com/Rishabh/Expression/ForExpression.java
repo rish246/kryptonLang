@@ -34,12 +34,20 @@ public class ForExpression extends Expression {
         EvalResult haltCondResult = _haltingCondition.evaluate(newEnv);
         _diagnostics.addAll(_haltingCondition.getDiagnostics());
 
+        if(_diagnostics.size() > 0) {
+            _diagnostics.add("Error in the for loop body");
+            return null;
+        }
+
         while((boolean)haltCondResult._value) {
             _body.evaluate(newEnv);
             _diagnostics.addAll(_body.getDiagnostics());
 
             _progressExp.evaluate(newEnv);
             _diagnostics.addAll(_progressExp.getDiagnostics());
+            if(_diagnostics.size() > 0) {
+                return null;
+            }
 
             haltCondResult = _haltingCondition.evaluate(newEnv);
         }

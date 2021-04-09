@@ -22,6 +22,10 @@ public class WhileExpression extends Expression {
     public EvalResult evaluate(Environment env) throws Exception {
         // evaluate conditionalBranch
         EvalResult condBranchResult = _conditionalBranch.evaluate(env);
+        _diagnostics.addAll(_conditionalBranch.getDiagnostics());
+
+        if(_diagnostics.size() > 0)
+            return null;
 
         if (!condBranchResult._type.equals("boolean")) {
             _diagnostics.add("The conditional branch in while expression need to be of type boolean");
@@ -50,12 +54,3 @@ public class WhileExpression extends Expression {
     }
 }
 
-//List ->
-//      , Comma separated Expressions
-//      --> Evaluate those
-//      , EvalResult <Value, Type>
-//      ArrayList<EvalResult>
-//      [
-//          parseList()
-//          --> ListExpressions separated by ;
-//      ]

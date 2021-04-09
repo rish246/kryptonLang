@@ -30,9 +30,7 @@ public class IfExpression extends Expression {
             _diagnostics.add("Error in the conditional branch of the if Expression");
             return null;
         }
-
-
-        if (!condBranchResult._type.equals("boolean")) {
+        else if (!condBranchResult._type.equals("boolean")) {
             _diagnostics.add("The conditional branch in if expression need to be of type boolean");
             return null;
         } else if(_thenBranch == null) {
@@ -54,9 +52,9 @@ public class IfExpression extends Expression {
         }
 
 
-        if (ifExpResult == null) {
+        if (ifExpResult == null)
             return null;
-        }
+        
 
 
         return new EvalResult(ifExpResult._value, "ifExpression");

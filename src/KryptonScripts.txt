@@ -143,7 +143,7 @@ for (iRow = 0; iRow < nRows; iRow = iRow + 1) {
 
 
 nRows = 3;
-for (iRow = 0; iRows < nRows; iRow = iRow + 1) {
+for (iRow = 0; iRow < nRows; iRow = iRow + 1) {
     curRow = "";
     for(iCol = 0; iCol <= iRow; iCol = iCol + 1) {
         curRow = curRow + "* ";

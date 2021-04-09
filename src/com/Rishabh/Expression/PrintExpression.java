@@ -30,13 +30,12 @@ public class PrintExpression extends Expression {
         EvalResult bodyOp = _body.evaluate(env);
         _diagnostics.addAll(_body.getDiagnostics());
 
-        if(bodyOp == null) {
+        if(bodyOp == null || _diagnostics.size() > 0) {
             return null;
         }
 
         System.out.println(TEXT_GREEN + bodyOp._value + TEXT_RESET);
 
-//        System.out.println(bodyOp);
         return new EvalResult(null, null);
     }
 
