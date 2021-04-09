@@ -22,7 +22,7 @@ public class PrintExpression extends Expression {
         _body = body;
     }
 
-    ExpressionType getType() {
+    public ExpressionType getType() {
         return _type;
     }
 

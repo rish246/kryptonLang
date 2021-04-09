@@ -23,6 +23,8 @@ public class BlockExpression extends Expression{
             _diagnostics.addAll(exp.getDiagnostics());
         }
 
+        // Where is the third expression.. The last assignment statement...
+
         return new EvalResult(null, "Statement block");
     }
 

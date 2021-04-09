@@ -15,7 +15,7 @@ public class Expression {
         _type = type;
     }
 
-    ExpressionType getType() {
+    public ExpressionType getType() {
         return _type;
     }
 

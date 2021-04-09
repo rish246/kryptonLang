@@ -30,3 +30,25 @@ while ( lo < hi ) {
 
 }
 ```
+
+
+*Program for printing star pattern in krypton*
+```
+nRows = 3;
+iRow = 1;
+
+while (iRow <= nRows) {
+    iCol = 1;
+    print(" ");
+
+    curRow = "";
+
+    while (iCol <= iRow) {
+        curRow = curRow + "* ";
+        iCol = iCol + 1;
+    }
+
+    print(curRow);
+    iRow = iRow + 1;
+}
+```

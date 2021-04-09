@@ -30,7 +30,7 @@ class Parser {
         }
     }
 
-    private Token CurrentToken() {
+    public Token CurrentToken() {
         return _tokens[_position];
     }
 
@@ -68,7 +68,7 @@ class Parser {
 
     }
 
-    private Token match(TokenType type) {
+    public Token match(TokenType type) {
         // If type matches the next token, then return the current token
         // else return newly generated token
         if (_position < _tokens.length && CurrentToken()._type == type)
@@ -219,22 +219,34 @@ class Parser {
             }
 
             case OpenBracketToken: {
-                TokenType openBracketToken = NextToken()._type;
+                match(TokenType.OpenBracketToken);
                 List<Expression> parsedExpressions = new ArrayList<>();
 
                 // While !match with }
-                while(CurrentToken()._type != TokenType.ClosedBracket) {
+                int blockDepth = 1;
+                while(blockDepth > 0) {
+                    if(CurrentToken()._type == TokenType.ClosedBracket) {
+                        blockDepth--;
+                        continue;
+                    }
                     Expression nextExpression = parse();
+
                     parsedExpressions.add(nextExpression);
-                    _position++;
+
+                    _position += 1;
+
                 }
-                // Now ParseSecondExpression
+
+
                 return new BlockExpression(parsedExpressions);
             }
 
+
             case IfKeywordToken: {
-                NextToken();
+                match(TokenType.IfKeywordToken);
+                match(TokenType.OpenParensToken);
                 Expression condBranch = parse();
+                match(TokenType.ClosedParensToken);
                 Expression thenBranch = parse();
 
                 Expression elseBranch = null;
@@ -249,22 +261,26 @@ class Parser {
             }
 
             case WhileKeywordToken: {
-                NextToken();
+                match(TokenType.WhileKeywordToken);
+                match(TokenType.OpenParensToken);
                 Expression condition = parse();
+                match(TokenType.ClosedParensToken);
                 Expression whileBody = parse();
 
                 return new WhileExpression(condition, whileBody);
             }
 
             case PrintExpToken: {
-                NextToken();
+                match(TokenType.PrintExpToken);
+                match(TokenType.OpenParensToken);
                 Expression printExpBody = parse();
+                match(TokenType.ClosedParensToken);
                 return new PrintExpression(printExpBody);
             }
 
 
             default:
-                _diagnostics.add("Unexpected primary expression ... Instead got : " + CurrentToken()._lexeme);
+                _diagnostics.add("Unexpected primary expression, Instead got : " + CurrentToken()._lexeme);
 
         }
 

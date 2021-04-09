@@ -64,9 +64,17 @@ public class Main {
             Parser parser = new Parser(line);
 //            parser.printTokens();
             Expression result = parser.parse();
+//
+            if (parser.CurrentToken()._type == TokenType.ClosedBracket
+            || parser.CurrentToken()._type == TokenType.EndOfLineToken
+            || parser.CurrentToken()._type == TokenType.SemiColonToken) {
+            } else {
+                parser._diagnostics.add("Expected EndOfLine token got " + parser.CurrentToken()._lexeme);
+            }
+//
             if(displayParseTree)
                 result.prettyPrint("");
-////
+//////
             try {
 
 //                result.prettyPrint("");
