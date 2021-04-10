@@ -53,15 +53,18 @@ print("");
 for (i = 2; i <= upperBound; i = i + 1) {
   isPrimeI = true;
 
+  # check if i is divisible by some number
+        if yes, i is not prime
+        else i is prime #
+        
   for (j = 2; j * j <= i; j = j + 1) {
-    if (i % j == 0) {
+    if (i % j == 0) 
       isPrimeI = false;
-    }
   }
 
-  if (isPrimeI) {
+  if (isPrimeI) 
     print("" + i + " is a prime number");
-  }
+  
 }
 ```
 
