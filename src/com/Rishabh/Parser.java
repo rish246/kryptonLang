@@ -5,6 +5,8 @@ import com.Rishabh.Expression.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.Rishabh.ExpressionType.FunctionExpression;
+
 
 class Parser {
     private Lexer lexer;
@@ -215,6 +217,12 @@ class Parser {
             case IdentifierToken: {
                 Token currentToken = match(TokenType.IdentifierToken);
 
+                // check if it is a function call
+                if(CurrentToken()._type == TokenType.OpenParensToken) {
+                    _position += 2;
+                    return new FunctionCallExpression(currentToken._lexeme);
+                }
+
                 return new IdentifierExpression(currentToken._lexeme); // just value of 1
             }
 
@@ -235,8 +243,8 @@ class Parser {
                     if(nextExpression.getType() == ExpressionType.IfExpression
                     || nextExpression.getType() == ExpressionType.BlockExpression
                     || nextExpression.getType() == ExpressionType.WhileExpression
-                        || nextExpression.getType() == ExpressionType.ForLoopExpression)
-                    {
+                        || nextExpression.getType() == ExpressionType.ForLoopExpression
+                        || nextExpression.getType() == ExpressionType.FuncExpression) {
                         _position++;
                         continue;
                     }
@@ -302,6 +310,16 @@ class Parser {
                 Expression printExpBody = parse();
                 match(TokenType.ClosedParensToken);
                 return new PrintExpression(printExpBody);
+            }
+
+            case FunctionDefineToken: {
+                match(TokenType.FunctionDefineToken);
+                String funcName = match(TokenType.IdentifierToken)._lexeme;
+                match(TokenType.OpenParensToken);
+                match(TokenType.ClosedParensToken);
+                Expression funcBody = parse();
+
+                return new FunctionExpression(funcName, funcBody);
             }
 
 

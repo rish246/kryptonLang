@@ -57,7 +57,7 @@ public class ForExpression extends Expression {
     }
 
     public void prettyPrint(String indent) {
-        System.out.println(indent + "ForExpression");
+        System.out.println("ForExpression");
 
         System.out.print(indent + "|-");_initializationCond.prettyPrint(indent + "    ");
         System.out.println(indent + "|");

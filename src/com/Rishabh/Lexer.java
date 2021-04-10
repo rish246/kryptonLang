@@ -191,6 +191,8 @@ class Lexer {
                 return new Token(TokenType.PrintExpToken, "print", null);
             case "for":
                 return new Token(TokenType.ForKeywordToken, "for", null);
+            case "def":
+                return new Token(TokenType.FunctionDefineToken, "def", null);
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }

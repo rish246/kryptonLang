@@ -161,19 +161,28 @@ for( i = 0; i < 100; i = i + 1) {
 
 
 ###### prime numbers between 1 to 100 krypton
-upperBound = 100;
-print("");
-for(i = 2; i <= upperBound; i = i + 1) {
+def printPrimes() {
+    upperBound = 100;
+    print("");
+    for(i = 2; i <= upperBound; i = i + 1) {
 
-    isPrimeI = true;
+        isPrimeI = true;
 
-    for(j = 2; j * j <= i; j = j + 1) {
-         if( i % j == 0) {
-            isPrimeI = false;
-         }
-    }
+        for(j = 2; j * j <= i; j = j + 1) {
+             if( i % j == 0) {
+                isPrimeI = false;
+             }
+        }
 
-    if(isPrimeI) {
-        print("" + i + " is a prime number");
+        if(isPrimeI) {
+            print("" + i + " is a prime number");
+        }
     }
 }
+
+printPrimes();
+
+def printX() {
+    print("x");
+}
+

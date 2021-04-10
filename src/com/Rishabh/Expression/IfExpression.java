@@ -61,7 +61,7 @@ public class IfExpression extends Expression {
     }
 
     public void prettyPrint(String indent) {
-        System.out.println(indent + "IfExpression");
+        System.out.println("IfExpression");
 
         System.out.print(indent + "|-");_conditionalBranch.prettyPrint(indent + "    ");
         System.out.println(indent + "|");
