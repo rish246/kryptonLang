@@ -63,6 +63,9 @@ class Lexer {
 
         // Tokens
         switch (currentChar()) {
+            case ',':
+                _position++;
+                return new Token(TokenType.CommaSeparatorToken, ",", null);
             case '+':
                 _position++;
                 return new Token(TokenType.AddToken, "+", null);

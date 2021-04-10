@@ -219,8 +219,29 @@ class Parser {
 
                 // check if it is a function call
                 if(CurrentToken()._type == TokenType.OpenParensToken) {
-                    _position += 2;
-                    return new FunctionCallExpression(currentToken._lexeme);
+
+                    // Match openParens
+                    match(TokenType.OpenParensToken);
+                    // Make a list of actual args
+                    List<Expression> actualArgs = new ArrayList<>();
+
+                    // getFirstExp
+                    if(CurrentToken()._type != TokenType.ClosedParensToken) {
+                        // parse an actual arg
+                        actualArgs.add(parse());
+                    }
+
+                    while(CurrentToken()._type != TokenType.ClosedParensToken) {
+                        match(TokenType.CommaSeparatorToken);
+                        actualArgs.add(parse());
+                    }
+
+
+                    return new FunctionCallExpression(currentToken._lexeme, actualArgs);
+
+
+
+
                 }
 
                 return new IdentifierExpression(currentToken._lexeme); // just value of 1
@@ -316,10 +337,35 @@ class Parser {
                 match(TokenType.FunctionDefineToken);
                 String funcName = match(TokenType.IdentifierToken)._lexeme;
                 match(TokenType.OpenParensToken);
+                // ParseFormalArgs
+                List<IdentifierExpression> formalArgs = new ArrayList<>();
+
+                if(CurrentToken()._type != TokenType.ClosedParensToken) {
+                    // Create a formal here
+                    Token firstArg = match(TokenType.IdentifierToken);
+                    if(_diagnostics.size() > 0)
+                        return null;
+
+                    formalArgs.add(new IdentifierExpression(firstArg._lexeme));
+
+                }
+
+                while(CurrentToken()._type != TokenType.ClosedParensToken) {
+                    match(TokenType.CommaSeparatorToken);
+
+                    Token nextIdentifier = match(TokenType.IdentifierToken);
+                    if(_diagnostics.size() > 0)
+                        return null;
+
+                    formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme));
+
+                }
+
+
                 match(TokenType.ClosedParensToken);
                 Expression funcBody = parse();
 
-                return new FunctionExpression(funcName, funcBody);
+                return new FunctionExpression(funcName, funcBody, formalArgs);
             }
 
 

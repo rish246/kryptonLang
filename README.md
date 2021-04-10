@@ -72,14 +72,15 @@ for (i = 2; i <= upperBound; i = i + 1) {
 **Program for defining and calling not parametered functions in krypton**
 
 ```python
-number = 10;
-def factorialOfNumber() {
+def factorial(n) {
     fact = 1;
-    for(i = 1; i <= number; i = i + 1) {
+         
+    for(i = 1; i <= n; i = i + 1) {
         fact = fact * i;
     }
-    print("Factorial of " + number + " is " + fact);
+    
+    print(fact);
 }
 ```
 
-![plot](./Program%20outputs/factorialFunction.jpg)
+![plot](./Program%20outputs/factorialFunctionParams.jpg)

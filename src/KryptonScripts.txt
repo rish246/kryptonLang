@@ -193,10 +193,31 @@ def printX() {
 number = 10;
 def factorialOfNumber() {
     fact = 1;
-    for(i = 1; i <= number; i = i + 1) {
-        fact = fact * i;
+
+    def prod() {
+        for(i = 1; i <= number; i = i + 1) {
+            fact = fact * i;
+        }
     }
+
+    prod();
+
     print("Factorial of " + number + " is " + fact);
 }
 
 factorialOfNumber();
+
+
+
+######### function with args ################
+def factorial(n) {
+    fact = 1;
+
+    for(i = 1; i <= n; i = i + 1) {
+        fact = fact * i;
+    }
+
+    print(fact);
+}
+
+

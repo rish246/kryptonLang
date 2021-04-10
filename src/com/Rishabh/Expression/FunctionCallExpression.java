@@ -9,18 +9,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FunctionCallExpression extends Expression {
-    String _functionName;
-    List<String> _diagnostics = new ArrayList<>();
+    public String _functionName;
+    public List<Expression> _actualArgs;
+    public List<String> _diagnostics = new ArrayList<>();
 
 
-    public FunctionCallExpression(String lexeme) {
+    public FunctionCallExpression(String lexeme, List<Expression> actualArgs) {
         super(ExpressionType.FunctionCallExpression);
         _functionName = lexeme;
+        _actualArgs = actualArgs;
     }
 
     @Override
     public void prettyPrint(String indent) {
-        System.out.println("Call -> " + _functionName);
+        System.out.println("Function Call");
+        System.out.println("|");
+        System.out.println(indent + _functionName);
+        System.out.println("|");
+        for(Expression aArg : _actualArgs) {
+            System.out.print("|-"); aArg.prettyPrint(indent + "    ");
+        }
+
     }
 
     public List<String> getDiagnostics() {
@@ -37,13 +46,32 @@ public class FunctionCallExpression extends Expression {
             return null;
         }
 
+
         // Get the closure from the symbol
         ClosureExpression closure = (ClosureExpression) res._value;
-        // get env and function expression from closre
-        Environment closureEnv = closure._closureEnv;
+
+        Environment newEnv = new Environment(null);
+        // Bind formal args with actual args
+        List<IdentifierExpression> formalArgs = closure._functionExp._formalArgs;
+
+        if(formalArgs.size() != _actualArgs.size()) {
+            _diagnostics.add("Invalid number of arguements passed in function " + _functionName + ", expected " + formalArgs.size() + ", got " + _actualArgs.size());
+            return null;
+        }
+
+        // evaluate the actual arg and add the entry in newEnv
+        for(int i=0; i<_actualArgs.size(); i++) {
+            EvalResult curArgResult = _actualArgs.get(i).evaluate(env);
+
+            Symbol newBinding = new Symbol(null, curArgResult._value, curArgResult._type);
+            newEnv.set(formalArgs.get(i)._lexeme, newBinding);
+        }
+
+        newEnv._ParentEnv = closure._closureEnv;
+
         Expression funcBody = closure._functionExp._body;
 
-        funcBody.evaluate(closureEnv);
+        funcBody.evaluate(newEnv);
         _diagnostics.addAll(funcBody.getDiagnostics());
 
         return new EvalResult(null, "Function call");
