@@ -67,3 +67,19 @@ for (i = 2; i <= upperBound; i = i + 1) {
 ```
 
 ![plot](./Program%20outputs/primeNumberProgram.jpg)
+
+
+**Program for defining and calling not parametered functions in krypton**
+
+```python
+number = 10;
+def factorialOfNumber() {
+    fact = 1;
+    for(i = 1; i <= number; i = i + 1) {
+        fact = fact * i;
+    }
+    print("Factorial of " + number + " is " + fact);
+}
+```
+
+![plot](./Program%20outputs/factorialFunction.jpg)
