@@ -1,4 +1,4 @@
-# This is the repository for the krypton programming language
+# krypton programming language
 
 ## Krypton is a small, dynamically typed and strongly typed programming language.
 
