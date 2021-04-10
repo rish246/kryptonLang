@@ -30,10 +30,11 @@ public class BlockExpression extends Expression{
 
     public void prettyPrint(String indent) {
         System.out.println("Block Expression");
-        System.out.println(indent + "|");
         for(Expression exp : _expressionList) {
             System.out.print(indent + "├──");
             exp.prettyPrint(indent + "    ");
+            System.out.println(indent + "|");
+
         }
     }
 

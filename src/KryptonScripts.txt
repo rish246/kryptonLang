@@ -151,5 +151,29 @@ for (iRow = 0; iRow < nRows; iRow = iRow + 1) {
     print(curRow);
 }
 
+for( i = 0; i < 100; i = i + 1) {
+    if(i%2 == 0)
+        print("" + i + " is even");
+    else
+        print("" + i + " is odd");
+
+}
 
 
+###### prime numbers between 1 to 100 krypton
+upperBound = 100;
+print("");
+for(i = 2; i <= upperBound; i = i + 1) {
+
+    isPrimeI = true;
+
+    for(j = 2; j * j <= i; j = j + 1) {
+         if( i % j == 0) {
+            isPrimeI = false;
+         }
+    }
+
+    if(isPrimeI) {
+        print("" + i + " is a prime number");
+    }
+}

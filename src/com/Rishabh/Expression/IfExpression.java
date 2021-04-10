@@ -54,7 +54,7 @@ public class IfExpression extends Expression {
 
         if (ifExpResult == null)
             return null;
-        
+
 
 
         return new EvalResult(ifExpResult._value, "ifExpression");
@@ -64,6 +64,8 @@ public class IfExpression extends Expression {
         System.out.println(indent + "IfExpression");
 
         System.out.print(indent + "|-");_conditionalBranch.prettyPrint(indent + "    ");
+        System.out.println(indent + "|");
+
         System.out.print(indent + "|-");_thenBranch.prettyPrint(indent + "    ");
         if(_elseBranch != null) {
             System.out.print(indent + "|_");

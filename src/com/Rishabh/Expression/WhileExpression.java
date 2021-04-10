@@ -35,6 +35,9 @@ public class WhileExpression extends Expression {
         while((boolean) _conditionalBranch.evaluate(env)._value) {
             _body.evaluate(env);
             _diagnostics.addAll(_body.getDiagnostics());
+            if(_diagnostics.size() > 0) {
+                return null;
+            }
         }
 
         return new EvalResult(null, "whileExpression");
@@ -45,6 +48,7 @@ public class WhileExpression extends Expression {
         System.out.println(indent + "WhileExpression");
 
         System.out.print(indent + "|-");_conditionalBranch.prettyPrint(indent + "    ");
+        System.out.println(indent + "|");
         System.out.print(indent + "|-");_body.prettyPrint(indent + "    ");
 
     }
@@ -53,4 +57,6 @@ public class WhileExpression extends Expression {
         return _diagnostics;
     }
 }
+
+// Now comma separated expressions.... These needs to be evaluated ... (How an Identifier is Evaluated) //
 

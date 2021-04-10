@@ -4,7 +4,7 @@
 
 ### This is under construction for now.
 
-_Program for binary search in krypton_
+**Program for binary search in krypton**
 
 ```java
 myAge = 20;
@@ -32,7 +32,7 @@ while ( lo < hi ) {
 ![plot](./Program%20outputs/BinarySearch.png)
 
 
-*Program for printing star pattern in krypton*
+**Program for printing star pattern in krypton**
 ```java
 
 nRows = 3;
@@ -45,5 +45,29 @@ for (iRow = 0; iRow < nRows; iRow = iRow + 1) {
 }
 ```
 ![plot](./Program%20outputs/StarPattern.png)
+
+
+**Program for printing prime numbers in krypton**
+```java
+upperBound = 100;
+print("");
+for(i = 2; i <= upperBound; i = i + 1) {
+
+    isPrimeI = true;
+
+    for(j = 2; j * j <= i; j = j + 1) {
+         if( i % j == 0) {
+            isPrimeI = false;
+         }
+    }
+
+    if(isPrimeI) {
+        print("" + i + " is a prime number");
+    }
+}
+```
+
+![plot](./Program%20outputs/primeNumberProgram.jpg)
+
 
 

@@ -262,7 +262,8 @@ class Parser {
 
                 if(_tokens.length > _position
                         && (Peek(1)._type == TokenType.ElseKeywordToken ||  Peek(0)._type == TokenType.ElseKeywordToken)) {
-                    _position += 2;
+                    _position++;
+                    match(TokenType.ElseKeywordToken);
                     elseBranch = parse();
                 }
                 return new IfExpression(condBranch, thenBranch, elseBranch);
