@@ -63,6 +63,9 @@ class Lexer {
 
         // Tokens
         switch (currentChar()) {
+            case ',':
+                _position++;
+                return new Token(TokenType.CommaSeparatorToken, ",", null);
             case '+':
                 _position++;
                 return new Token(TokenType.AddToken, "+", null);
@@ -191,6 +194,10 @@ class Lexer {
                 return new Token(TokenType.PrintExpToken, "print", null);
             case "for":
                 return new Token(TokenType.ForKeywordToken, "for", null);
+            case "def":
+                return new Token(TokenType.FunctionDefineToken, "def", null);
+            case "return":
+                return new Token(TokenType.ReturnToken, "return", null);
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }

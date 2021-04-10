@@ -67,3 +67,102 @@ for (i = 2; i <= upperBound; i = i + 1) {
 ```
 
 ![plot](./Program%20outputs/primeNumberProgram.jpg)
+
+
+**Program for defining and calling not parametered functions in krypton**
+
+```python
+def factorial(n) {
+    fact = 1;
+         
+    for(i = 1; i <= n; i = i + 1) {
+        fact = fact * i;
+    }
+    
+    print(fact);
+}
+```
+
+![plot](./Program%20outputs/factorialFunctionParams.jpg)
+
+
+
+**Program for finding nth fibonacci number using recursion**
+
+```python
+def fibonacci(n) {
+    res = 1;
+    if ( n < 2 ) {
+        res = n;
+    } 
+    else {
+        res = fibonacci(n-1) + fibonacci(n-2);
+    }
+    return res;
+}
+```
+
+![plot](./Program%20outputs/fibonacciRecursive.jpg)
+
+
+**function closures in krypton**
+
+```python
+def factorial(n) {
+
+    # another function in krypton #
+    def prodNatural(n) {
+        resProd = 1;
+        for(i = 1; i <= n; i = i + 1) {
+            resProd = resProd * i;
+        }
+
+        return resProd;
+    }
+
+    return prodNatural(n);
+}
+```
+
+![plot](./Program%20outputs/factorialNestedFunctions.jpg)
+
+**First class functions in krypton**
+
+```python
+def printSquares(squareFunc, n) {
+    for(i = 1; i <= n; i = i + 1) {
+        print("Square of " + i + " is " + squareFunc(i));
+    }
+}
+
+def square(n) {
+    return n * n;
+}
+
+printSquares(square, 5);
+```
+
+![plot](./Program%20outputs/firstClassFunctionsInKrypton.jpg)
+
+
+**Higher order functions and currying in krypton**
+
+```python
+def prodNTimes(n) {
+    def func(x) {
+        res = 1;
+        for(i = 1; i <= n; i = i + 1) {
+            res = res * x;
+        }
+        return res;
+    }
+
+    return func;
+}
+
+cube = prodNTimes(3);
+square = prodNTimes(2);
+
+```
+
+![plot](./Program%20outputs/higherOrderFuncsAndCurrying.jpg)

@@ -161,19 +161,147 @@ for( i = 0; i < 100; i = i + 1) {
 
 
 ###### prime numbers between 1 to 100 krypton
-upperBound = 100;
-print("");
-for(i = 2; i <= upperBound; i = i + 1) {
+def printPrimes() {
+    upperBound = 100;
+    print("");
+    for(i = 2; i <= upperBound; i = i + 1) {
 
-    isPrimeI = true;
+        isPrimeI = true;
 
-    for(j = 2; j * j <= i; j = j + 1) {
-         if( i % j == 0) {
-            isPrimeI = false;
-         }
-    }
+        for(j = 2; j * j <= i; j = j + 1) {
+             if( i % j == 0) {
+                isPrimeI = false;
+             }
+        }
 
-    if(isPrimeI) {
-        print("" + i + " is a prime number");
+        if(isPrimeI) {
+            print("" + i + " is a prime number");
+        }
     }
 }
+
+
+
+
+printPrimes();
+
+def printX() {
+    print("x");
+}
+
+
+number = 10;
+def factorialOfNumber() {
+    fact = 1;
+
+    def prod() {
+        for(i = 1; i <= number; i = i + 1) {
+            fact = fact * i;
+        }
+    }
+
+    prod();
+
+    print("Factorial of " + number + " is " + fact);
+}
+
+factorialOfNumber();
+
+
+
+######### function with args ################
+def factorial(n) {
+    fact = 1;
+
+    for(i = 1; i <= n; i = i + 1) {
+        fact = fact * i;
+    }
+
+    print(fact);
+}
+
+
+
+def isSatisfying(condFunction, value) {
+    if(condFunction(value)) {
+        print("Condition satisfied");
+    } else {
+        print("Condition not satisfied");
+    }
+}
+
+
+def fibonacci(nTurns) {
+    result = "";
+    result = result + "0 1 ";
+    a = 0;
+    b = 1;
+    for(iTurn = 2; iTurn < nTurns; iTurn = iTurn + 1) {
+            b = a + b;
+            a = b - a;
+            result = result + b + " ";
+    }
+
+    print(result);
+}
+
+def factorial(n) {
+
+    # find product of first natural numbers using this function #
+    def prodNatural(n) {
+        resProd = 1;
+
+        if( n > 1 ) {
+            resProd = n * prodNatural(n-1);
+        }
+
+        return resProd;
+    }
+
+    return prodNatural(n);
+}
+
+
+def fibonacci(n) {
+    res = 1;
+    if ( n < 2 ) {
+        res = n;
+    } else {
+        res = fibonacci(n-1) + fibonacci(n-2);
+    }
+    return res;
+}
+
+
+# print square of first n natural numbers #
+def printSquares(squareFunc, n) {
+    for(i = 1; i <= n; i = i + 1) {
+        print("Square of " + i + " is " + squareFunc(i));
+    }
+}
+
+def square(n) {
+    return n * n;
+}
+
+############3 higher order functions krypton ##########
+def prodNTimes(n) {
+    def func(x) {
+        res = 1;
+        for(i = 1; i <= n; i = i + 1) {
+            res = res * x;
+        }
+        return res;
+    }
+
+    return func;
+}
+
+cube = prodNTimes(3);
+square = prodNTimes(2);
+
+cube(6);
+cube(3);
+
+square(2);
+square(4);

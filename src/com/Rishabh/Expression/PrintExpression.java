@@ -40,8 +40,8 @@ public class PrintExpression extends Expression {
     }
 
     public void prettyPrint(String indent) {
-        System.out.println(indent + "PrintExpression");
-        System.out.print("|-");
+        System.out.println("PrintExpression");
+        System.out.print(indent + "|-");
         _body.prettyPrint(indent + "    ");
     }
 

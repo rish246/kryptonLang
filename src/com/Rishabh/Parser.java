@@ -5,6 +5,8 @@ import com.Rishabh.Expression.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.Rishabh.ExpressionType.FunctionExpression;
+
 
 class Parser {
     private Lexer lexer;
@@ -159,7 +161,7 @@ class Parser {
         while(_position < _tokens.length
         && CurrentToken()._type != TokenType.EndOfLineToken) {
 
-            // This is probably causing the arguements
+            // This is probably causing the arguement
             if(CurrentToken()._type == TokenType.SemiColonToken)
                 break;
 
@@ -214,6 +216,36 @@ class Parser {
 
             case IdentifierToken: {
                 Token currentToken = match(TokenType.IdentifierToken);
+                // check if it is a function call
+                if(CurrentToken()._type == TokenType.OpenParensToken) {
+                    // Match openParens
+                    match(TokenType.OpenParensToken);
+                    // Make a list of actual args
+                    List<Expression> actualArgs = new ArrayList<>();
+
+                    // getFirstExp
+                    if(CurrentToken()._type != TokenType.ClosedParensToken) {
+                        // parse an actual arg
+                        actualArgs.add(parse());
+                    }
+
+
+
+                    while(CurrentToken()._type != TokenType.ClosedParensToken) {
+                        match(TokenType.CommaSeparatorToken);
+                        actualArgs.add(parse());
+                    }
+
+                    match(TokenType.ClosedParensToken);
+
+
+
+                    return new FunctionCallExpression(currentToken._lexeme, actualArgs);
+
+
+
+
+                }
 
                 return new IdentifierExpression(currentToken._lexeme); // just value of 1
             }
@@ -224,7 +256,7 @@ class Parser {
 
                 // While !match with }
                 int blockDepth = 1;
-                while(blockDepth > 0) {
+                while(blockDepth > 0) { // BlockDepth is not being maintained .. why is that
                     if(CurrentToken()._type == TokenType.ClosedBracket) {
                         blockDepth--;
                         continue;
@@ -235,8 +267,8 @@ class Parser {
                     if(nextExpression.getType() == ExpressionType.IfExpression
                     || nextExpression.getType() == ExpressionType.BlockExpression
                     || nextExpression.getType() == ExpressionType.WhileExpression
-                        || nextExpression.getType() == ExpressionType.ForLoopExpression)
-                    {
+                        || nextExpression.getType() == ExpressionType.ForLoopExpression
+                        || nextExpression.getType() == ExpressionType.FuncExpression) {
                         _position++;
                         continue;
                     }
@@ -256,6 +288,7 @@ class Parser {
                 Expression condBranch = parse();
                 match(TokenType.ClosedParensToken);
                 Expression thenBranch = parse();
+
 
                 Expression elseBranch = null;
 //                System.out.println(CurrentToken()._lexeme);
@@ -304,6 +337,54 @@ class Parser {
                 return new PrintExpression(printExpBody);
             }
 
+            case FunctionDefineToken: {
+                match(TokenType.FunctionDefineToken);
+                String funcName = match(TokenType.IdentifierToken)._lexeme;
+                match(TokenType.OpenParensToken);
+                // ParseFormalArgs
+                List<IdentifierExpression> formalArgs = new ArrayList<>();
+
+                if(CurrentToken()._type != TokenType.ClosedParensToken) {
+                    // Create a formal here
+                    Token firstArg = match(TokenType.IdentifierToken);
+                    if(_diagnostics.size() > 0)
+                        return null;
+
+                    formalArgs.add(new IdentifierExpression(firstArg._lexeme));
+
+                }
+
+                while(CurrentToken()._type != TokenType.ClosedParensToken) {
+                    match(TokenType.CommaSeparatorToken);
+
+                    Token nextIdentifier = match(TokenType.IdentifierToken);
+                    if(_diagnostics.size() > 0)
+                        return null;
+
+                    formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme));
+
+                }
+
+
+                match(TokenType.ClosedParensToken);
+                Expression funcBody = parse();
+
+                return new FunctionExpression(funcName, funcBody, formalArgs);
+            }
+
+            case ReturnToken: {
+                match(TokenType.ReturnToken);
+
+                Expression returnBody = parse();
+                if(returnBody == null) {
+                    _diagnostics.add("Empty return statements are not allowed");
+                    return null;
+                }
+
+                return new ReturnExpression(returnBody);
+
+
+            }
 
             default:
                 _diagnostics.add("Unexpected primary expression, Instead got : " + CurrentToken()._lexeme);
