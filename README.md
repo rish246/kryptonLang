@@ -143,3 +143,26 @@ printSquares(square, 5);
 ```
 
 ![plot](./Program%20outputs/firstClassFunctionsInKrypton.jpg)
+
+
+**Higher order functions and currying in krypton**
+
+```python
+def prodNTimes(n) {
+    def func(x) {
+        res = 1;
+        for(i = 1; i <= n; i = i + 1) {
+            res = res * x;
+        }
+        return res;
+    }
+
+    return func;
+}
+
+cube = prodNTimes(3);
+square = prodNTimes(2);
+
+```
+
+![plot](./Program%20outputs/higherOrderFuncsAndCurrying.jpg)

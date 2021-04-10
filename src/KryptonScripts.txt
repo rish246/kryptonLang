@@ -283,3 +283,25 @@ def printSquares(squareFunc, n) {
 def square(n) {
     return n * n;
 }
+
+############3 higher order functions krypton ##########
+def prodNTimes(n) {
+    def func(x) {
+        res = 1;
+        for(i = 1; i <= n; i = i + 1) {
+            res = res * x;
+        }
+        return res;
+    }
+
+    return func;
+}
+
+cube = prodNTimes(3);
+square = prodNTimes(2);
+
+cube(6);
+cube(3);
+
+square(2);
+square(4);
