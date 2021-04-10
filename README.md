@@ -6,7 +6,7 @@
 
 **Program for binary search in krypton**
 
-```javascript
+```python
 myAge = 20;
 lo = 0;
 hi = 100;
@@ -32,7 +32,7 @@ while (lo < hi) {
 
 **Program for printing star pattern in krypton**
 
-```javascript
+```python
 nRows = 3;
 for (iRow = 0; iRow < nRows; iRow = iRow + 1) {
   curRow = "";
@@ -47,15 +47,13 @@ for (iRow = 0; iRow < nRows; iRow = iRow + 1) {
 
 **Program for printing prime numbers in krypton**
 
-```javascript
+```python
 upperBound = 100;
 print("");
 for (i = 2; i <= upperBound; i = i + 1) {
   isPrimeI = true;
 
-  # check if i is divisible by some number
-        if yes, i is not prime
-        else i is prime #
+  # check if i is divisible by some number if yes, i is not prime else i is prime #
         
   for (j = 2; j * j <= i; j = j + 1) {
     if (i % j == 0) 
