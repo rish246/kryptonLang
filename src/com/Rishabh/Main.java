@@ -54,11 +54,11 @@ public class Main {
             Parser parser = new Parser(line);
 //            parser.printTokens();
             Expression result = parser.parse();
-//////
-//////
+////////
+////////
             if(displayParseTree)
                 result.prettyPrint("");
-//////////
+////////////
             try {
 
 //                result.prettyPrint("");

@@ -221,3 +221,65 @@ def factorial(n) {
 }
 
 
+
+def isSatisfying(condFunction, value) {
+    if(condFunction(value)) {
+        print("Condition satisfied");
+    } else {
+        print("Condition not satisfied");
+    }
+}
+
+
+def fibonacci(nTurns) {
+    result = "";
+    result = result + "0 1 ";
+    a = 0;
+    b = 1;
+    for(iTurn = 2; iTurn < nTurns; iTurn = iTurn + 1) {
+            b = a + b;
+            a = b - a;
+            result = result + b + " ";
+    }
+
+    print(result);
+}
+
+def factorial(n) {
+
+    # find product of first natural numbers using this function #
+    def prodNatural(n) {
+        resProd = 1;
+
+        if( n > 1 ) {
+            resProd = n * prodNatural(n-1);
+        }
+
+        return resProd;
+    }
+
+    return prodNatural(n);
+}
+
+
+def fibonacci(n) {
+    res = 1;
+    if ( n < 2 ) {
+        res = n;
+    } else {
+        res = fibonacci(n-1) + fibonacci(n-2);
+    }
+    return res;
+}
+
+
+# print square of first n natural numbers #
+def printSquares(squareFunc, n) {
+    for(i = 1; i <= n; i = i + 1) {
+        print("Square of " + i + " is " + squareFunc(i));
+    }
+}
+
+def square(n) {
+    return n * n;
+}

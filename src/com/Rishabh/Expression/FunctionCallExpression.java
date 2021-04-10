@@ -27,7 +27,7 @@ public class FunctionCallExpression extends Expression {
         System.out.println(indent + _functionName);
         System.out.println("|");
         for(Expression aArg : _actualArgs) {
-            System.out.print("|-"); aArg.prettyPrint(indent + "    ");
+            System.out.print(indent + "|-"); aArg.prettyPrint(indent + "    ");
         }
 
     }
@@ -59,6 +59,10 @@ public class FunctionCallExpression extends Expression {
             return null;
         }
 
+
+        // Map function name to the closure in the body
+        newEnv.set(_functionName, res);
+
         // evaluate the actual arg and add the entry in newEnv
         for(int i=0; i<_actualArgs.size(); i++) {
             EvalResult curArgResult = _actualArgs.get(i).evaluate(env);
@@ -71,11 +75,11 @@ public class FunctionCallExpression extends Expression {
 
         Expression funcBody = closure._functionExp._body;
 
-        funcBody.evaluate(newEnv);
+        EvalResult funcResult = funcBody.evaluate(newEnv);
+        // If the value != null... then value and type of the function is same
         _diagnostics.addAll(funcBody.getDiagnostics());
 
-        return new EvalResult(null, "Function call");
-
+        return funcResult;
 
     }
 

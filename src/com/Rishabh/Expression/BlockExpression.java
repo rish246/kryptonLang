@@ -19,7 +19,13 @@ public class BlockExpression extends Expression{
         Environment currentBlockEnv = new Environment(env);
 
         for(Expression exp : _expressionList) {
-            exp.evaluate(currentBlockEnv);
+
+            EvalResult curExpResult = exp.evaluate(currentBlockEnv);
+            if(exp._type == ExpressionType.ReturnExpression) {
+                return new EvalResult(curExpResult._value, curExpResult._type);
+            }
+            // If exp._type == returnStatement
+            // return new EvalResult(value, type);
             _diagnostics.addAll(exp.getDiagnostics());
         }
 

@@ -196,6 +196,8 @@ class Lexer {
                 return new Token(TokenType.ForKeywordToken, "for", null);
             case "def":
                 return new Token(TokenType.FunctionDefineToken, "def", null);
+            case "return":
+                return new Token(TokenType.ReturnToken, "return", null);
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }
