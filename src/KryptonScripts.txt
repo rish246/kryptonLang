@@ -305,3 +305,23 @@ cube(3);
 
 square(2);
 square(4);
+
+#########################################################
+def countTo(to) {
+
+    def counter(from, to) {
+        res = " ";
+        for( i = from; i <= to; i = i + 1) {
+            res = res + i + " ";
+        }
+        return res;
+    }
+
+    res = "";
+    res = "Invalid value passed in the function";
+    if (to >= 1)
+        res = counter(1, to);
+
+
+    return res;
+}

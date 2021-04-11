@@ -108,23 +108,27 @@ def fibonacci(n) {
 **function closures in krypton**
 
 ```python
-def factorial(n) {
+def countTo(to) {
 
-    # another function in krypton #
-    def prodNatural(n) {
-        resProd = 1;
-        for(i = 1; i <= n; i = i + 1) {
-            resProd = resProd * i;
+    def counter(from, to) {
+        res = " ";
+        for( i = from; i <= to; i = i + 1) {
+            res = res + i + " ";
         }
-
-        return resProd;
+        return res;
     }
 
-    return prodNatural(n);
+    res = "";
+    res = "Invalid value passed in the function";
+    if (to >= 1)
+        res = counter(1, to);
+
+
+    return res;
 }
 ```
 
-![plot](./Program%20outputs/factorialNestedFunctions.jpg)
+![plot](./Program%20outputs/functionClosures.jpg)
 
 **First class functions in krypton**
 
@@ -166,3 +170,4 @@ square = prodNTimes(2);
 ```
 
 ![plot](./Program%20outputs/higherOrderFuncsAndCurrying.jpg)
+
