@@ -102,6 +102,24 @@ public class BinaryExpression extends Expression {
                     return new EvalResult(leftRes._value != rightRes._value, "boolean");
             }
         }
+        else if(leftType.equals("list") && rightType.equals("list")) {
+            // return new EvalResult of type list
+            switch(_operatorToken) {
+                case AddToken: {
+
+                    List leftList = (List) leftRes._value;
+                    List rightList = (List) rightRes._value;
+                    System.out.println(leftList);
+                    System.out.println(rightList);
+                    // Merge these two lists
+                    leftList.addAll(rightList);
+                    return new EvalResult(leftList, "list");
+                }
+
+            }
+
+
+        }
 
         else if(leftType.equals("string")) {
             switch(_operatorToken) {

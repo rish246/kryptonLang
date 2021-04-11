@@ -87,7 +87,12 @@ class Lexer {
             case ')':
                 ++_position;
                 return new Token(TokenType.ClosedParensToken, ")", null);
-
+            case '[':
+                ++_position;
+                return new Token(TokenType.OpenSquareBracketToken, "[", null);
+            case ']':
+                ++_position;
+                return new Token(TokenType.ClosedSquareBracketToken, "]", null);
             case '|':
                 if (_line.charAt(_position + 1) == '|') {
                     _position += 2;

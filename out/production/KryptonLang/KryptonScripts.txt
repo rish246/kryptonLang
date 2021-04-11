@@ -354,3 +354,21 @@ def filter(func, n) {
 
     return res;
 }
+
+oddNumbers = filter(lambda(x) { return x % 2 != 0; }, 50);
+
+evenFunc = lambda(x) { return x % 2 == 0; }
+
+filter(evenFunc, 50);
+
+
+#######################
+def prodNTimes(n) {
+    return lambda(x) {
+            res = 1;
+            for(i = 1; i <= n; i = i + 1) {
+                res = res * x;
+            }
+            return res;
+    };
+}

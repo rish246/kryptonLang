@@ -281,6 +281,35 @@ class Parser {
                 return new BlockExpression(parsedExpressions);
             }
 
+            case OpenSquareBracketToken: {
+                // Make a new List
+                match(TokenType.OpenSquareBracketToken);
+
+
+                List<Expression> listElements = new ArrayList<>();
+
+                if(CurrentToken()._type != TokenType.ClosedSquareBracketToken) {
+                    Expression firstElement = parse();
+                    if(_diagnostics.size() > 0)
+                        return null;
+
+                    listElements.add(firstElement);
+                }
+
+                while(CurrentToken()._type != TokenType.ClosedSquareBracketToken) {
+                    match(TokenType.CommaSeparatorToken);
+
+                    Expression nextElement = parse();
+                    if(_diagnostics.size() > 0)
+                        return null;
+
+                    listElements.add(nextElement);
+                }
+
+                match(TokenType.ClosedSquareBracketToken);
+
+                return new ListExpression(listElements);
+            }
 
             case IfKeywordToken: {
                 match(TokenType.IfKeywordToken);
