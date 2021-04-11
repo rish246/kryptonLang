@@ -325,3 +325,24 @@ def countTo(to) {
 
     return res;
 }
+
+
+########################################################
+# apply func to first n natural numbers and reduce to acc
+def reduce(func, acc, n) {
+    for(i = 1; i <= n; i = i + 1) {
+        acc = func(acc, i);
+    }
+    return acc;
+}
+
+def prod(acc, n) {
+    return acc * n;
+}
+
+def sum(acc, n) {
+    return acc + n;
+}
+
+prodSixNumbers = reduce(prod, 1, 6);
+sumFive = reduce(sum, 0, 5);

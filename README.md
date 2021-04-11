@@ -171,3 +171,23 @@ square = prodNTimes(2);
 
 ![plot](./Program%20outputs/higherOrderFuncsAndCurrying.jpg)
 
+```python
+def reduce(func, acc, n) {
+    for(i = 1; i <= n; i = i + 1) {
+        acc = func(acc, i);
+    }
+    return acc;
+}
+
+def prod(acc, n) {
+    return acc * n;
+}
+
+def sum(acc, n) {
+    return acc + n;
+}
+
+prodSixNumbers = reduce(prod, 1, 6);
+sumFive = reduce(sum, 0, 5);
+```
+![plot](./Program%20outputs/reduceHOF.jpg)
