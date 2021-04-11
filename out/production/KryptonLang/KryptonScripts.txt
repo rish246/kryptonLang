@@ -330,14 +330,27 @@ def countTo(to) {
 ########################################################
 # apply func to first n natural numbers and reduce to acc
 def reduce(func, acc, n) {
+
     for(i = 1; i <= n; i = i + 1) {
         acc = func(acc, i);
     }
     return acc;
 }
 
-def prod(acc, n) {
-    return acc * n;
-}
 
-prodSixNumbers = reduce(prod, 1, 6);
+
+reduce(lambda(acc, i) { return acc + i; }, 0, 6);
+
+#########################################################
+def filter(func, n) {
+    res = "";
+
+    for(i = 1; i <=n; i = i + 1) {
+        funRes = func(i);
+        if(func(i)) {
+            res = res + i + ", ";
+        }
+    }
+
+    return res;
+}

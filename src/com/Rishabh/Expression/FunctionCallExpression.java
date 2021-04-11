@@ -66,7 +66,6 @@ public class FunctionCallExpression extends Expression {
         // evaluate the actual arg and add the entry in newEnv
         for(int i=0; i<_actualArgs.size(); i++) {
             EvalResult curArgResult = _actualArgs.get(i).evaluate(env);
-
             Symbol newBinding = new Symbol(null, curArgResult._value, curArgResult._type);
             newEnv.set(formalArgs.get(i)._lexeme, newBinding);
         }

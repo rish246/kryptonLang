@@ -191,3 +191,29 @@ prodSixNumbers = reduce(prod, 1, 6);
 sumFive = reduce(sum, 0, 5);
 ```
 ![plot](./Program%20outputs/reduceHOF.jpg)
+
+
+**Lambda expression in krypton**
+
+```python
+def filter(func, n) {
+    res = "";
+
+    for(i = 1; i <=n; i = i + 1) {
+        funRes = func(i);
+        if(func(i)) {
+            res = res + i + ", ";
+        }
+    }
+
+    return res;
+}
+
+oddNumbers = filter(lambda(x) { return x % 2 != 0; }, 50);
+
+evenFunc = lambda(x) { return x % 2 == 0; }
+
+filter(evenFunc, 50);
+```
+![plot](./Program%20outputs/LambdaExpressions.jpg)
+

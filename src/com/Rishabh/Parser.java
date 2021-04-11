@@ -239,7 +239,6 @@ class Parser {
                     match(TokenType.ClosedParensToken);
 
 
-
                     return new FunctionCallExpression(currentToken._lexeme, actualArgs);
 
 
@@ -263,20 +262,21 @@ class Parser {
                     }
                     Expression nextExpression = parse();
 
+                    // Same expression as yesterday .. it is giving null and hence can't do anything about it;
+
                     parsedExpressions.add(nextExpression);
                     if(nextExpression.getType() == ExpressionType.IfExpression
                     || nextExpression.getType() == ExpressionType.BlockExpression
                     || nextExpression.getType() == ExpressionType.WhileExpression
                         || nextExpression.getType() == ExpressionType.ForLoopExpression
-                        || nextExpression.getType() == ExpressionType.FuncExpression) {
-                        _position++;
+                        || nextExpression.getType() == ExpressionType.FuncExpression) { // True
                         continue;
                     }
 
                     match(TokenType.SemiColonToken);
 
                 }
-
+                match(TokenType.ClosedBracket);
 
                 return new BlockExpression(parsedExpressions);
             }
@@ -291,7 +291,6 @@ class Parser {
 
 
                 Expression elseBranch = null;
-//                System.out.println(CurrentToken()._lexeme);
 
                 if(_tokens.length > _position
                         && (Peek(1)._type == TokenType.ElseKeywordToken ||  Peek(0)._type == TokenType.ElseKeywordToken)) {
@@ -382,6 +381,45 @@ class Parser {
                 }
 
                 return new ReturnExpression(returnBody);
+
+
+            }
+
+            case LambdaExpressionToken: {
+                match(TokenType.LambdaExpressionToken);
+                match(TokenType.OpenParensToken);
+                List<IdentifierExpression> formalArgs = new ArrayList<>();
+
+
+                // Similar problem as the block exp -->
+                //
+                if(CurrentToken()._type != TokenType.ClosedParensToken) {
+                    // Create a formal here
+                    Token firstArg = match(TokenType.IdentifierToken);
+                    if(_diagnostics.size() > 0)
+                        return null;
+
+                    formalArgs.add(new IdentifierExpression(firstArg._lexeme));
+
+                }
+
+                while(CurrentToken()._type != TokenType.ClosedParensToken) {
+                    match(TokenType.CommaSeparatorToken);
+
+                    Token nextIdentifier = match(TokenType.IdentifierToken);
+                    if(_diagnostics.size() > 0)
+                        return null;
+
+                    formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme));
+
+                }
+
+
+                match(TokenType.ClosedParensToken);
+                Expression funcBody = parse();
+
+                return new FunctionExpression(null, funcBody, formalArgs);
+
 
 
             }

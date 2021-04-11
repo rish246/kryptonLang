@@ -29,6 +29,11 @@ public class FunctionExpression extends Expression {
         Environment closureEnv = new Environment(env._table, env._ParentEnv);
 
         ClosureExpression funcClosure = new ClosureExpression(this, closureEnv);
+        
+        if(_name == null) {
+            return new EvalResult(funcClosure, "function closure");
+        }
+        // Only do this if the name is not null
         Symbol newClosure = new Symbol("closure", funcClosure, "closure");
         env.set(_name, newClosure);
 
