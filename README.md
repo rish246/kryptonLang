@@ -110,7 +110,7 @@ def fibonacci(n) {
 ```python
 def countTo(to) {
 
-    def counter(from, to) {
+    def counter(from) {
         res = " ";
         for( i = from; i <= to; i = i + 1) {
             res = res + i + " ";
@@ -121,7 +121,7 @@ def countTo(to) {
     res = "";
     res = "Invalid value passed in the function";
     if (to >= 1)
-        res = counter(1, to);
+        res = counter(1);
 
 
     return res;
