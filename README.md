@@ -217,3 +217,88 @@ filter(evenFunc, 50);
 ```
 ![plot](./Program%20outputs/LambdaExpressions.jpg)
 
+
+**Map, filter and reduce on lists**
+
+*Helper function to print the lists*
+```python
+def printList(lst, len) {
+    for(i = 0; i < len; i = i + 1) {
+        print(lst[i]);
+    }
+}
+```
+
+1. *Map*
+```python
+def map(func, list, lenList) {
+    result = [];
+
+    for(i = 0; i < lenList; i = i + 1) {
+        result = result + func(list[i]);
+    }
+
+    print("Initial list");
+    printList(list, lenList);
+
+    print("FInal list");
+    printList(result, lenList);
+}
+
+# call #
+map(lambda(x) { return x + 1; }, [1, 2, 3], 3);
+```
+
+*output*
+![plot](./Program%20outputs/mapListHOF.jpg)
+
+
+2. *Filter*
+```python
+def filter(func, list, lenList) {
+    result = [];
+    resultLen = 0;
+
+    for(i = 0; i < lenList; i = i + 1) {
+        if(func(list[i])) {
+            result = result + list[i];
+            resultLen = resultLen + 1;
+        }
+    }
+
+    print("Initial list");
+    printList(list, lenList);
+
+    print("FInal list");
+    printList(result, resultLen);
+
+}
+
+# call #
+filter(lambda(x) { return x % 2 == 0; }, [1, 2, 3, 4], 4);
+```
+
+*output*
+![plot](./Program%20outputs/filterListHOF.jpg)
+
+3. Reduce
+```python
+def reduce(func, list, acc, lenList) {
+    result = acc;
+    for(i = 0; i < lenList; i = i + 1) {
+        result = func(result, list[i]);
+    }
+
+    print("Initial list");
+    printList(list, lenList);
+
+    print("final result");
+    print(result);
+
+}
+```
+
+*output*
+![plot](./Program%20outputs/reduceListHOF.jpg)
+
+
