@@ -246,6 +246,18 @@ class Parser {
 
                 }
 
+                // ArraySuperScriptable expression
+                else if(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
+                    match(TokenType.OpenSquareBracketToken);
+                    // Array superScripting is going on here
+                    Expression index = parse();
+                    // Get the index in here
+                    match(TokenType.ClosedSquareBracketToken);
+                    return new ArrayAccessExpression(currentToken, index);
+
+
+                }
+
                 return new IdentifierExpression(currentToken._lexeme); // just value of 1
             }
 

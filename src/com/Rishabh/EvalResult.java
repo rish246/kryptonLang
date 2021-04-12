@@ -1,6 +1,14 @@
 package com.Rishabh;
 
 public class EvalResult {
+    public Object getValue() {
+        return _value;
+    }
+
+    public String getType() {
+        return _type;
+    }
+
     public Object _value;
     public String _type;
 

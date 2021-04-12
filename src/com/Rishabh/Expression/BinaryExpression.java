@@ -104,20 +104,43 @@ public class BinaryExpression extends Expression {
         }
         else if(leftType.equals("list") && rightType.equals("list")) {
             // return new EvalResult of type list
+            List leftList = (List) leftRes._value;
+            List rightList = (List) rightRes._value;
+
             switch(_operatorToken) {
                 case AddToken: {
-
-                    List leftList = (List) leftRes._value;
-                    List rightList = (List) rightRes._value;
-                    System.out.println(leftList);
-                    System.out.println(rightList);
-                    // Merge these two lists
-                    leftList.addAll(rightList);
-                    return new EvalResult(leftList, "list");
+                    List<Expression> concatenatedList = new ArrayList<>();
+                    concatenatedList.addAll(leftList);
+                    concatenatedList.addAll(rightList);
+                    return new EvalResult(concatenatedList, "list");
                 }
+
+                case EqualityToken: {
+                    return new EvalResult(leftList.equals(rightList), "boolean");
+                }
+
+                case NotEqualsToken: {
+                    return new EvalResult(!leftList.equals(rightList), "boolean");
+                }
+
 
             }
 
+
+        }
+
+        else if(leftType.equals("list")) {
+
+            switch(_operatorToken) {
+                case AddToken: {
+                    List leftList = (List) leftRes._value;
+                    List<Object> newList = new ArrayList<>();
+                    newList.addAll(leftList);
+                    newList.add(rightRes);
+
+                    return new EvalResult(newList, "list");
+                }
+            }
 
         }
 
