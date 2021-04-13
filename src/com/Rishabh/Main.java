@@ -103,7 +103,7 @@ public class Main {
     public static boolean hasValidParens(String inputLine) {
         int netRes = 0;
         // Take ( == 1 and ) == -1.. after exec, the netRes should be 0
-        HashMap<Character, Integer> score = new HashMap<Character, Integer>();
+        HashMap<Character, Integer> score = new HashMap<>();
         score.put('(', 1);
         score.put(')', -1);
         score.put('{', 2);
