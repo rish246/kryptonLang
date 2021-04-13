@@ -335,4 +335,4 @@ def fibonacci(n) {
 ```
 
 _output_
-![plot](./Program%20outputs/factorialDP.jpg)
+![plot](./Program%20outputs/fibonacciDP.jpg)
