@@ -318,9 +318,9 @@ def countTo(to) {
 
     res = "";
     res = "Invalid value passed in the function";
-    if (to >= 1)
+    if (to >= 1) {
         res = counter(1, to);
-
+    }
 
     return res;
 }

@@ -102,26 +102,29 @@ class Parser {
             case MultToken:
             case DivToken:
             case ModuloToken:
-                return 6;
+                return 7;
 
             case AddToken:
             case SubToken:
-                return 5;
+                return 6;
 
             case LessThanEqualToken:
             case LessThanToken:
             case GreaterThanEqualToken:
             case GreaterThanToken:
-                return 4;
+                return 5;
 
             case EqualityToken:
             case NotEqualsToken:
-                return 3;
+                return 4;
 
             case LogicalAndToken:
-                return 2;
+                return 3;
 
             case LogicalOrToken:
+                return 2;
+
+            case AssignmentToken:
                 return 1;
 
                 default:
@@ -135,7 +138,7 @@ class Parser {
             case AddToken:
             case SubToken:
             case LogicalNotToken:
-                return 7;
+                return 8;
 
 
             default:
@@ -145,23 +148,78 @@ class Parser {
 
     public Expression parse() {
 
-        if(CurrentToken()._type == TokenType.IdentifierToken
-            && Peek(1)._type == TokenType.AssignmentToken) {
-            // This is an assignment exp
-            Token left = NextToken();
-            TokenType operatorToken = NextToken()._type;
-            Expression right = parse();
+        // if(CurrentToken()._type == TokenType.IdentifierToken
+        //     && Peek(1)._type == TokenType.AssignmentToken) {
+        //     // This is an assignment exp
+        //     Token left = NextToken();
+        //     TokenType operatorToken = NextToken()._type;
+        //     Expression right = parse();
 
-            // Add an entry in the environment and get the result
-            return new AssignmentExpression(left, operatorToken, right);
+        //     // Add an entry in the environment and get the result
+        //     return new AssignmentExpression(left, operatorToken, right);
 
-        }
+        // }
         return parseBinaryExpression(0);
     }
 
     private boolean isStatementInitialization(Token tk) {
         return tk._type == TokenType.IfKeywordToken || tk._type == TokenType.OpenBracketToken || tk._type == TokenType.WhileKeywordToken || tk._type == TokenType.ForKeywordToken
                     || tk._type == TokenType.PrintExpToken || tk._type == TokenType.FunctionDefineToken || tk._type == TokenType.ReturnToken;
+    }
+
+
+    private boolean isLeftAssociative(Token tk) {
+        return tk._type == TokenType.AssignmentToken;
+    }
+
+   
+
+
+    private Expression parseBinaryExpression(int parentPrecedence) {
+        Expression left;
+
+        int unaryOperatorPrec = getUnaryOperatorPrecedence(CurrentToken()._type);
+        if (unaryOperatorPrec != 0 && unaryOperatorPrec >= parentPrecedence)
+            left = new UnaryExpression(NextToken()._type, parseBinaryExpression(unaryOperatorPrec));
+        else if(isStatementInitialization(CurrentToken())) {
+            left = parseStatement();
+            return left;
+        } else {
+            left = parsePrimaryExp();
+        }
+
+
+        while(_position < _tokens.length
+        && CurrentToken()._type != TokenType.EndOfLineToken) {
+
+            // This is probably causing the arguement
+            if(CurrentToken()._type == TokenType.SemiColonToken)
+                break;
+
+            int curPrecedence = getBinaryOperatorPrecedence(CurrentToken()._type);
+
+
+            if (curPrecedence < parentPrecedence || curPrecedence == 0)
+                break;
+
+            if(curPrecedence == parentPrecedence && !isLeftAssociative(CurrentToken()))
+                break;
+
+            TokenType binOperator = NextToken()._type;
+
+            Expression right = parseBinaryExpression(curPrecedence);
+
+            if(binOperator == TokenType.AssignmentToken) {
+                // Make an assignment expression
+                return new AssignmentExpression(left, binOperator, right);
+            }
+
+            left = new BinaryExpression(left, binOperator, right);
+
+        }
+
+        return left;
+
     }
 
     private Expression parseStatement() {
@@ -334,45 +392,6 @@ class Parser {
                 return null;
         }
         
-    }
-
-
-    private Expression parseBinaryExpression(int parentPrecedence) {
-        Expression left;
-
-        int unaryOperatorPrec = getUnaryOperatorPrecedence(CurrentToken()._type);
-        if (unaryOperatorPrec != 0 && unaryOperatorPrec >= parentPrecedence)
-            left = new UnaryExpression(NextToken()._type, parseBinaryExpression(unaryOperatorPrec));
-        else if(isStatementInitialization(CurrentToken())) {
-            left = parseStatement();
-            return left;
-        } else {
-            left = parsePrimaryExp();
-        }
-
-
-        while(_position < _tokens.length
-        && CurrentToken()._type != TokenType.EndOfLineToken) {
-
-            // This is probably causing the arguement
-            if(CurrentToken()._type == TokenType.SemiColonToken)
-                break;
-
-            int curPrecedence = getBinaryOperatorPrecedence(CurrentToken()._type);
-
-            if (curPrecedence <= parentPrecedence || curPrecedence == 0)
-                break;
-
-            TokenType binOperator = NextToken()._type;
-
-            Expression right = parseBinaryExpression(curPrecedence);
-
-            left = new BinaryExpression(left, binOperator, right);
-
-        }
-
-        return left;
-
     }
 
 

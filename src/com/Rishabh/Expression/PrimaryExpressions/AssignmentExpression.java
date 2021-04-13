@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AssignmentExpression extends Expression {
-    Token _left;
+    Expression _left;
     TokenType _operatorToken; // Assignment Token Always
     Expression _right;
     //    ExpressionType _type;
     List<String> _diagnostics = new ArrayList<>();
 
-    public AssignmentExpression(Token left, TokenType operatorToken, Expression right) {
+    public AssignmentExpression(Expression left, TokenType operatorToken, Expression right) {
         super(ExpressionType.AssignmentExpression);
         _left = left;
         _operatorToken = operatorToken;
@@ -32,7 +32,8 @@ public class AssignmentExpression extends Expression {
         System.out.println(indent + "|");
         System.out.print(indent + "├──");
 //        _left.prettyPrint(indent + "    ");
-        System.out.println(_left._lexeme + indent);
+        // System.out.println(_left. + indent);
+        _left.prettyPrint(indent + "    ");
         // Add some long lines here
         System.out.println(indent + "|");
 
@@ -59,7 +60,9 @@ public class AssignmentExpression extends Expression {
         String rightType = rightRes._type;
         Object rightValue = rightRes._value;
 
-        Symbol res = env.set(_left._lexeme, new Symbol(_left._lexeme, rightValue, rightType));
+        // left's lexeme
+        IdentifierExpression left = (IdentifierExpression) _left;
+        Symbol res = env.set(left._lexeme, new Symbol(left._lexeme, rightValue, rightType));
 //        System.out.println(res._value); // res is null here
         return new EvalResult(res._value, res._type);
 
