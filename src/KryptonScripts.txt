@@ -459,3 +459,28 @@ def factorialDP(n) {
 
     return dp[n];
 }
+
+
+def fibonacci(n) {
+    dp = [0] * (n + 1);
+
+    dp[0] = dp[1] = 1;
+
+    for(i = 2; i <= n; i = i + 1) {
+        dp[i] = dp[i-1] + dp[i-2];
+    }
+
+    return dp[n];
+}
+
+# count occurence of each element in the list
+def countOccurence(list, listLen) {
+    dp = [0] * (listLen + 1);
+
+    for(i = 0; i < listLen; i = i + 1) {
+        dp[list[i]] = dp[list[i]] + 1;
+    }
+
+    return dp;
+
+}

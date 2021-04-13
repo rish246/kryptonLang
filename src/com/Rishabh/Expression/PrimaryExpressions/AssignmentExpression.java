@@ -84,6 +84,7 @@ public class AssignmentExpression extends Expression {
 
             // make changes in env
             env.set(envEntry, envList);
+            return rightRes; // Can't return list... have to return the value updated
         }
 
         else {

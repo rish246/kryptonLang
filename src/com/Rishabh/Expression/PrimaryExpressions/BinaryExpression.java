@@ -145,7 +145,7 @@ public class BinaryExpression extends Expression {
                     }
 
                     for(int i=0; i<nTimes; i++) {
-                        newList.add(new EvalResult(leftList, "list"));
+                        newList.addAll(leftList);
                     }
 
                     return new EvalResult(newList, "list");

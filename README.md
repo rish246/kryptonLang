@@ -317,3 +317,22 @@ def factorialDP(n) {
 
 _output_
 ![plot](./Program%20outputs/factorialDP.jpg)
+
+**Nth fibonacci number using dynamic programming in krypton**
+
+```python
+def fibonacci(n) {
+    dp = [0] * (n + 1);
+
+    dp[0] = dp[1] = 1;
+
+    for(i = 2; i <= n; i = i + 1) {
+        dp[i] = dp[i-1] + dp[i-2];
+    }
+
+    return dp[n];
+}
+```
+
+_output_
+![plot](./Program%20outputs/factorialDP.jpg)
