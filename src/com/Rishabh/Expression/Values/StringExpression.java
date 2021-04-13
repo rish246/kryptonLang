@@ -15,7 +15,7 @@ public class StringExpression extends Expression {
 
     @Override
     public void prettyPrint(String indent) {
-        System.out.println(_value);
+        System.out.println(indent + _value);
     }
 
     @Override

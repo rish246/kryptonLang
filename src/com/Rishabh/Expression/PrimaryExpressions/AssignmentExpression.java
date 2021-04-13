@@ -61,10 +61,36 @@ public class AssignmentExpression extends Expression {
         Object rightValue = rightRes._value;
 
         // left's lexeme
-        IdentifierExpression left = (IdentifierExpression) _left;
-        Symbol res = env.set(left._lexeme, new Symbol(left._lexeme, rightValue, rightType));
-//        System.out.println(res._value); // res is null here
-        return new EvalResult(res._value, res._type);
+        if(_left._type == ExpressionType.IdentifierExpression) {
+            IdentifierExpression left = (IdentifierExpression) _left;
+            Symbol res = env.set(left._lexeme, new Symbol(left._lexeme, rightValue, rightType));
+    //        System.out.println(res._value); // res is null here
+            return new EvalResult(res._value, res._type);
+        }
+
+        if(_left._type == ExpressionType.ArrayAccessExpression) {
+            ArrayAccessExpression left = (ArrayAccessExpression) _left;
+            String envEntry = left._identifier._lexeme;
+            Expression index = left._index;
+
+            int IndexValue = (int) index.evaluate(env)._value;
+
+            // Get the list from env
+            Symbol envList = env.get(envEntry);
+            List originalList = (List) envList._value;
+
+            originalList.set(IndexValue, rightRes);
+            envList._value = originalList;
+
+            // make changes in env
+            env.set(envEntry, envList);
+        }
+
+        else {
+            _diagnostics.add("Expression of type " + _left.getType() + " is not subsciptable");
+        }
+
+        return null;
 
 //        return new EvalResult(res._value, res._type);
 

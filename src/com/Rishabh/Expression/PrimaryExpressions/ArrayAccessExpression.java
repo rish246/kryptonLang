@@ -54,11 +54,11 @@ public class ArrayAccessExpression extends Expression {
 
     public void prettyPrint(String indent) {
         System.out.println("Array Access");
-        System.out.println("|");
-        System.out.println(indent + _identifier._value);
         System.out.print(indent + "|-");
-        System.out.println("|");
-        _index.prettyPrint(indent + "    ");
+        System.out.println(_identifier._value);
+        System.out.println(indent + "|-");
+        System.out.println(indent + "|");
+        System.out.print(indent + "|_"); _index.prettyPrint(indent + "    ");
 
     }
 
@@ -67,3 +67,8 @@ public class ArrayAccessExpression extends Expression {
     }
 
 }
+
+// Get the list from env
+// Take out the list
+// Update the ith variable
+// set the list to new symbol
