@@ -161,8 +161,7 @@ for( i = 0; i < 100; i = i + 1) {
 
 
 ###### prime numbers between 1 to 100 krypton
-def printPrimes() {
-    upperBound = 100;
+def printPrimes(upperBound) {
     print("");
     for(i = 2; i <= upperBound; i = i + 1) {
 
@@ -319,9 +318,9 @@ def countTo(to) {
 
     res = "";
     res = "Invalid value passed in the function";
-    if (to >= 1)
+    if (to >= 1) {
         res = counter(1, to);
-
+    }
 
     return res;
 }
@@ -431,4 +430,14 @@ def reduce(func, list, acc, lenList) {
     print("final result");
     print(result);
 
+}
+
+reduce(lambda(acc, x) { return acc + x; }, [1, 2, 3], 0, 3);
+
+############################
+x = 3;
+if( x > 3 ) {
+    print("greater");
+} else {
+    print("not greater");
 }

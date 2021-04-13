@@ -57,6 +57,10 @@ public class WhileExpression extends Expression {
     public List<String> getDiagnostics() {
         return _diagnostics;
     }
+
+    public boolean isExpressionPrimary() {
+        return false;
+    }
 }
 
 // Now comma separated expressions.... These needs to be evaluated ... (How an Identifier is Evaluated) //

@@ -30,4 +30,8 @@ public class Expression {
         return List.of();
     }
 
+    public boolean isExpressionPrimary() {
+        return true;
+    }
+
 }

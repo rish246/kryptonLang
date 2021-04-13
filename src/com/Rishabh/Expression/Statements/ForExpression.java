@@ -76,4 +76,8 @@ public class ForExpression extends Expression {
     public List<String> getDiagnostics() {
         return _diagnostics;
     }
+
+    public boolean isExpressionPrimary() {
+        return false;
+    }
 }

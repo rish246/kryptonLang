@@ -50,4 +50,8 @@ public class PrintExpression extends Expression {
         return _diagnostics;
     }
 
+    public boolean isExpressionPrimary() {
+        return false;
+    }
+
 }

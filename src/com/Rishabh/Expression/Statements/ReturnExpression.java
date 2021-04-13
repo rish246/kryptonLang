@@ -45,4 +45,8 @@ public class ReturnExpression extends Expression {
 
     }
 
+    public boolean isExpressionPrimary() {
+        return false;
+    }
+
 }

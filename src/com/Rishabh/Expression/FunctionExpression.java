@@ -59,4 +59,8 @@ public class FunctionExpression extends Expression {
     public List<String> getDiagnostics() {
         return _diagnostics;
     }
+
+    public boolean isExpressionPrimary() {
+        return _name == null;
+    }
 }

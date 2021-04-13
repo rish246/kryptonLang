@@ -10,7 +10,7 @@ import java.util.List;
 public class BlockExpression extends Expression{
     public List<Expression> _expressionList;
     private List<String> _diagnostics = new ArrayList<>();
-    
+
     public BlockExpression(List<Expression> expressions) {
         super(ExpressionType.BlockExpression);
         _expressionList = expressions;
@@ -48,6 +48,10 @@ public class BlockExpression extends Expression{
 
     public List<String> getDiagnostics() {
         return _diagnostics;
+    }
+
+    public boolean isExpressionPrimary() {
+        return false;
     }
 
 
