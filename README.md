@@ -54,38 +54,35 @@ for (i = 2; i <= upperBound; i = i + 1) {
   isPrimeI = true;
 
   # check if i is divisible by some number if yes, i is not prime else i is prime #
-        
+
   for (j = 2; j * j <= i; j = j + 1) {
-    if (i % j == 0) 
+    if (i % j == 0)
       isPrimeI = false;
   }
 
-  if (isPrimeI) 
+  if (isPrimeI)
     print("" + i + " is a prime number");
-  
+
 }
 ```
 
 ![plot](./Program%20outputs/primeNumberProgram.jpg)
-
 
 **Program for defining and calling not parametered functions in krypton**
 
 ```python
 def factorial(n) {
     fact = 1;
-         
+
     for(i = 1; i <= n; i = i + 1) {
         fact = fact * i;
     }
-    
+
     print(fact);
 }
 ```
 
 ![plot](./Program%20outputs/factorialFunctionParams.jpg)
-
-
 
 **Program for finding nth fibonacci number using recursion**
 
@@ -94,7 +91,7 @@ def fibonacci(n) {
     res = 1;
     if ( n < 2 ) {
         res = n;
-    } 
+    }
     else {
         res = fibonacci(n-1) + fibonacci(n-2);
     }
@@ -103,7 +100,6 @@ def fibonacci(n) {
 ```
 
 ![plot](./Program%20outputs/fibonacciRecursive.jpg)
-
 
 **function closures in krypton**
 
@@ -148,7 +144,6 @@ printSquares(square, 5);
 
 ![plot](./Program%20outputs/firstClassFunctionsInKrypton.jpg)
 
-
 **Higher order functions and currying in krypton**
 
 ```python
@@ -190,8 +185,8 @@ def sum(acc, n) {
 prodSixNumbers = reduce(prod, 1, 6);
 sumFive = reduce(sum, 0, 5);
 ```
-![plot](./Program%20outputs/reduceHOF.jpg)
 
+![plot](./Program%20outputs/reduceHOF.jpg)
 
 **Lambda expression in krypton**
 
@@ -215,12 +210,13 @@ evenFunc = lambda(x) { return x % 2 == 0; }
 
 filter(evenFunc, 50);
 ```
-![plot](./Program%20outputs/LambdaExpressions.jpg)
 
+![plot](./Program%20outputs/LambdaExpressions.jpg)
 
 **Map, filter and reduce on lists**
 
-*Helper function to print the lists*
+_Helper function to print the lists_
+
 ```python
 def printList(lst, len) {
     for(i = 0; i < len; i = i + 1) {
@@ -229,7 +225,8 @@ def printList(lst, len) {
 }
 ```
 
-1. *Map*
+1. _Map_
+
 ```python
 def map(func, list, lenList) {
     result = [];
@@ -249,11 +246,11 @@ def map(func, list, lenList) {
 map(lambda(x) { return x + 1; }, [1, 2, 3], 3);
 ```
 
-*output*
+_output_
 ![plot](./Program%20outputs/mapListHOF.jpg)
 
+2. _Filter_
 
-2. *Filter*
 ```python
 def filter(func, list, lenList) {
     result = [];
@@ -278,10 +275,11 @@ def filter(func, list, lenList) {
 filter(lambda(x) { return x % 2 == 0; }, [1, 2, 3, 4], 4);
 ```
 
-*output*
+_output_
 ![plot](./Program%20outputs/filterListHOF.jpg)
 
 3. Reduce
+
 ```python
 def reduce(func, list, acc, lenList) {
     result = acc;
@@ -298,7 +296,24 @@ def reduce(func, list, acc, lenList) {
 }
 ```
 
-*output*
+_output_
 ![plot](./Program%20outputs/reduceListHOF.jpg)
 
+**Factorial DP using krypton**
 
+```python
+def factorialDP(n) {
+    dp = [-1] * (n + 1);
+
+    dp[0] = dp[1] = 1;
+
+    for(i = 2; i <= n; i = i + 1) {
+        dp[i] = i * dp[i-1];
+    }
+
+    return dp[n];
+}
+```
+
+_output_
+![plot](./Program%20outputs/factorialDP.jpg)

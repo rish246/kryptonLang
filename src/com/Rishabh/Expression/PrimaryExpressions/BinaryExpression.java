@@ -132,6 +132,28 @@ public class BinaryExpression extends Expression {
 
         }
 
+        else if(leftType.equals("list") && rightType.equals("int")) {
+
+            switch(_operatorToken) {
+                case MultToken: {
+                    List leftList = (List) leftRes._value;
+                    List<Object> newList = new ArrayList<>();
+                    int nTimes = (int) rightRes._value;
+                    if(nTimes < 0) {
+                        _diagnostics.add("Invalid value in the array assign expression");
+                        return null;
+                    }
+
+                    for(int i=0; i<nTimes; i++) {
+                        newList.add(new EvalResult(leftList, "list"));
+                    }
+
+                    return new EvalResult(newList, "list");
+                }
+            }
+
+        }
+        
         else if(leftType.equals("list")) {
 
             switch(_operatorToken) {
@@ -146,6 +168,9 @@ public class BinaryExpression extends Expression {
             }
 
         }
+
+        
+    
 
         else if(leftType.equals("string")) {
             switch(_operatorToken) {
