@@ -568,8 +568,3 @@ class Parser {
 
 
 }
-
-// check for if expressions, they are posing great problems
-//  make primary and non primary expressions separate
-// My parse Primary expression is parsing non primary expressions as well
-// We need to separate the two functions
