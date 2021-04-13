@@ -9,9 +9,9 @@ import com.Rishabh.Utilities.Environment;
 import java.util.List;
 
 public class Expression {
-    ExpressionType _type;
+    public ExpressionType _type;
 
-    Expression(ExpressionType type) {
+    public Expression(ExpressionType type) {
         _type = type;
     }
 
