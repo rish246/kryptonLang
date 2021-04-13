@@ -236,14 +236,24 @@ class Parser {
                     // getFirstExp
                     if(CurrentToken()._type != TokenType.ClosedParensToken) {
                         // parse an actual arg
-                        actualArgs.add(parse());
-                    }
+                        Expression nextExpression = parse();
+
+                        if(!nextExpression.isExpressionPrimary())
+                            _diagnostics.add("Expected a primary expression in function call, Got "+ nextExpression._type);
+                        
+                        actualArgs.add(nextExpression);
+                    }   
 
 
 
                     while(CurrentToken()._type != TokenType.ClosedParensToken) {
                         match(TokenType.CommaSeparatorToken);
-                        actualArgs.add(parse());
+                        Expression nextExpression = parse();
+
+                        if(!nextExpression.isExpressionPrimary())
+                            _diagnostics.add("Expected a primary expression in function call, Got "+ nextExpression._type);
+                        
+                        actualArgs.add(nextExpression);
                     }
 
                     match(TokenType.ClosedParensToken);
@@ -261,7 +271,10 @@ class Parser {
                     match(TokenType.OpenSquareBracketToken);
                     // Array superScripting is going on here
                     Expression index = parse();
-                    // Get the index in here
+
+                    if(!index.isExpressionPrimary())
+                        _diagnostics.add("Expected a primary expression in subscript operator, Got "+ index._type);
+                        
                     match(TokenType.ClosedSquareBracketToken);
                     return new ArrayAccessExpression(currentToken, index);
 
@@ -337,17 +350,20 @@ class Parser {
                 match(TokenType.IfKeywordToken);
                 match(TokenType.OpenParensToken);
                 Expression condBranch = parse();
+                // The conditional must be a primary expression
+                if(!condBranch.isExpressionPrimary())
+                    _diagnostics.add("Expression in if condition must be a primary expression, Got " + condBranch._type);
+
                 match(TokenType.ClosedParensToken);
                 Expression thenBranch = parse();
 
-
+                // Parse Only primary expression
                 Expression elseBranch = null;
 
-                if(_tokens.length > _position
-                        && (Peek(1)._type == TokenType.ElseKeywordToken ||  Peek(0)._type == TokenType.ElseKeywordToken)) {
-                    _position++;
+                if(_tokens.length > _position && CurrentToken()._type == TokenType.ElseKeywordToken) {
                     match(TokenType.ElseKeywordToken);
                     elseBranch = parse();
+                    System.out.println(CurrentToken()._type);
                 }
                 return new IfExpression(condBranch, thenBranch, elseBranch);
             }
@@ -356,6 +372,10 @@ class Parser {
                 match(TokenType.WhileKeywordToken);
                 match(TokenType.OpenParensToken);
                 Expression condition = parse();
+
+                if(!condition.isExpressionPrimary())
+                    _diagnostics.add("Expression in if condition must be a primary expression, Got " + condition._type);
+
                 match(TokenType.ClosedParensToken);
                 Expression whileBody = parse();
 
@@ -367,12 +387,23 @@ class Parser {
                 match(TokenType.OpenParensToken);
                 // parse the conditions
                 Expression initCondition = parse();
+                // check if the init condition is a primary exp
+                if(!initCondition.isExpressionPrimary())
+                    _diagnostics.add("Expected a primary expression in for loop condition, Got " + initCondition._type);
+                
                 match(TokenType.SemiColonToken);
 
                 Expression haltingCondtion = parse();
+                if(!haltingCondtion.isExpressionPrimary())
+                    _diagnostics.add("Expected a primary expression in for loop condition, Got " + haltingCondtion._type);
+
+
                 match(TokenType.SemiColonToken);
 
                 Expression progressExp = parse();
+                if(!progressExp.isExpressionPrimary())
+                    _diagnostics.add("Expected a primary expression in for loop condition, Got " + progressExp._type);
+                
                 match(TokenType.ClosedParensToken);
                 Expression forBody = parse();
 
@@ -383,6 +414,12 @@ class Parser {
                 match(TokenType.PrintExpToken);
                 match(TokenType.OpenParensToken);
                 Expression printExpBody = parse();
+
+                if(!printExpBody.isExpressionPrimary())
+                    _diagnostics.add("Expected a primary expression in the print statement, Got " + printExpBody._type);
+
+
+
                 match(TokenType.ClosedParensToken);
                 return new PrintExpression(printExpBody);
             }
@@ -426,10 +463,14 @@ class Parser {
                 match(TokenType.ReturnToken);
 
                 Expression returnBody = parse();
+
                 if(returnBody == null) {
                     _diagnostics.add("Empty return statements are not allowed");
                     return null;
                 }
+
+                if(!returnBody.isExpressionPrimary())
+                    _diagnostics.add("Expected a primary expression in the return statement, Got " + returnBody._type);
 
                 return new ReturnExpression(returnBody);
 
