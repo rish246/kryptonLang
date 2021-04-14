@@ -337,7 +337,53 @@ def fibonacci(n) {
 _output_
 ![plot](./Program%20outputs/fibonacciDP.jpg)
 
-**Nth fibonacci number using dynamic programming in krypton**
+**Binary search in a sorted list in krypton**
+
+```python
+def binarySearch(lst, len, key) {
+
+    def helper(start, end) {
+        res = -1;
+
+        if(start <= end) {
+            mid = start + (end - start) / 2;
+
+            if(lst[mid] == key) {
+                res = mid;
+            }
+            else if(lst[mid] > key) {
+                res = helper(start, mid - 1);
+            }
+            else {
+                res = helper(mid + 1, end);
+            }
+        }
+
+
+        return res;
+
+    }
+
+
+    start = 0;
+    end = len - 1;
+
+
+    locationKey = helper(start, end);
+    if(locationKey == -1) {
+        print("Oops the key is not present in the list ");
+    }
+    else {
+        print("Element " + key + " is present at location " + locationKey);
+    }
+
+}
+```
+
+_output_
+![plot](./Program%20outputs/binarySearchList.jpg)
+
+**Mergesort algorithm implementation in krypton**
 
 ```python
 def sublist(lst, start, end) {

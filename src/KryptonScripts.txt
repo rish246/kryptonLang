@@ -532,16 +532,6 @@ def pow(x, n) {
     return dp[n];
 }
 
-
-def printList(lst, len) {
-    res = "";
-    for(i = 0; i < len; i = i + 1) {
-        res = res + lst[i] + ", ";
-    }
-    print(res);
-}
-
-
 ############## bubble sort program in krypton #########
 
 def sort(lst, len) {
@@ -573,6 +563,17 @@ def sort(lst, len) {
 
 
 
+def printList(lst, len) {
+    res = "";
+    for(i = 0; i < len; i = i + 1) {
+        res = res + lst[i] + ", ";
+    }
+    print(res);
+}
+
+
+
+
 ###################3 mergeSort in krypton ###################
 def sublist(lst, start, end) {
     res = [];
@@ -582,4 +583,85 @@ def sublist(lst, start, end) {
     }
 
     return res;
+}
+
+
+def merge(leftList, lLen, rightList, rLen) {
+    res = [];
+
+    if(lLen == 0) {
+        res = rightList;
+    }
+    else if(rLen == 0) {
+        res = leftList;
+    }
+    else {
+        if(leftList[0] < rightList[0]) {
+            res = res + leftList[0] + merge(sublist(leftList, 1, lLen), lLen - 1, rightList, rLen);
+        }
+        else 
+        {
+            res = res + rightList[0] + merge(leftList, lLen, sublist(rightList, 1, rLen), rLen - 1);
+        }
+    }
+
+    return res;
+
+}
+
+def mergeSort(lst, start, end) {
+    res = [];
+    if(start == end) {
+        res = res + lst[start];
+    }
+    else {
+        mid = start + (end - start) / 2;
+
+        leftSorted = mergeSort(lst, start, mid);
+
+        lLen = mid - start + 1;
+
+        rightSorted = mergeSort(lst, mid + 1, end);
+
+        rLen = end - mid;
+
+        res = merge(leftSorted, lLen, rightSorted, rLen);
+    }
+
+    return res;
+
+}
+
+
+######## def binary search ############
+def binarySearch(lst, len, key) {
+
+    def helper(start, end) {
+        res = -1;
+
+        if(start <= end) {
+            mid = start + (end - start) / 2;
+
+            if(lst[mid] == key) {
+                res = mid;
+            }
+            else if(lst[mid] > key) {
+                res = helper(start, mid - 1);
+            }
+            else {
+                res = helper(mid + 1, end);
+            }
+        }
+
+
+        return res;
+
+    }
+
+
+    start = 0;
+    end = len - 1;
+
+    return helper(start, end);
+
 }
