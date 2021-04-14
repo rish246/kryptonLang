@@ -37,7 +37,11 @@ public class ReturnExpression extends Expression {
 
         EvalResult bodyResult = _body.evaluate(env);
         _diagnostics.addAll(_body.getDiagnostics());
-        if(bodyResult._value == null || bodyResult._type == null) {
+
+        
+
+        if(bodyResult == null || bodyResult._value == null || bodyResult._type == null) {
+            _diagnostics.add("Error in the body of return statement");
             return null;
         }
 

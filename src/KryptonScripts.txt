@@ -484,3 +484,102 @@ def countOccurence(list, listLen) {
     return dp;
 
 }
+
+
+
+def pow(x, k) {
+    res = 1; 
+    if(k == 0) {
+        res = 1;
+    }
+    else if(k == 1) {
+        res = x;
+    }
+    else {
+        res = pow(x, k / 2);
+        res = pow(res, 2);
+
+        if(k%2 != 0) {
+            res = res + res;
+        }
+    }
+    return res;
+
+
+}
+
+def powDP(x, k) {
+    dp = [1] * (k + 1);
+    dp[1] = x;
+    for(i = 2; i <= k; i = i + 1) {
+        res = dp[i/2] * dp[i/2];
+        if(i % 2 != 0) {
+            res = res * x;
+        }
+
+        dp[i] = res;
+    }
+
+    return dp[k];
+}
+// dp[2] = dp[1] * dp[1] * printX
+// 27
+// dp[2] = dp[1] * dp[1]
+// dp[3] = dp[1] * dp[2] 
+
+def pow(x, n) {
+    dp = [1] * n;
+    return dp[n];
+}
+
+
+def printList(lst, len) {
+    res = "";
+    for(i = 0; i < len; i = i + 1) {
+        res = res + lst[i] + ", ";
+    }
+    print(res);
+}
+
+
+############## bubble sort program in krypton #########
+
+def sort(lst, len) {
+
+    def swap(first, second) {
+        temp = lst[first];
+        lst[first] = lst[second];
+        lst[second] = temp;
+    }
+
+    printList(lst, len);
+
+    for(i = 0; i < len - 1; i = i + 1) {
+
+        for(j = 1; j < len; j = j + 1) {
+
+            if(lst[j] < lst[j-1]) {
+                swap(j, j - 1);
+            }
+            
+        }
+
+    }
+
+    printList(lst, len);
+    
+
+}
+
+
+
+###################3 mergeSort in krypton ###################
+def sublist(lst, start, end) {
+    res = [];
+
+    for(i = start; i < end; i = i + 1) {
+        res = res + lst[i];
+    }
+
+    return res;
+}

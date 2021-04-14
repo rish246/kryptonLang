@@ -77,7 +77,12 @@ public class FunctionCallExpression extends Expression {
         Expression funcBody = closure._functionExp._body;
 
         EvalResult funcResult = funcBody.evaluate(newEnv);
-        // If the value != null... then value and type of the function is same
+        _diagnostics.addAll(funcBody.getDiagnostics());        // If the value != null... then value and type of the function is same
+        // Maybe this is where is the second nullPtrExc
+        if(funcResult == null) {
+            return null;
+        }
+
         _diagnostics.addAll(funcBody.getDiagnostics());
 
         return funcResult;

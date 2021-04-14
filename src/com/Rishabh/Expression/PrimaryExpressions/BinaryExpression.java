@@ -150,6 +150,15 @@ public class BinaryExpression extends Expression {
 
                     return new EvalResult(newList, "list");
                 }
+
+                case AddToken: {
+                    List leftList = (List) leftRes._value;
+                    List<Object> newList = new ArrayList<>();
+                    newList.addAll(leftList);
+                    newList.add(rightRes);
+
+                    return new EvalResult(newList, "list");
+                }
             }
 
         }

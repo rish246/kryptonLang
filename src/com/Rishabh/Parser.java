@@ -14,6 +14,8 @@ import com.Rishabh.Expression.Values.ListExpression;
 import com.Rishabh.Expression.Values.NumberExpression;
 import com.Rishabh.Expression.Values.StringExpression;
 
+import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -238,6 +240,7 @@ class Parser {
                 // Parse Only primary expression
                 Expression elseBranch = null;
 
+                System.out.println(CurrentToken()._type);
                 if(_tokens.length > _position && CurrentToken()._type == TokenType.ElseKeywordToken) {
                     match(TokenType.ElseKeywordToken);
                     elseBranch = parse();

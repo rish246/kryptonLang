@@ -336,3 +336,68 @@ def fibonacci(n) {
 
 _output_
 ![plot](./Program%20outputs/fibonacciDP.jpg)
+
+**Nth fibonacci number using dynamic programming in krypton**
+
+```python
+def sublist(lst, start, end) {
+    res = [];
+
+    for(i = start; i < end; i = i + 1) {
+        res = res + lst[i];
+    }
+
+    return res;
+}
+
+
+def merge(leftList, lLen, rightList, rLen) {
+    res = [];
+
+    if(lLen == 0) {
+        res = rightList;
+    }
+    else if(rLen == 0) {
+        res = leftList;
+    }
+    else {
+        if(leftList[0] < rightList[0]) {
+            res = res + leftList[0] + merge(sublist(leftList, 1, lLen), lLen - 1, rightList, rLen);
+        }
+        else
+        {
+            res = res + rightList[0] + merge(leftList, lLen, sublist(rightList, 1, rLen), rLen - 1);
+        }
+    }
+
+    return res;
+
+}
+
+def mergeSort(lst, start, end) {
+    res = [];
+    if(start == end) {
+        res = res + lst[start];
+    }
+    else {
+        mid = start + (end - start) / 2;
+
+        leftSorted = mergeSort(lst, start, mid);
+
+        lLen = mid - start + 1;
+
+        rightSorted = mergeSort(lst, mid + 1, end);
+
+        rLen = end - mid;
+
+        res = merge(leftSorted, lLen, rightSorted, rLen);
+    }
+
+    return res;
+
+}
+
+```
+
+_output_
+![plot](./Program%20outputs/mergeSort.jpg)

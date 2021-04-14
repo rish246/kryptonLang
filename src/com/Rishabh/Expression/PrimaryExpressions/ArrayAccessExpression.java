@@ -41,7 +41,10 @@ public class ArrayAccessExpression extends Expression {
 
 
         int listIndex = (int)indexRes._value;
+
         if(listIndex >= itemList.size()) {
+            System.out.println(itemList);
+            System.out.println(listIndex);
             _diagnostics.add("Index " + listIndex + " out of bounds for list of length " + itemList.size());
             return null;
         }
@@ -68,7 +71,3 @@ public class ArrayAccessExpression extends Expression {
 
 }
 
-// Get the list from env
-// Take out the list
-// Update the ith variable
-// set the list to new symbol
