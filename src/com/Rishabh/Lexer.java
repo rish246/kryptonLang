@@ -34,6 +34,16 @@ class Lexer {
             return nextToken();
         }
 
+        // check if it is a comment
+        if(currentChar() == '#') {
+            while(_position < _line.length() && currentChar() != '\n') {
+                _position++;
+            }
+            if (_position < _line.length() - 1) 
+                _position++;
+            return nextToken();
+        }
+
         // if isDigit .. go with IntToken
         if (Character.isDigit(currentChar()))
             return getIntToken(start);
@@ -151,13 +161,6 @@ class Lexer {
                     ++_position;
                     return new Token(TokenType.LogicalNotToken, "!", null);
                 }
-
-            case '#': {
-                while(_line.charAt(_position  + 1) != '#')
-                    _position += 1;
-                _position += 2;
-                return nextToken();
-            }
 
             case '{':
                 ++_position;

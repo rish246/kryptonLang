@@ -683,3 +683,11 @@ def binarySearch(lst, len, key) {
     }
 
 }
+
+
+
+
+################# language breaking on these statements #######################3
+if ( x < 4 ) {
+    $ = 4;
+}
