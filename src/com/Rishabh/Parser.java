@@ -149,19 +149,13 @@ class Parser {
     }
 
     public Expression parse() {
-
-        // if(CurrentToken()._type == TokenType.IdentifierToken
-        //     && Peek(1)._type == TokenType.AssignmentToken) {
-        //     // This is an assignment exp
-        //     Token left = NextToken();
-        //     TokenType operatorToken = NextToken()._type;
-        //     Expression right = parse();
-
-        //     // Add an entry in the environment and get the result
-        //     return new AssignmentExpression(left, operatorToken, right);
-
-        // }
-        return parseBinaryExpression(0);
+        // If next statement is statement declaration... then parseStatement and return the statement
+        // else parseBinaryExpression
+        if(isStatementInitialization(CurrentToken())) {
+            return parseStatement(); 
+        } 
+    
+        return parseExpression(0);
     }
 
     private boolean isStatementInitialization(Token tk) {
@@ -177,16 +171,13 @@ class Parser {
    
 
 
-    private Expression parseBinaryExpression(int parentPrecedence) {
+    private Expression parseExpression(int parentPrecedence) {
         Expression left;
 
         int unaryOperatorPrec = getUnaryOperatorPrecedence(CurrentToken()._type);
         if (unaryOperatorPrec != 0 && unaryOperatorPrec >= parentPrecedence)
-            left = new UnaryExpression(NextToken()._type, parseBinaryExpression(unaryOperatorPrec));
-        else if(isStatementInitialization(CurrentToken())) {
-            left = parseStatement();
-            return left;
-        } else {
+            left = new UnaryExpression(NextToken()._type, parseExpression(unaryOperatorPrec));
+        else {
             left = parsePrimaryExp();
         }
 
@@ -209,7 +200,7 @@ class Parser {
 
             TokenType binOperator = NextToken()._type;
 
-            Expression right = parseBinaryExpression(curPrecedence);
+            Expression right = parseExpression(curPrecedence);
 
             if(binOperator == TokenType.AssignmentToken) {
                 // Make an assignment expression
@@ -229,11 +220,9 @@ class Parser {
             case IfKeywordToken: {
                 match(TokenType.IfKeywordToken);
                 match(TokenType.OpenParensToken);
-                Expression condBranch = parse();
-                // The conditional must be a primary expression
-                if(!condBranch.isExpressionPrimary())
-                    _diagnostics.add("Expression in if condition must be a primary expression, Got " + condBranch._type);
-
+                
+                Expression condBranch = parseExpression(0);
+ 
                 match(TokenType.ClosedParensToken);
                 Expression thenBranch = parse();
 
@@ -244,7 +233,6 @@ class Parser {
                 if(_tokens.length > _position && CurrentToken()._type == TokenType.ElseKeywordToken) {
                     match(TokenType.ElseKeywordToken);
                     elseBranch = parse();
-                    System.out.println(CurrentToken()._type);
                 }
                 return new IfExpression(condBranch, thenBranch, elseBranch);
             }
@@ -284,10 +272,7 @@ class Parser {
             case WhileKeywordToken: {
                 match(TokenType.WhileKeywordToken);
                 match(TokenType.OpenParensToken);
-                Expression condition = parse();
-
-                if(!condition.isExpressionPrimary())
-                    _diagnostics.add("Expression in if condition must be a primary expression, Got " + condition._type);
+                Expression condition = parseExpression(0);
 
                 match(TokenType.ClosedParensToken);
                 Expression whileBody = parse();
@@ -299,23 +284,15 @@ class Parser {
                 match(TokenType.ForKeywordToken);
                 match(TokenType.OpenParensToken);
                 // parse the conditions
-                Expression initCondition = parse();
-                // check if the init condition is a primary exp
-                if(!initCondition.isExpressionPrimary())
-                    _diagnostics.add("Expected a primary expression in for loop condition, Got " + initCondition._type);
-                
+                Expression initCondition = parseExpression(0);
+              
                 match(TokenType.SemiColonToken);
 
-                Expression haltingCondtion = parse();
-                if(!haltingCondtion.isExpressionPrimary())
-                    _diagnostics.add("Expected a primary expression in for loop condition, Got " + haltingCondtion._type);
-
-
+                Expression haltingCondtion = parseExpression(0);
+              
                 match(TokenType.SemiColonToken);
 
-                Expression progressExp = parse();
-                if(!progressExp.isExpressionPrimary())
-                    _diagnostics.add("Expected a primary expression in for loop condition, Got " + progressExp._type);
+                Expression progressExp = parseExpression(0);
                 
                 match(TokenType.ClosedParensToken);
                 Expression forBody = parse();
@@ -361,15 +338,12 @@ class Parser {
             case ReturnToken: {
                 match(TokenType.ReturnToken);
 
-                Expression returnBody = parse();
+                Expression returnBody = parseExpression(0);
 
                 if(returnBody == null) {
                     _diagnostics.add("Empty return statements are not allowed");
                     return null;
                 }
-
-                if(!returnBody.isExpressionPrimary())
-                    _diagnostics.add("Expected a primary expression in the return statement, Got " + returnBody._type);
 
                 return new ReturnExpression(returnBody);
 
@@ -379,12 +353,7 @@ class Parser {
             case PrintExpToken: {
                 match(TokenType.PrintExpToken);
                 match(TokenType.OpenParensToken);
-                Expression printExpBody = parse();
-
-                if(!printExpBody.isExpressionPrimary())
-                    _diagnostics.add("Expected a primary expression in the print statement, Got " + printExpBody._type);
-
-
+                Expression printExpBody = parseExpression(0);
 
                 match(TokenType.ClosedParensToken);
                 return new PrintExpression(printExpBody);
@@ -404,7 +373,7 @@ class Parser {
                 // return a tree for parens
                 Token left = NextToken();
 
-                Expression body = parseBinaryExpression(0);
+                Expression body = parseExpression(0);
 
                 Token right = match(TokenType.ClosedParensToken);
 
@@ -439,26 +408,14 @@ class Parser {
                     List<Expression> actualArgs = new ArrayList<>();
 
                     // getFirstExp
-                    if(CurrentToken()._type != TokenType.ClosedParensToken) {
-                        // parse an actual arg
-                        Expression nextExpression = parse();
-
-                        if(!nextExpression.isExpressionPrimary())
-                            _diagnostics.add("Expected a primary expression in function call, Got "+ nextExpression._type);
-                        
-                        actualArgs.add(nextExpression);
+                    if(CurrentToken()._type != TokenType.ClosedParensToken) {                        
+                        actualArgs.add(parseExpression(0));
                     }   
-
 
 
                     while(CurrentToken()._type != TokenType.ClosedParensToken) {
                         match(TokenType.CommaSeparatorToken);
-                        Expression nextExpression = parse();
-
-                        if(!nextExpression.isExpressionPrimary())
-                            _diagnostics.add("Expected a primary expression in function call, Got "+ nextExpression._type);
-                        
-                        actualArgs.add(nextExpression);
+                        actualArgs.add(parseExpression(0));
                     }
 
                     match(TokenType.ClosedParensToken);
@@ -466,23 +423,14 @@ class Parser {
 
                     return new FunctionCallExpression(currentToken._lexeme, actualArgs);
 
-
-
-
                 }
 
                 // ArraySuperScriptable expression
                 else if(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
                     match(TokenType.OpenSquareBracketToken);
-                    // Array superScripting is going on here
-                    Expression index = parse();
-
-                    if(!index.isExpressionPrimary())
-                        _diagnostics.add("Expected a primary expression in subscript operator, Got "+ index._type);
-                        
+                    Expression index = parseExpression(0);                        
                     match(TokenType.ClosedSquareBracketToken);
                     return new ArrayAccessExpression(currentToken, index);
-
 
                 }
 
@@ -497,20 +445,13 @@ class Parser {
                 List<Expression> listElements = new ArrayList<>();
 
                 if(CurrentToken()._type != TokenType.ClosedSquareBracketToken) {
-                    Expression firstElement = parse();
-                    if(_diagnostics.size() > 0)
-                        return null;
-
+                    Expression firstElement = parseExpression(0);
                     listElements.add(firstElement);
                 }
 
                 while(CurrentToken()._type != TokenType.ClosedSquareBracketToken) {
                     match(TokenType.CommaSeparatorToken);
-
-                    Expression nextElement = parse();
-                    if(_diagnostics.size() > 0)
-                        return null;
-
+                    Expression nextElement = parseExpression(0);
                     listElements.add(nextElement);
                 }
 
@@ -531,8 +472,6 @@ class Parser {
                 if(CurrentToken()._type != TokenType.ClosedParensToken) {
                     // Create a formal here
                     Token firstArg = match(TokenType.IdentifierToken);
-                    if(_diagnostics.size() > 0)
-                        return null;
 
                     formalArgs.add(new IdentifierExpression(firstArg._lexeme));
 
@@ -540,11 +479,7 @@ class Parser {
 
                 while(CurrentToken()._type != TokenType.ClosedParensToken) {
                     match(TokenType.CommaSeparatorToken);
-
                     Token nextIdentifier = match(TokenType.IdentifierToken);
-                    if(_diagnostics.size() > 0)
-                        return null;
-
                     formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme));
 
                 }

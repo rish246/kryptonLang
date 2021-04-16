@@ -497,7 +497,7 @@ def pow(x, k) {
     }
     else {
         res = pow(x, k / 2);
-        res = pow(res, 2);
+        res = res * res;
 
         if(k%2 != 0) {
             res = res + res;
@@ -574,7 +574,6 @@ def printList(lst, len) {
 
 
 
-###################3 mergeSort in krypton ###################
 def sublist(lst, start, end) {
     res = [];
 
@@ -609,28 +608,41 @@ def merge(leftList, lLen, rightList, rLen) {
 
 }
 
-def mergeSort(lst, start, end) {
-    res = [];
-    if(start == end) {
-        res = res + lst[start];
+
+def mergeSort(lst, len) {
+
+    def mergeSortHelper(lst, start, end) {
+        res = [];
+        if(start == end) {
+            res = res + lst[start];
+        }
+        else {
+            mid = start + (end - start) / 2;
+
+            leftSorted = mergeSortHelper(lst, start, mid);
+
+            lLen = mid - start + 1;
+
+            rightSorted = mergeSortHelper(lst, mid + 1, end);
+
+            rLen = end - mid;
+
+            res = merge(leftSorted, lLen, rightSorted, rLen);
+        }
+
+        return res;
+
     }
-    else {
-        mid = start + (end - start) / 2;
 
-        leftSorted = mergeSort(lst, start, mid);
 
-        lLen = mid - start + 1;
-
-        rightSorted = mergeSort(lst, mid + 1, end);
-
-        rLen = end - mid;
-
-        res = merge(leftSorted, lLen, rightSorted, rLen);
-    }
-
-    return res;
+    start = 0;
+    end = len - 1;
+    return mergeSortHelper(lst, start, end);
 
 }
+
+
+mergeSort([1, 2, 3, 5, 4, 7, 6], 0, 6) == [1, 2, 3, 4, 5, 6, 7]
 
 
 ######## def binary search ############
@@ -662,6 +674,13 @@ def binarySearch(lst, len, key) {
     start = 0;
     end = len - 1;
 
-    return helper(start, end);
+
+    locationKey = helper(start, end);
+    if(locationKey == -1) {
+        print("Oops the key is not present in the list ");
+    }
+    else {
+        print("Element " + key + " is present at location " + locationKey);
+    }
 
 }
