@@ -11,10 +11,12 @@ import java.util.List;
 
 public class ListExpression extends Expression {
     public List<Expression> _elements;
+    public List<String> _diagnostics;
 
     public ListExpression(List<Expression> elements) {
         super(ExpressionType.ListExpression);
         _elements = elements;
+        _diagnostics = new ArrayList<>();
 //        super(ExpressionType.BinaryExpression);
     }
 
@@ -30,9 +32,14 @@ public class ListExpression extends Expression {
 
         for(Expression exp : _elements) {
             _results.add(exp.evaluate(env));
+            _diagnostics.addAll(exp.getDiagnostics());
         }
 
         return new EvalResult(_results, "list");
+    }
+
+    public List<String> getDiagnostics() {
+        return _diagnostics;
     }
 
 }

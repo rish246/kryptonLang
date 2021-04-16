@@ -710,7 +710,7 @@ def binarySearch(lst, len, key) {
         }
 
 
-        return $res;
+        return res;
 
     }
 

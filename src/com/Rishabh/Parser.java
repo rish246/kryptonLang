@@ -454,12 +454,21 @@ class Parser {
 
                 if(CurrentToken()._type != TokenType.ClosedSquareBracketToken) {
                     Expression firstElement = parseExpression(0);
+                    if(firstElement == null)       
+                        return null;                  
                     listElements.add(firstElement);
+                    
                 }
+
+                
 
                 while(CurrentToken()._type != TokenType.ClosedSquareBracketToken) {
                     match(TokenType.CommaSeparatorToken);
                     Expression nextElement = parseExpression(0);
+                    if(nextElement == null) {
+                        next();
+                        continue;
+                    }
                     listElements.add(nextElement);
                 }
 

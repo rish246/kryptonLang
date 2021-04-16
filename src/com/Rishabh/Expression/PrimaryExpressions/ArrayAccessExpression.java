@@ -26,8 +26,11 @@ public class ArrayAccessExpression extends Expression {
     public EvalResult evaluate(Environment env) throws Exception {
 //        return null;
         EvalResult indexRes = _index.evaluate(env);
-        if(indexRes == null || indexRes._value == null) {
-            _diagnostics.add("Invalid expression in array access expression");
+        _diagnostics.addAll(_index.getDiagnostics());
+
+        // If there are any errors in indexRes
+        if(_diagnostics.size() > 0) {
+            _diagnostics.add("Error in the array access expression");
             return null;
         }
 
@@ -37,14 +40,17 @@ public class ArrayAccessExpression extends Expression {
         }
 
         Symbol ourList = env.get(_identifier._lexeme);
+        if(ourList == null) {
+            _diagnostics.add("Identifier " + _identifier._lexeme + " is not defined");
+            return null;
+        }
+
         List itemList = (List) ourList._value;
 
 
         int listIndex = (int)indexRes._value;
 
         if(listIndex >= itemList.size()) {
-            System.out.println(itemList);
-            System.out.println(listIndex);
             _diagnostics.add("Index " + listIndex + " out of bounds for list of length " + itemList.size());
             return null;
         }
