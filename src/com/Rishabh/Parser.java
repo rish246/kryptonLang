@@ -417,13 +417,24 @@ class Parser {
 
                     // getFirstExp
                     if(CurrentToken()._type != TokenType.ClosedParensToken) {                        
-                        actualArgs.add(parseExpression(0));
+                        Expression firstExp = parseExpression(0);
+                        if(firstExp == null) {
+                            _diagnostics.add("Error at line number " + _lineNumbers[_position]);
+                            return null;
+                        }
+                        actualArgs.add(firstExp);
+
                     }   
 
 
                     while(CurrentToken()._type != TokenType.ClosedParensToken) {
                         match(TokenType.CommaSeparatorToken);
-                        actualArgs.add(parseExpression(0));
+                        Expression newExp = parseExpression(0);
+                        if(newExp == null) {
+                            next();
+                            continue;
+                        }
+                        actualArgs.add(newExp);
                     }
 
                     match(TokenType.ClosedParensToken);

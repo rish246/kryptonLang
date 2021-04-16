@@ -40,6 +40,8 @@ public class ArrayAccessExpression extends Expression {
         }
 
         Symbol ourList = env.get(_identifier._lexeme);
+        System.out.println(ourList);
+        System.out.println(_identifier._lexeme);
         if(ourList == null) {
             _diagnostics.add("Identifier " + _identifier._lexeme + " is not defined");
             return null;

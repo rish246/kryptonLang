@@ -25,11 +25,14 @@ public class BlockExpression extends Expression{
             EvalResult curExpResult = exp.evaluate(currentBlockEnv);
             _diagnostics.addAll(exp.getDiagnostics());
 
+            if(_diagnostics.size() > 0) {
+                return null;
+            }
+            
             if(exp._type == ExpressionType.ReturnExpression) {
                 return new EvalResult(curExpResult._value, curExpResult._type);
             }
 
-            _diagnostics.addAll(exp.getDiagnostics());
         }
 
         // Where is the third expression.. The last assignment statement...

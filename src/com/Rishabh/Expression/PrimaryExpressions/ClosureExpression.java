@@ -25,6 +25,7 @@ public class ClosureExpression extends Expression {
     public EvalResult evaluate(Environment env) throws Exception {
         Expression funBody = _functionExp._body;
         funBody.evaluate(_closureEnv);
+        _diagnostics.addAll(funBody.getDiagnostics());
 
         return new EvalResult(null, "functionExpression");
 

@@ -56,6 +56,8 @@ public class AssignmentExpression extends Expression {
         if(rightRes == null)
             return null;
 
+        // get the errors in left expression as well
+
 
         String rightType = rightRes._type;
         Object rightValue = rightRes._value;
@@ -77,6 +79,12 @@ public class AssignmentExpression extends Expression {
 
             // Get the list from env
             Symbol envList = env.get(envEntry);
+            if(envList == null) {
+                _diagnostics.add("Identifier " + envEntry + " is undefined");
+                return null;
+            }
+
+
             List originalList = (List) envList._value;
 
             originalList.set(IndexValue, rightRes);
