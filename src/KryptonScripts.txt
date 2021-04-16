@@ -663,10 +663,7 @@ def binarySearch(lst, len, key) {
                 res = helper(mid + 1, end);
             }
         }
-
-
         return res;
-
     }
 
 
@@ -691,3 +688,47 @@ def binarySearch(lst, len, key) {
 if ( x < 4 ) {
     $ = 4;
 }
+
+################# break this function in every possible way #################
+def binarySearch(lst, len, key) {
+
+    def helper(start, end) {
+        res = -1;
+
+        if(start <= end) {
+            mid = start + end;
+
+            if(lst[mid] == key) {
+                res = mid;
+            }
+            else if(lst[mid] > key) {
+                res = helper(start, mid - 1);
+            }
+            else {
+                res = helper(mid + 1, end);
+            }
+        }
+
+
+        return $res;
+
+    }
+
+
+    start = 0;
+    end = len - 1;
+
+
+    locationKey = helper(start, end);
+    if(locationKey == -1) {
+        print("Oops the key is not present in the list ");
+    }
+    else {
+        print("Element " + key + " is present at location " + locationKey);
+    }
+
+}
+
+binarySearch([1, 2, 3, 5, 6], 5, 5);
+binarySearch([1, 2, 3, 5, 6], 5, 6);
+binarySearch([1, 2, 3, 5, 6], 5, 9);

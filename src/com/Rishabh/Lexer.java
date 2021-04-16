@@ -39,9 +39,32 @@ class Lexer {
             while(_position < _line.length() && currentChar() != '\n') {
                 _position++;
             }
-            if (_position < _line.length() - 1) 
-                _position++;
             return nextToken();
+            // return nextToken();
+        }
+
+
+        if(currentChar() == '"') {
+            // This is going to be a Krypton String
+            _position++;
+
+            while(_position < _line.length() && currentChar() != '"') {
+                _position++;
+            }
+
+            // If the position is equal to length of string
+            // voila beros
+            String inputStr = "";
+            if(_position == _line.length()) {
+                _diagnostics.add("Got EOL while scanning string literal");
+            }
+            else {
+                inputStr = _line.substring(start + 1, _position);
+                _position++;
+
+            }
+
+            return new Token(TokenType.StringConstToken, inputStr, inputStr);
         }
 
         // if isDigit .. go with IntToken
@@ -53,29 +76,10 @@ class Lexer {
             return getWordToken(start);
 
 
-        if(currentChar() == '"') {
-            // This is going to be a Krypton String
-            _position++;
-
-            while(currentChar() != '"') {
-                _position++;
-            }
-
-            String inputStr = _line.substring(start + 1, _position);
-            _position++;
-
-            return new Token(TokenType.StringConstToken, inputStr, inputStr);
-        }
-
-
-        // Reject spaces
-        // GIving bugs... fix this error now
         if (currentChar() == ' ') {
-//            System.out.println("Found space");
             while (currentChar() == ' ') {
                 _position++;
             }
-
             return nextToken();
         }
 

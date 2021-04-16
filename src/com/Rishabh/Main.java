@@ -55,48 +55,48 @@ public class Main {
 
 
             Parser parser = new Parser(line);
-            parser.printTokens();
+            // parser.printTokens();
             Expression result = parser.parse();
 ////////
-////////
+//////
             if(displayParseTree)
                 result.prettyPrint("");
 
             for(String diagnostic : parser._diagnostics)
                 System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
-//             try {
+            try {
 
-// //                result.prettyPrint("");
+//                result.prettyPrint("");
 
-//                 if (parser._diagnostics.size() > 0) {
+                if (parser._diagnostics.size() > 0) {
 
-//                     for(String diagnostic : parser._diagnostics)
-//                         System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
+                    for(String diagnostic : parser._diagnostics)
+                        System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
 
-//                     continue;
-//                 }
+                    continue;
+                }
 
-//                 if(displayParseTree)
-//                     result.prettyPrint("");
+                if(displayParseTree)
+                    result.prettyPrint("");
 
-//                 EvalResult answer = result.evaluate(parentEnv);
-//                 List<String> runtimeDiagnostics = result.getDiagnostics();
+                EvalResult answer = result.evaluate(parentEnv);
+                List<String> runtimeDiagnostics = result.getDiagnostics();
 
-//                 if(runtimeDiagnostics.size() > 0) {
-//                     for(String diagnostic : runtimeDiagnostics) {
-//                         System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
-//                     }
-//                     continue;
-//                 }
+                if(runtimeDiagnostics.size() > 0) {
+                    for(String diagnostic : runtimeDiagnostics) {
+                        System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
+                    }
+                    continue;
+                }
 
-//                 if (answer == null || answer._value == null)
-//                     continue;
+                if (answer == null || answer._value == null)
+                    continue;
 
-//                 System.out.println(TEXT_GREEN + answer._value + TEXT_RESET);
-//             } catch (Exception e1) {
-//                 System.out.println(e1.toString());
+                System.out.println(TEXT_GREEN + answer._value + TEXT_RESET);
+            } catch (Exception e1) {
+                System.out.println(e1.toString());
 
-//             }
+            }
         }
     }
 
@@ -111,8 +111,12 @@ public class Main {
         HashMap<Character, Integer> score = new HashMap<>();
         score.put('(', 1);
         score.put(')', -1);
-        score.put('{', 2);
-        score.put('}', -2);
+        score.put('{', 1);
+        score.put('}', -1);
+        score.put('[', 1);
+        score.put(']', -1);
+
+
 
 
         char[] nextLine = inputLine.toCharArray();

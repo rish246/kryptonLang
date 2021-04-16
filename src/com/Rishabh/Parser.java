@@ -14,7 +14,6 @@ import com.Rishabh.Expression.Values.ListExpression;
 import com.Rishabh.Expression.Values.NumberExpression;
 import com.Rishabh.Expression.Values.StringExpression;
 
-import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,7 @@ import java.util.List;
 class Parser {
     private Lexer lexer;
     private Token[] _tokens;
+    private Integer[] _lineNumbers;
     private int _position;
 
     // Make diagnostics for parser as well
@@ -32,7 +32,7 @@ class Parser {
         lexer = new Lexer(text);
         _position = 0;
 
-        _tokens = tokenizeLine();
+        tokenizeLine();
 
         // Append lexer diagnostics with parser diagnostics
         _diagnostics.addAll(lexer._diagnostics);
@@ -69,21 +69,23 @@ class Parser {
 // Tomorrow refactor the whole code
     // Think why 5 + is not working ... parser should be traced
 
-    private Token[] tokenizeLine() {
+    private void tokenizeLine() {
         Token newToken;
 
         List<Token> listTokens = new ArrayList<>();
+        List<Integer> lineNums = new ArrayList<>();
 
         do {
             newToken = lexer.nextToken();
             listTokens.add(newToken);
+            lineNums.add(lexer._lineNumber);
         } while (newToken._type != TokenType.EndOfLineToken);
 
         Token[] result = new Token[listTokens.size()];
-        result = listTokens.toArray(result);
+        _tokens = listTokens.toArray(result);
 
-        return result;
-
+        Integer[] lines = new Integer[lineNums.size()];
+        _lineNumbers = lineNums.toArray(lines);
     }
 
     public Token match(TokenType type) {
@@ -93,7 +95,7 @@ class Parser {
             return NextToken();
 
 
-        _diagnostics.add("Expected " + type + ", Got : " + CurrentToken()._type);
+        _diagnostics.add("Expected " + type + ", Got : " + CurrentToken()._type + " at line number " + _lineNumbers[_position]);
 
         return new Token(type, null, null);
     }
@@ -203,7 +205,6 @@ class Parser {
             Expression right = parseExpression(curPrecedence);
 
             if(binOperator == TokenType.AssignmentToken) {
-                // Make an assignment expression
                 return new AssignmentExpression(left, binOperator, right);
             }
 
@@ -229,7 +230,6 @@ class Parser {
                 // Parse Only primary expression
                 Expression elseBranch = null;
 
-                System.out.println(CurrentToken()._type);
                 if(_tokens.length > _position && CurrentToken()._type == TokenType.ElseKeywordToken) {
                     match(TokenType.ElseKeywordToken);
                     elseBranch = parse();
@@ -253,11 +253,19 @@ class Parser {
                     // Same expression as yesterday .. it is giving null and hence can't do anything about it;
 
                     parsedExpressions.add(nextExpression);
+                    if(nextExpression == null) {
+                        next();
+                        continue;
+                    }
+
+                    // I should have never reached there... why did i start parsing the function.. it should have given an error right away
+
+
                     if(nextExpression.getType() == ExpressionType.IfExpression
                     || nextExpression.getType() == ExpressionType.BlockExpression
                     || nextExpression.getType() == ExpressionType.WhileExpression
                         || nextExpression.getType() == ExpressionType.ForLoopExpression
-                        || nextExpression.getType() == ExpressionType.FuncExpression) { // True
+                        || nextExpression.getType() == ExpressionType.FuncExpression) { 
                         continue;
                     }
 
@@ -360,7 +368,7 @@ class Parser {
             }
 
             default:
-                _diagnostics.add("Unexpected token : " + CurrentToken()._lexeme + ", expected a statement initialization");
+                _diagnostics.add("Unexpected token : " + CurrentToken()._lexeme + ", expected a statement initialization at line number " + _lineNumbers[_position]);
                 return null;
         }
         
@@ -495,7 +503,7 @@ class Parser {
             }
 
             default:
-                _diagnostics.add("Unexpected primary expression, Instead got : " + CurrentToken()._lexeme);
+                _diagnostics.add("Unexpected primary expression, Instead got : " + CurrentToken()._lexeme + ", at line number " + _lineNumbers[_position]);
 
         }
 
