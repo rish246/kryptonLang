@@ -4,8 +4,7 @@ package com.Rishabh;
 import com.Rishabh.Expression.Expression;
 import com.Rishabh.Utilities.Environment;
 
-import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
-
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -27,46 +26,65 @@ public class Main {
         // Create an environment here
         Environment parentEnv = new Environment(null);
 
-	// write your code here
+
+        // write your code here
         while (true) {
 
             System.out.print("Krypton >> ");
             String line = scanner.nextLine().trim();
-//            int LineNumber = 1;
 
-
-            boolean isValidInput = hasValidParens(line);
-            while(!isValidInput) {
-                System.out.print("\t");
-                String nextLine = scanner.nextLine().trim();
-                line = line + '\n' + nextLine;
-                isValidInput = hasValidParens(line);
-            }
-
-
-
-            if(line.equals(""))
-                continue;
-
-            if(line.equals("#dispTree")) {
+            if(line.equals("#dispTree")){
                 displayParseTree = !displayParseTree;
                 continue;
             }
 
+            String myInputFile = "";
 
-            Parser parser = new Parser(line);
-            // parser.printTokens();
-            Expression result = parser.parse();
-////////
-//////
-            if(displayParseTree)
-                result.prettyPrint("");
 
-            for(String diagnostic : parser._diagnostics)
-                System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
+            Expression result;
+            Parser parser;
+
             try {
 
-//                result.prettyPrint("");
+                if(line.startsWith("load")) {
+                    myInputFile = line.substring(5);
+                    File inputFileObj = new File(myInputFile);
+                    Scanner inputFileReader = new Scanner(inputFileObj);
+
+                    String programCode = "";
+                    while (inputFileReader.hasNextLine()) {
+                        String nextLineFile = inputFileReader.nextLine().trim();
+                        programCode += nextLineFile;
+                    }
+
+                    parser = new Parser(programCode);
+    //                parser.printTokens();
+                    result = parser.parse();
+                }
+
+                else {
+                    boolean isValidInput = hasValidParens(line);
+                     while(!isValidInput) {
+                         System.out.print("\t");
+                         String nextLine = scanner.nextLine().trim();
+                         line = line + '\n' + nextLine;
+                         isValidInput = hasValidParens(line);
+                     }
+
+
+
+                     if(line.equals(""))
+                         continue;
+
+
+                     parser = new Parser(line);
+                     result = parser.parse();
+
+                }
+
+                if(displayParseTree)
+                    result.prettyPrint("");
+
 
                 if (parser._diagnostics.size() > 0) {
 
@@ -75,9 +93,6 @@ public class Main {
 
                     continue;
                 }
-
-                if(displayParseTree)
-                    result.prettyPrint("");
 
                 EvalResult answer = result.evaluate(parentEnv);
                 List<String> runtimeDiagnostics = result.getDiagnostics();
@@ -93,12 +108,15 @@ public class Main {
                     continue;
 
                 System.out.println(TEXT_GREEN + answer._value + TEXT_RESET);
+
             } catch (Exception e1) {
                 System.out.println(e1.toString());
-
             }
         }
+
     }
+    
+    
 
     // Next are string ... String has a giant token
     // "---" ->
@@ -131,4 +149,36 @@ public class Main {
 
 
 }
+
+
+
+
+
+
+//             boolean isValidInput = hasValidParens(line);
+//             while(!isValidInput) {
+//                 System.out.print("\t");
+//                 String nextLine = scanner.nextLine().trim();
+//                 line = line + '\n' + nextLine;
+//                 isValidInput = hasValidParens(line);
+//             }
+
+
+
+//             if(line.equals(""))
+//                 continue;
+
+//             if(line.equals("#dispTree")) {
+//                 displayParseTree = !displayParseTree;
+//                 continue;
+//             }
+
+
+//             Parser parser = new Parser(line);
+//             // parser.printTokens();
+//             Expression result = parser.parse();
+// ////////
+// //////
+//             if(displayParseTree)
+//                 result.prettyPrint("");
 
