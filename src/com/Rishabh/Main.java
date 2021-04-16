@@ -5,6 +5,7 @@ import com.Rishabh.Expression.Expression;
 import com.Rishabh.Utilities.Environment;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -20,7 +21,68 @@ public class Main {
 
     
     public static void main(String[] args) {
+        // Evaluate parse Tree -> generate parse Tree and evaluate the parse Tree
+        // For file... if(args[]) {}
+        // Execute file
+        //      parser
+        //      result
+        //      evaluate
+        if(args.length == 0) {
+            runRepl();
+        }
+        else {
 
+            Environment programEnv = new Environment(null);
+            String filename = args[0];
+            try {
+                String program = readInputFile(filename);
+                Expression result = parseProgram(program);
+
+                // Line numbers are not being maintined for some reason
+                if(result == null)
+                    return;
+
+
+                EvalResult answer = getEvalResult(programEnv, result);
+                if (answer == null || answer._value == null)
+                    return;
+
+                System.out.println(TEXT_GREEN + answer._value + TEXT_RESET);
+                // evaluate the result
+
+            } catch (Exception e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
+
+
+        }
+    }
+
+    private static EvalResult getEvalResult(Environment programEnv, Expression result) throws Exception {
+        EvalResult answer = result.evaluate(programEnv);
+        List<String> runtimeDiagnostics = result.getDiagnostics();
+
+        if (runtimeDiagnostics.size() > 0) {
+            printDiagnostics(runtimeDiagnostics);
+            return null;
+        }
+        return answer;
+    }
+
+    private static Expression parseProgram(String program) {
+        Parser parser = new Parser(program);
+        Expression result = parser.parse();
+
+        if(parser._diagnostics.size() > 0) {
+            printDiagnostics(parser._diagnostics);
+            return null;
+        }
+        return result;
+    }
+
+
+    private static void runRepl() {
         boolean displayParseTree = false;
 
         // Create an environment here
@@ -33,12 +95,11 @@ public class Main {
             System.out.print("Krypton >> ");
             String line = scanner.nextLine().trim();
 
-            if(line.equals("#dispTree")){
+            if (line.equals("#dispTree")) {
                 displayParseTree = !displayParseTree;
                 continue;
             }
 
-            String myInputFile = "";
 
 
             Expression result;
@@ -46,64 +107,41 @@ public class Main {
 
             try {
 
-                if(line.startsWith("load")) {
-                    myInputFile = line.substring(5);
-                    File inputFileObj = new File(myInputFile);
-                    Scanner inputFileReader = new Scanner(inputFileObj);
-
-                    String programCode = "";
-                    while (inputFileReader.hasNextLine()) {
-                        String nextLineFile = inputFileReader.nextLine().trim();
-                        programCode += nextLineFile;
-                    }
+                if (line.startsWith("load")) {
+                    String filename = line.substring(5);
+                    String programCode = readInputFile(filename);
 
                     parser = new Parser(programCode);
-    //                parser.printTokens();
+
                     result = parser.parse();
                 }
-
                 else {
-                    boolean isValidInput = hasValidParens(line);
-                     while(!isValidInput) {
-                         System.out.print("\t");
-                         String nextLine = scanner.nextLine().trim();
-                         line = line + '\n' + nextLine;
-                         isValidInput = hasValidParens(line);
-                     }
+                    line = getNextCodeSegment(line);
 
+                    if (line.equals(""))
+                        continue;
 
-
-                     if(line.equals(""))
-                         continue;
-
-
-                     parser = new Parser(line);
-                     result = parser.parse();
+                    parser = new Parser(line);
+                    result = parser.parse();
 
                 }
 
-                if(displayParseTree)
+                if (displayParseTree)
                     result.prettyPrint("");
 
-
                 if (parser._diagnostics.size() > 0) {
-
-                    for(String diagnostic : parser._diagnostics)
-                        System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
-
+                    printDiagnostics(parser._diagnostics);
                     continue;
                 }
 
-                EvalResult answer = result.evaluate(parentEnv);
-                List<String> runtimeDiagnostics = result.getDiagnostics();
-
-                if(runtimeDiagnostics.size() > 0) {
-                    for(String diagnostic : runtimeDiagnostics) {
-                        System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
-                    }
-                    continue;
-                }
-
+//                EvalResult answer = result.evaluate(parentEnv);
+//                List<String> runtimeDiagnostics = result.getDiagnostics();
+//
+//                if (runtimeDiagnostics.size() > 0) {
+//                    printDiagnostics(runtimeDiagnostics);
+//                    continue;
+//                }
+                EvalResult answer = getEvalResult(parentEnv, result);
                 if (answer == null || answer._value == null)
                     continue;
 
@@ -112,15 +150,37 @@ public class Main {
             } catch (Exception e1) {
                 System.out.println(e1.toString());
             }
+
         }
-
     }
-    
-    
 
-    // Next are string ... String has a giant token
-    // "---" ->
-    // // StringToken -> new StringExpression --> 
+    private static void printDiagnostics(List<String> Diagnostics) {
+        for (String diagnostic : Diagnostics)
+            System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
+    }
+
+    private static String getNextCodeSegment(String line) {
+        boolean isValidInput = hasValidParens(line);
+        while (!isValidInput) {
+            System.out.print("\t");
+            String nextLine = scanner.nextLine().trim();
+            line = line + '\n' + nextLine;
+            isValidInput = hasValidParens(line);
+        }
+        return line;
+    }
+
+    private static String readInputFile(String myInputFile) throws FileNotFoundException {
+        File inputFileObj = new File(myInputFile);
+        Scanner inputFileReader = new Scanner(inputFileObj);
+
+        String programCode = "";
+        while (inputFileReader.hasNextLine()) {
+            String nextLineFile = inputFileReader.nextLine().trim();
+            programCode += nextLineFile + '\n';
+        }
+        return programCode;
+    }
 
 
     public static boolean hasValidParens(String inputLine) {
@@ -149,36 +209,3 @@ public class Main {
 
 
 }
-
-
-
-
-
-
-//             boolean isValidInput = hasValidParens(line);
-//             while(!isValidInput) {
-//                 System.out.print("\t");
-//                 String nextLine = scanner.nextLine().trim();
-//                 line = line + '\n' + nextLine;
-//                 isValidInput = hasValidParens(line);
-//             }
-
-
-
-//             if(line.equals(""))
-//                 continue;
-
-//             if(line.equals("#dispTree")) {
-//                 displayParseTree = !displayParseTree;
-//                 continue;
-//             }
-
-
-//             Parser parser = new Parser(line);
-//             // parser.printTokens();
-//             Expression result = parser.parse();
-// ////////
-// //////
-//             if(displayParseTree)
-//                 result.prettyPrint("");
-

@@ -66,7 +66,6 @@ public class AssignmentExpression extends Expression {
         if(_left._type == ExpressionType.IdentifierExpression) {
             IdentifierExpression left = (IdentifierExpression) _left;
             Symbol res = env.set(left._lexeme, new Symbol(left._lexeme, rightValue, rightType));
-    //        System.out.println(res._value); // res is null here
             return new EvalResult(res._value, res._type);
         }
 
