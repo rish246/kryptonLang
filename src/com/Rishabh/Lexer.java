@@ -11,6 +11,7 @@ class Lexer {
     // Care about lexer errors
     String _line;
     int _position;
+    int _lineNumber;
 
     List<String> _diagnostics;
 
@@ -18,6 +19,7 @@ class Lexer {
         _line = line;
         _position = 0;
         _diagnostics = new ArrayList<String>();
+        _lineNumber = 1;
     }
 
     Token nextToken() {
@@ -25,6 +27,12 @@ class Lexer {
             return new Token(TokenType.EndOfLineToken, null, null);
         // if current char is a digit
         int start = _position;
+
+        if(currentChar() == '\n') {
+            _lineNumber++;
+            _position++;
+            return nextToken();
+        }
 
         // if isDigit .. go with IntToken
         if (Character.isDigit(currentChar()))
@@ -168,7 +176,7 @@ class Lexer {
         }
 
         // Add an error here
-        _diagnostics.add("Invalid token : " + _line.charAt(_position) + " at location " + _position);
+        _diagnostics.add("Invalid token : " + _line.charAt(_position) + " at line number "  + _lineNumber);
 
         return new Token(TokenType.ErrorToken, "" + _line.charAt(_position++), null);
 
@@ -179,8 +187,8 @@ class Lexer {
     }
 
     private Token getWordToken(int start) {
-        Condition isLetterCondition = (Character::isLetter);
-        String lexeme = getToken(start, isLetterCondition);
+        Condition isWordCondition = (letter -> Character.isLetterOrDigit(letter) || letter == '_');
+        String lexeme = getToken(start, isWordCondition);
 
         // If keyword
         switch (lexeme) {

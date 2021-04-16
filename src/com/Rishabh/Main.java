@@ -4,6 +4,8 @@ package com.Rishabh;
 import com.Rishabh.Expression.Expression;
 import com.Rishabh.Utilities.Environment;
 
+import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -35,9 +37,9 @@ public class Main {
 
             boolean isValidInput = hasValidParens(line);
             while(!isValidInput) {
-                System.out.print(">>>\t");
+                System.out.print("\t");
                 String nextLine = scanner.nextLine().trim();
-                line = line + nextLine;
+                line = line + '\n' + nextLine;
                 isValidInput = hasValidParens(line);
             }
 
@@ -53,46 +55,48 @@ public class Main {
 
 
             Parser parser = new Parser(line);
-//            parser.printTokens();
+            parser.printTokens();
             Expression result = parser.parse();
 ////////
 ////////
             if(displayParseTree)
                 result.prettyPrint("");
-////////////
-            try {
 
-//                result.prettyPrint("");
+            for(String diagnostic : parser._diagnostics)
+                System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
+//             try {
 
-                if (parser._diagnostics.size() > 0) {
+// //                result.prettyPrint("");
 
-                    for(String diagnostic : parser._diagnostics)
-                        System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
+//                 if (parser._diagnostics.size() > 0) {
 
-                    continue;
-                }
+//                     for(String diagnostic : parser._diagnostics)
+//                         System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
 
-                if(displayParseTree)
-                    result.prettyPrint("");
+//                     continue;
+//                 }
 
-                EvalResult answer = result.evaluate(parentEnv);
-                List<String> runtimeDiagnostics = result.getDiagnostics();
+//                 if(displayParseTree)
+//                     result.prettyPrint("");
 
-                if(runtimeDiagnostics.size() > 0) {
-                    for(String diagnostic : runtimeDiagnostics) {
-                        System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
-                    }
-                    continue;
-                }
+//                 EvalResult answer = result.evaluate(parentEnv);
+//                 List<String> runtimeDiagnostics = result.getDiagnostics();
 
-                if (answer == null || answer._value == null)
-                    continue;
+//                 if(runtimeDiagnostics.size() > 0) {
+//                     for(String diagnostic : runtimeDiagnostics) {
+//                         System.out.println(TEXT_RED + diagnostic + TEXT_RESET);
+//                     }
+//                     continue;
+//                 }
 
-                System.out.println(TEXT_GREEN + answer._value + TEXT_RESET);
-            } catch (Exception e1) {
-                System.out.println(e1.toString());
+//                 if (answer == null || answer._value == null)
+//                     continue;
 
-            }
+//                 System.out.println(TEXT_GREEN + answer._value + TEXT_RESET);
+//             } catch (Exception e1) {
+//                 System.out.println(e1.toString());
+
+//             }
         }
     }
 

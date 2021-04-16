@@ -420,28 +420,40 @@ def merge(leftList, lLen, rightList, rLen) {
 
 }
 
-def mergeSort(lst, start, end) {
-    res = [];
-    if(start == end) {
-        res = res + lst[start];
+def mergeSort(lst, len) {
+
+    def mergeSortHelper(lst, start, end) {
+        res = [];
+        if(start == end) {
+            res = res + lst[start];
+        }
+        else {
+            mid = start + (end - start) / 2;
+
+            leftSorted = mergeSortHelper(lst, start, mid);
+
+            lLen = mid - start + 1;
+
+            rightSorted = mergeSortHelper(lst, mid + 1, end);
+
+            rLen = end - mid;
+
+            res = merge(leftSorted, lLen, rightSorted, rLen);
+        }
+
+        return res;
+
     }
-    else {
-        mid = start + (end - start) / 2;
 
-        leftSorted = mergeSort(lst, start, mid);
 
-        lLen = mid - start + 1;
-
-        rightSorted = mergeSort(lst, mid + 1, end);
-
-        rLen = end - mid;
-
-        res = merge(leftSorted, lLen, rightSorted, rLen);
-    }
-
-    return res;
+    start = 0;
+    end = len - 1;
+    return mergeSortHelper(lst, start, end);
 
 }
+
+
+printList(mergeSort([1, 2, 3, 2, 1, 5, 3], 7), 7);
 
 ```
 
