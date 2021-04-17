@@ -26,9 +26,9 @@
 
     board = [   [".", ".", "X", "X", "X"],
                 [".", "X", ".", ".", "."],
-                [".", ".", ".", "X", "."],
-                ["X", ".", "X", ".", "."],
-                [".", ".", ".", "X", "."]];
+                [".", ".", ".", ".", "X"],
+                [".", ".", "X", "X", "."],
+                ["X", "X", ".", "X", "."]];
 
     print("Original Board");
     print("---------------");
@@ -42,28 +42,34 @@
         return (row >= 0 && row < rows && col >= 0 && col < cols);
     }
 
-    foundPath = false;
 
     def pathFinding(curRow, curCol) {
+        res = false;
+
         if(curRow == (rows - 1) && curCol == (cols - 1)) {
-            board[curRow, curCol] = "$";
-            foundPath = true;
+            board[curRow, curCol] = "#";
+            res = true;
         }
-         else if(isValid(curRow, curCol) && !foundPath)
+         else if(isValid(curRow, curCol))
          {
                 if(board[curRow, curCol] != "X" && board[curRow, curCol] != "#") {
                     board[curRow, curCol] = "#";
-                    pathFinding(curRow + 1, curCol);
-                    pathFinding(curRow - 1, curCol);
-                    pathFinding(curRow, curCol + 1);
-                    pathFinding(curRow, curCol - 1);
+                    res = res || pathFinding(curRow + 1, curCol);
+                    res = res || pathFinding(curRow - 1, curCol);
+                    res = res || pathFinding(curRow, curCol + 1);
+                    res = res || pathFinding(curRow, curCol - 1);
+                    if(!res) {
+                        board[curRow, curCol] = ".";
+                    }
                 }
 
          }
 
+         return res;
+
     }
 
-    pathFinding(0, 0);
+    foundPath = pathFinding(0, 0);
     print("");
     print("Final Board");
     print("---------------");
@@ -78,8 +84,8 @@
     printBoard(board, rows, cols);
 
 
-
 }
+
 
 ```
 
