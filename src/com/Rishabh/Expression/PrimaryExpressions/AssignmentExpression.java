@@ -81,7 +81,19 @@ public class AssignmentExpression extends Expression {
 
 
             EvalResult firstIdx = indices.get(0);
+
+
+
+            if(firstIdx._type != "int") {
+                _diagnostics.add("Expected an int for index.. got a " + firstIdx._type);
+                return null;
+
+            }
+
+
+
             int firstIdxVal = (int) firstIdx._value;
+
 
             Symbol envList = env.get(envEntry);
             if(envList == null) {
@@ -95,20 +107,52 @@ public class AssignmentExpression extends Expression {
 
 
             for(int i=1; i < indices.size() - 1; i++) {
+                if(curList._type != "list") {
+                    _diagnostics.add("Dimension mismatch in the array access expression");
+                    return null;
+                }
+
                 EvalResult idx = indices.get(i);
-                int idxVal = (int) idx._value;
+
                 String idxType = idx._type;
-                curList = (EvalResult) ((List) curList._value).get(idxVal);
+                if(idxType != "int") {
+                    _diagnostics.add("Index must evaluate to an integer.. found " + idxType);
+                    return null;
+                }
+
+                int idxVal = (int) idx._value;
+
+                List<EvalResult> nextList = (List) curList._value;
+
+                if(idxVal >= nextList.size()) {
+                    _diagnostics.add("Index " + idxVal + " too large for array of size " + nextList.size());
+                    return null;
+                }
+
+                curList = nextList.get(idxVal);
 
             }
 
             int finalIndex = 0;
             if(indices.size() > 1) {
                 List<EvalResult> finalRes = (List) curList._value;
-                finalIndex = (int) ((EvalResult) indices.get(indices.size() - 1))._value;
+                EvalResult lastIdx = indices.get(indices.size() - 1);
+                if(lastIdx._type != "int") {
+                    _diagnostics.add("Expected an int for index.. got a " + curList._type);
+                    return null;
+                }
+                finalIndex = (int) lastIdx._value;
+
+                if(finalIndex >= finalRes.size()) {
+                    _diagnostics.add("Index " + finalIndex + " to large for array of size " + finalRes.size());
+                    return null;
+                }
+
                 finalRes.set(finalIndex, rightRes);
             }
             else {
+
+
                 finalIndex = (int) curList._value;
                 originalList.set(finalIndex, rightRes);
             }

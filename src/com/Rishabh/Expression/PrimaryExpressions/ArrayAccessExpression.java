@@ -45,9 +45,14 @@ public class ArrayAccessExpression extends Expression {
 
         List<EvalResult> ourItemList = (List) ourList._value;
 
-        EvalResult firstIdx = (EvalResult) indices.get(0);
-        int firstIdxVal = (int) firstIdx._value;
+        EvalResult firstIdx = indices.get(0);
+        
+        if(firstIdx._type != "int") {
+            _diagnostics.add("Index must evaluate to an integer.. found " + firstIdx._type);
+            return null;
+        }
 
+        int firstIdxVal = (int) firstIdx._value;
 
         if(firstIdxVal >= ourItemList.size()) {
             _diagnostics.add("Index " + firstIdxVal + " is out of bounds for an array of size " + ourItemList.size());
@@ -55,13 +60,37 @@ public class ArrayAccessExpression extends Expression {
         }
 
 
+
+
         EvalResult nextItem = ourItemList.get(firstIdxVal);
 
         for(int i=1; i < indices.size(); i++) {
             EvalResult idx = indices.get(i);
             String idxType = idx._type;
+
+
+            // Make sure the nextItem is of type list
+            if(nextItem._type != "list") {
+                _diagnostics.add("Dimension mismatch in the array access expression");
+                return null;
+            }
+
+            if(idxType != "int") {
+                _diagnostics.add("Index must evaluate to an integer.. found " + idxType);
+                return null;
+            }
+
             int idxVal = (int) idx._value;
-            nextItem = (EvalResult) ((List) nextItem._value).get(idxVal);
+
+            // Make sure the idx is not out of bounds
+            List<EvalResult> nextList = (List) nextItem._value;
+
+            if(idxVal >= nextList.size()) {
+                _diagnostics.add("Index " + idxVal + " too large for array of size " + nextList.size());
+                return null;
+            }
+
+            nextItem = nextList.get(idxVal);
 
         }
 
