@@ -1,0 +1,18 @@
+{
+    def factorialDP(n) {
+        dp = [-1] * (n + 1);
+
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for(i = 2; i <= n; i = i + 1) {
+            dp[i] = i * dp[i-1];
+        }
+
+        return dp[n];
+    }
+
+    print("Factorial of 3 = " + factorialDP(3));
+    print("Factorial of 5 = " + factorialDP(5));
+
+}
