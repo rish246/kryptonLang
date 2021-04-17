@@ -46,7 +46,7 @@ public class ArrayAccessExpression extends Expression {
         List<EvalResult> ourItemList = (List) ourList._value;
 
         EvalResult firstIdx = indices.get(0);
-        
+
         if(firstIdx._type != "int") {
             _diagnostics.add("Index must evaluate to an integer.. found " + firstIdx._type);
             return null;

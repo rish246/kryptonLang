@@ -241,8 +241,3 @@ class Lexer {
 
 
 }
-
-
-// Multiple statements ---> if the statement is not complete, We are not waiting for a second prompt
-// (calcParens... if Parens are not balanced... go for another prompt
-// Else submit
