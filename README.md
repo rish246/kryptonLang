@@ -84,7 +84,9 @@
 ```
 
 _output_
+![plot](./Program%20outputs/dfs_pathfinding_grid_not_solved.jpg)
 ![plot](./Program%20outputs/dfs_pathfinding_grid.jpg)
+
 
 
 
