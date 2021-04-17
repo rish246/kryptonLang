@@ -72,95 +72,46 @@ public class AssignmentExpression extends Expression {
 
         if(_left._type == ExpressionType.ArrayAccessExpression) {
 
-            ArrayAccessExpression left = (ArrayAccessExpression) _left;
-            String envEntry = left._identifier._lexeme;
+            ArrayAccessExpression curExp = (ArrayAccessExpression) _left;
 
-            ListExpression index = left._index;
-
-            List<EvalResult> indices = (List) index.evaluate(env)._value;
-
-
-            EvalResult firstIdx = indices.get(0);
-
-
-
-            if(firstIdx._type != "int") {
-                _diagnostics.add("Expected an int for index.. got a " + firstIdx._type);
-                return null;
-
-            }
-
-
-
-            int firstIdxVal = (int) firstIdx._value;
-
-
-            Symbol envList = env.get(envEntry);
-            if(envList == null) {
-                _diagnostics.add("Identifier " + envEntry + " is undefined");
+            Symbol ourListEntry = env.get(curExp._identifier._lexeme);
+            if(ourListEntry == null) {
+                _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme);
                 return null;
             }
 
-            List<EvalResult> originalList = (List) envList._value;
+            EvalResult finalResult = new EvalResult((List) ourListEntry._value, ourListEntry._type);
 
-            EvalResult curList = originalList.get(firstIdxVal); //
-
-
-            for(int i=1; i < indices.size() - 1; i++) {
-                if(curList._type != "list") {
-                    _diagnostics.add("Dimension mismatch in the array access expression");
+            for(Expression index : curExp._indices) {
+                if(finalResult._type != "list") {
+                    _diagnostics.add("Types " + finalResult._type + " are not subscriptable");
                     return null;
                 }
 
-                EvalResult idx = indices.get(i);
-
-                String idxType = idx._type;
-                if(idxType != "int") {
-                    _diagnostics.add("Index must evaluate to an integer.. found " + idxType);
+                EvalResult curIdx = index.evaluate(env);
+                String curIdxType = curIdx._type;
+                if(!curIdxType.equals("int")) {
+                    _diagnostics.add("Indices must be integers only.. Found " + curIdxType);
                     return null;
                 }
 
-                int idxVal = (int) idx._value;
+                int curIdxVal = (int) curIdx._value;
 
-                List<EvalResult> nextList = (List) curList._value;
+                List<EvalResult> curList = (List) finalResult._value;
 
-                if(idxVal >= nextList.size()) {
-                    _diagnostics.add("Index " + idxVal + " too large for array of size " + nextList.size());
+                if(curIdxVal >= curList.size()) {
+                    _diagnostics.add("Length " + curIdxVal + " out of bound for array " + curExp._identifier._lexeme);
                     return null;
                 }
 
-                curList = nextList.get(idxVal);
-
+                finalResult = curList.get(curIdxVal);
             }
 
-            int finalIndex = 0;
-            if(indices.size() > 1) {
-                List<EvalResult> finalRes = (List) curList._value;
-                EvalResult lastIdx = indices.get(indices.size() - 1);
-                if(lastIdx._type != "int") {
-                    _diagnostics.add("Expected an int for index.. got a " + curList._type);
-                    return null;
-                }
-                finalIndex = (int) lastIdx._value;
+            // finalResult -> pointing at value to be changed
+            finalResult._value = rightRes._value;
+            finalResult._type = rightRes._type;
 
-                if(finalIndex >= finalRes.size()) {
-                    _diagnostics.add("Index " + finalIndex + " to large for array of size " + finalRes.size());
-                    return null;
-                }
-
-                finalRes.set(finalIndex, rightRes);
-            }
-            else {
-
-
-                finalIndex = (int) curList._value;
-                originalList.set(finalIndex, rightRes);
-            }
-
-            envList._value = originalList;
-////
-            env.set(envEntry, envList);
-            return rightRes; // Can't return list... have to return the value updated
+            return finalResult;
         }
 
         else {

@@ -7,84 +7,80 @@
 **Depth first search path finding algorithm in krypton**
 
 ```python
-{
-    def printBoard(board, rows, cols) {
-            curRow = "";
-            for(row = 0; row < rows; row = row + 1) {
-                printRow(board, row, cols);
-            }
-
-    }
-
-    def printRow(board, rowNum, cols) {
-        rowRes = "";
-        for(col = 0; col < cols; col = col + 1) {
-            rowRes = rowRes + board[rowNum, col] + ", ";
+def printBoard(board, rows, cols) {
+        curRow = "";
+        for(row = 0; row < rows; row = row + 1) {
+            printRow(board, row, cols);
         }
-        print(rowRes);
-    }
-
-    board = [   [".", ".", "X", "X", "X"],
-                [".", "X", ".", ".", "."],
-                [".", ".", ".", ".", "X"],
-                [".", ".", "X", "X", "."],
-                ["X", "X", ".", "X", "."]];
-
-    print("Original Board");
-    print("---------------");
-    printBoard(board, 5, 5);
-
-
-    # run a dfs on board
-    rows = 5;
-    cols = 5;
-    def isValid(row, col) {
-        return (row >= 0 && row < rows && col >= 0 && col < cols);
-    }
-
-
-    def pathFinding(curRow, curCol) {
-        res = false;
-
-        if(curRow == (rows - 1) && curCol == (cols - 1)) {
-            board[curRow, curCol] = "#";
-            res = true;
-        }
-         else if(isValid(curRow, curCol))
-         {
-                if(board[curRow, curCol] != "X" && board[curRow, curCol] != "#") {
-                    board[curRow, curCol] = "#";
-                    res = res || pathFinding(curRow + 1, curCol);
-                    res = res || pathFinding(curRow - 1, curCol);
-                    res = res || pathFinding(curRow, curCol + 1);
-                    res = res || pathFinding(curRow, curCol - 1);
-                    if(!res) {
-                        board[curRow, curCol] = ".";
-                    }
-                }
-
-         }
-
-         return res;
-
-    }
-
-    foundPath = pathFinding(0, 0);
-    print("");
-    print("Final Board");
-    print("---------------");
-
-    if(foundPath == true) {
-        print("Path exists");
-    }
-    else {
-        print("Couldn't find path");
-    }
-
-    printBoard(board, rows, cols);
-
 
 }
+
+def printRow(board, rowNum, cols) {
+    rowRes = "";
+    for(col = 0; col < cols; col = col + 1) {
+        rowRes = rowRes + board[rowNum][col] + ", ";
+    }
+    print(rowRes);
+}
+
+board = [   [".", ".", "X", "X", "X"],
+            [".", "X", ".", ".", "."],
+            [".", ".", ".", ".", "X"],
+            [".", ".", "X", "X", "."],
+            ["X", "X", ".", "X", "."]];
+
+print("Original Board");
+print("---------------");
+printBoard(board, 5, 5);
+
+
+# run a dfs on board
+rows = 5;
+cols = 5;
+def isValid(row, col) {
+    return (row >= 0 && row < rows && col >= 0 && col < cols);
+}
+
+
+def pathFinding(curRow, curCol) {
+    res = false;
+
+    if(curRow == (rows - 1) && curCol == (cols - 1)) {
+        board[curRow][ curCol] = "#";
+        res = true;
+    }
+     else if(isValid(curRow, curCol))
+     {
+            if(board[curRow][curCol] != "X" && board[curRow][ curCol] != "#") {
+                board[curRow][ curCol] = "#";
+                res = res || pathFinding(curRow + 1, curCol);
+                res = res || pathFinding(curRow - 1, curCol);
+                res = res || pathFinding(curRow, curCol + 1);
+                res = res || pathFinding(curRow, curCol - 1);
+                if(!res) {
+                    board[curRow][curCol] = ".";
+                }
+            }
+
+     }
+
+     return res;
+
+}
+
+foundPath = pathFinding(0, 0);
+print("");
+print("Final Board");
+print("---------------");
+
+if(foundPath == true) {
+    print("Path exists");
+}
+else {
+    print("Couldn't find path");
+}
+
+printBoard(board, rows, cols);
 
 
 ```

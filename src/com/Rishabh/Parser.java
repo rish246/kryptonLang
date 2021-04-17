@@ -448,14 +448,24 @@ class Parser {
 
                 // ArraySuperScriptable expression
                 else if(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
-                    ListExpression index = (ListExpression) parsePrimaryExp();
+                    List<Expression> indices = new ArrayList<>();
+                    while(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
+                        match(TokenType.OpenSquareBracketToken);
+                        Expression nextIdx = parseExpression(0);
+                        if(nextIdx == null) {
+                            _diagnostics.add("Unexpected expression at line number " + _lineNumbers[_position]);
+                            return null;
+                        }
+                        indices.add(nextIdx);
+                        match(TokenType.ClosedSquareBracketToken);
+                    }
 
-                    if(index._elements.size() == 0) {
-                        _diagnostics.add("Index value can't be empty.. At line number " + _lineNumbers[_position]);
+                    if(indices.size() == 0) {
+                        _diagnostics.add("Subscript operator cannot be empty");
                         return null;
                     }
 
-                    return new ArrayAccessExpression(currentToken, index);
+                    return new ArrayAccessExpression(currentToken, indices);
 
                 }
 
