@@ -1,0 +1,69 @@
+{
+    def printGrid(grid, rows, cols) {
+            for(row = 0; row < rows; row = row + 1) {
+                printRow(grid, row, cols);
+            }
+    }
+
+    def printRow(board, rowNum, cols) {
+        rowRes = "";
+        for(col = 0; col < cols; col = col + 1) {
+            nComponent = board[rowNum][col];
+            if(nComponent < 0) {
+                nComponent = nComponent * -1;
+            }
+
+            rowRes = rowRes + "  " + nComponent + "   ";
+        }
+        print(rowRes);
+    }
+
+
+
+    ###############################################################33
+    grid = [[1, 1, 0, 1, 1],
+            [0, 1, 1, 0, 0],
+            [0, 0, 0, 0, 1],
+            [1, 1, 1, 0, 1],
+            [0, 1, 0, 1, 0]];
+
+    nRows = 5;
+    nCols = 5;
+    def isValid(row, col) {
+        return (row >= 0 && row < nRows && col >= 0 && col < nCols);
+    }
+
+    def dfs(row, col, count) {
+        if(isValid(row, col))
+        {
+            if(grid[row][col] == 1) {
+                grid[row][col] = -count;
+                dfs(row+1, col, count);
+                dfs(row - 1, col, count);
+                dfs(row, col+1, count);
+                dfs(row, col - 1, count);
+            }
+        }
+    }
+    print("---------------------------------");
+    print("Original Grid");
+    printGrid(grid, nRows, nCols);
+
+    count = 0;
+
+    for(row = 0; row < nRows; row = row + 1) {
+        for(col = 0; col < nCols; col = col + 1) {
+            if(grid[row][col] == 1){
+                count = count + 1;
+                dfs(row, col, count);
+            }
+        }
+    }
+
+    print("There are total " + count + " connected components in the grid");
+    print("---------------------------------");
+    print("Final Grid");
+    printGrid(grid, nRows, nCols);
+
+
+}
