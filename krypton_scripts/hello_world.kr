@@ -1,0 +1,5 @@
+{
+    # this is my program for printing hello world in krypton
+    # check out my language on github.com/KryptonLang
+    print("hello world");
+}
