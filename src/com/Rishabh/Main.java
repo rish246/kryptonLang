@@ -134,18 +134,12 @@ public class Main {
                     continue;
                 }
 
-//                EvalResult answer = result.evaluate(parentEnv);
-//                List<String> runtimeDiagnostics = result.getDiagnostics();
-//
-//                if (runtimeDiagnostics.size() > 0) {
-//                    printDiagnostics(runtimeDiagnostics);
-//                    continue;
-//                }
+
                 EvalResult answer = getEvalResult(parentEnv, result);
                 if (answer == null || answer._value == null)
                     continue;
 
-                System.out.println(TEXT_GREEN + answer._value + TEXT_RESET);
+                System.out.println(TEXT_GREEN + answer._value + ", " + answer._type + TEXT_RESET);
 
             } catch (Exception e1) {
                 System.out.println(e1.toString());

@@ -89,8 +89,6 @@ class Parser {
     }
 
     public Token match(TokenType type) {
-        // If type matches the next token, then return the current token
-        // else return newly generated token
         if (_position < _tokens.length && CurrentToken()._type == type)
             return NextToken();
 
@@ -170,8 +168,6 @@ class Parser {
         return tk._type == TokenType.AssignmentToken;
     }
 
-   
-
 
     private Expression parseExpression(int parentPrecedence) {
         Expression left;
@@ -187,7 +183,6 @@ class Parser {
         while(_position < _tokens.length
         && CurrentToken()._type != TokenType.EndOfLineToken) {
 
-            // This is probably causing the arguement
             if(CurrentToken()._type == TokenType.SemiColonToken)
                 break;
 
@@ -375,6 +370,35 @@ class Parser {
     }
 
 
+    private List<Expression> parseCommaSeparatedExpressions(TokenType delimiterType) {
+        List<Expression> listElements = new ArrayList<>();
+
+        if(CurrentToken()._type != delimiterType) {
+            Expression firstElement = parseExpression(0);
+            if(firstElement == null) {
+                _diagnostics.add("Error at line number " + _lineNumbers[_position]);
+                return null;
+            }
+            listElements.add(firstElement);
+
+        }
+
+
+
+        while(CurrentToken()._type != delimiterType) {
+            match(TokenType.CommaSeparatorToken);
+            Expression nextElement = parseExpression(0);
+            if(nextElement == null) {
+                next();
+                continue;
+            }
+            listElements.add(nextElement);
+        }
+
+        return listElements;
+    }
+
+
     private Expression parsePrimaryExp() {
         switch (CurrentToken()._type) {
             case OpenParensToken:
@@ -412,30 +436,8 @@ class Parser {
                 if(CurrentToken()._type == TokenType.OpenParensToken) {
                     // Match openParens
                     match(TokenType.OpenParensToken);
-                    // Make a list of actual args
-                    List<Expression> actualArgs = new ArrayList<>();
 
-                    // getFirstExp
-                    if(CurrentToken()._type != TokenType.ClosedParensToken) {                        
-                        Expression firstExp = parseExpression(0);
-                        if(firstExp == null) {
-                            _diagnostics.add("Error at line number " + _lineNumbers[_position]);
-                            return null;
-                        }
-                        actualArgs.add(firstExp);
-
-                    }   
-
-
-                    while(CurrentToken()._type != TokenType.ClosedParensToken) {
-                        match(TokenType.CommaSeparatorToken);
-                        Expression newExp = parseExpression(0);
-                        if(newExp == null) {
-                            next();
-                            continue;
-                        }
-                        actualArgs.add(newExp);
-                    }
+                    List<Expression> actualArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
 
                     match(TokenType.ClosedParensToken);
 
@@ -446,9 +448,13 @@ class Parser {
 
                 // ArraySuperScriptable expression
                 else if(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
-                    match(TokenType.OpenSquareBracketToken);
-                    Expression index = parseExpression(0);                        
-                    match(TokenType.ClosedSquareBracketToken);
+                    ListExpression index = (ListExpression) parsePrimaryExp();
+
+                    if(index._elements.size() == 0) {
+                        _diagnostics.add("Index value can't be empty.. At line number " + _lineNumbers[_position]);
+                        return null;
+                    }
+
                     return new ArrayAccessExpression(currentToken, index);
 
                 }
@@ -460,28 +466,12 @@ class Parser {
                 // Make a new List
                 match(TokenType.OpenSquareBracketToken);
 
+                List<Expression> listElements = parseCommaSeparatedExpressions(TokenType.ClosedSquareBracketToken);
 
-                List<Expression> listElements = new ArrayList<>();
-
-                if(CurrentToken()._type != TokenType.ClosedSquareBracketToken) {
-                    Expression firstElement = parseExpression(0);
-                    if(firstElement == null)       
-                        return null;                  
-                    listElements.add(firstElement);
-                    
+                if(listElements == null) {
+                    return null;
                 }
 
-                
-
-                while(CurrentToken()._type != TokenType.ClosedSquareBracketToken) {
-                    match(TokenType.CommaSeparatorToken);
-                    Expression nextElement = parseExpression(0);
-                    if(nextElement == null) {
-                        next();
-                        continue;
-                    }
-                    listElements.add(nextElement);
-                }
 
                 match(TokenType.ClosedSquareBracketToken);
 
@@ -494,9 +484,6 @@ class Parser {
                 match(TokenType.OpenParensToken);
                 List<IdentifierExpression> formalArgs = new ArrayList<>();
 
-
-                // Similar problem as the block exp -->
-                //
                 if(CurrentToken()._type != TokenType.ClosedParensToken) {
                     // Create a formal here
                     Token firstArg = match(TokenType.IdentifierToken);

@@ -1,11 +1,12 @@
 package com.Rishabh.Expression.PrimaryExpressions;
 
 import com.Rishabh.EvalResult;
+import com.Rishabh.Expression.Expression;
+import com.Rishabh.Expression.Values.ListExpression;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Token;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
-import com.Rishabh.Expression.Expression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +14,10 @@ import java.util.List;
 public class ArrayAccessExpression extends Expression {
 
     public Token _identifier;
-    public Expression _index;
+    public ListExpression _index;
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ArrayAccessExpression(Token identifierToken, Expression index) {
+    public ArrayAccessExpression(Token identifierToken, ListExpression index) {
         super(ExpressionType.ArrayAccessExpression);
         _identifier = identifierToken;
         _index = index;
@@ -25,17 +26,13 @@ public class ArrayAccessExpression extends Expression {
 
     public EvalResult evaluate(Environment env) throws Exception {
 //        return null;
-        EvalResult indexRes = _index.evaluate(env);
+        EvalResult indexRes = _index.evaluate(env); // Evaluate to a list of ints
+        List<EvalResult> indices = (List) indexRes._value;
         _diagnostics.addAll(_index.getDiagnostics());
 
         // If there are any errors in indexRes
         if(_diagnostics.size() > 0) {
             _diagnostics.add("Error in the array access expression");
-            return null;
-        }
-
-        if(indexRes._type != "int") {
-            _diagnostics.add("Index need to evaluate to an Int");
             return null;
         }
 
@@ -45,20 +42,30 @@ public class ArrayAccessExpression extends Expression {
             return null;
         }
 
-        List itemList = (List) ourList._value;
+
+        List<EvalResult> ourItemList = (List) ourList._value;
+
+        EvalResult firstIdx = (EvalResult) indices.get(0);
+        int firstIdxVal = (int) firstIdx._value;
 
 
-        int listIndex = (int)indexRes._value;
-
-        if(listIndex >= itemList.size()) {
-            _diagnostics.add("Index " + listIndex + " out of bounds for list of length " + itemList.size());
+        if(firstIdxVal >= ourItemList.size()) {
+            _diagnostics.add("Index " + firstIdxVal + " is out of bounds for an array of size " + ourItemList.size());
             return null;
         }
 
-        EvalResult ithValue = (EvalResult)itemList.get(listIndex);
 
+        EvalResult nextItem = ourItemList.get(firstIdxVal);
 
-        return new EvalResult(ithValue.getValue(), ithValue.getType());
+        for(int i=1; i < indices.size(); i++) {
+            EvalResult idx = indices.get(i);
+            String idxType = idx._type;
+            int idxVal = (int) idx._value;
+            nextItem = (EvalResult) ((List) nextItem._value).get(idxVal);
+
+        }
+
+        return new EvalResult(nextItem._value, nextItem._type);
     }
 
     public void prettyPrint(String indent) {

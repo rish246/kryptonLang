@@ -96,7 +96,10 @@ public class BinaryExpression extends Expression {
         else if (leftType.equals("boolean") && rightType.equals("boolean")) {
             switch (_operatorToken) {
                 case LogicalAndToken:
-                    return new EvalResult(((boolean) leftRes._value && (boolean) rightRes._value), "boolean");
+                    boolean leftValue = (boolean) leftRes._value;
+                    if(!leftValue)
+                        return new EvalResult(false, "boolean");
+                    return new EvalResult((boolean) rightRes._value, "boolean");
                 case LogicalOrToken:
                     return new EvalResult(((boolean) leftRes._value || (boolean) rightRes._value), "boolean");
                 case EqualityToken:

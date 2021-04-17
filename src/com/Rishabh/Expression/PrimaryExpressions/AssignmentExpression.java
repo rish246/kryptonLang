@@ -7,7 +7,7 @@ import com.Rishabh.TokenType;
 import com.Rishabh.Expression.Expression;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
-
+import com.Rishabh.Expression.Values.ListExpression;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +50,7 @@ public class AssignmentExpression extends Expression {
 
     public EvalResult evaluate(Environment env) throws Exception {
 
+
         EvalResult rightRes = _right.evaluate(env);
         _diagnostics.addAll(_right.getDiagnostics());
 
@@ -70,26 +71,50 @@ public class AssignmentExpression extends Expression {
         }
 
         if(_left._type == ExpressionType.ArrayAccessExpression) {
+
             ArrayAccessExpression left = (ArrayAccessExpression) _left;
             String envEntry = left._identifier._lexeme;
-            Expression index = left._index;
 
-            int IndexValue = (int) index.evaluate(env)._value;
+            ListExpression index = left._index;
 
-            // Get the list from env
+            List<EvalResult> indices = (List) index.evaluate(env)._value;
+
+
+            EvalResult firstIdx = indices.get(0);
+            int firstIdxVal = (int) firstIdx._value;
+
             Symbol envList = env.get(envEntry);
             if(envList == null) {
                 _diagnostics.add("Identifier " + envEntry + " is undefined");
                 return null;
             }
 
+            List<EvalResult> originalList = (List) envList._value;
 
-            List originalList = (List) envList._value;
+            EvalResult curList = originalList.get(firstIdxVal); //
 
-            originalList.set(IndexValue, rightRes);
+
+            for(int i=1; i < indices.size() - 1; i++) {
+                EvalResult idx = indices.get(i);
+                int idxVal = (int) idx._value;
+                String idxType = idx._type;
+                curList = (EvalResult) ((List) curList._value).get(idxVal);
+
+            }
+
+            int finalIndex = 0;
+            if(indices.size() > 1) {
+                List<EvalResult> finalRes = (List) curList._value;
+                finalIndex = (int) ((EvalResult) indices.get(indices.size() - 1))._value;
+                finalRes.set(finalIndex, rightRes);
+            }
+            else {
+                finalIndex = (int) curList._value;
+                originalList.set(finalIndex, rightRes);
+            }
+
             envList._value = originalList;
-
-            // make changes in env
+////
             env.set(envEntry, envList);
             return rightRes; // Can't return list... have to return the value updated
         }
