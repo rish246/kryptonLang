@@ -23,6 +23,9 @@ public class BlockStatement extends Statement {
         Environment currentBlockEnv = new Environment(env);
 
         for(SyntaxTree exp : _expressionList) {
+            if(exp == null) {
+                return new EvalResult(null, null);
+            }
 
             EvalResult curExpResult = exp.evaluate(currentBlockEnv);
             _diagnostics.addAll(exp.getDiagnostics());
@@ -30,9 +33,8 @@ public class BlockStatement extends Statement {
                 return null;
             }
 
-            if(exp.isStatement() && curExpResult._value != null) {
+            if(exp.isStatement() && curExpResult != null && curExpResult._value != null) {
                 return new EvalResult(curExpResult._value, curExpResult._type);
-
             }
 
         }

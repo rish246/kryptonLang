@@ -7,9 +7,9 @@
 
 ```python
 def printGrid(grid, rows, cols) {
-        for(row = 0; row < rows; row = row + 1) {
-            printRow(grid, row, cols);
-        }
+    for(row = 0; row < rows; row = row + 1) {
+        printRow(grid, row, cols);
+    }
 }
 
 def printRow(board, rowNum, cols) {
@@ -41,15 +41,15 @@ def isValid(row, col) {
 }
 
 def dfs(row, col, count) {
-    if(isValid(row, col))
+    if(isValid(row, col)
+    && grid[row][col] == 1)
     {
-        if(grid[row][col] == 1) {
-            grid[row][col] = -count;
-            dfs(row+1, col, count);
-            dfs(row - 1, col, count);
-            dfs(row, col+1, count);
-            dfs(row, col - 1, count);
-        }
+        grid[row][col] = -count;
+        dfs(row+1, col, count);
+        dfs(row - 1, col, count);
+        dfs(row, col+1, count);
+        dfs(row, col - 1, count);
+
     }
 }
 print("---------------------------------");
@@ -71,7 +71,6 @@ print("There are total " + count + " connected components in the grid");
 print("---------------------------------");
 print("Final Grid");
 printGrid(grid, nRows, nCols);
-
 
 
 ```
@@ -105,7 +104,7 @@ def printRow(board, rowNum, cols) {
 
 board = [   [".", ".", "X", "X", "X"],
             [".", "X", ".", ".", "."],
-            [".", ".", ".", ".", "X"],
+            [".", ".", ".", ".", "."],
             [".", ".", "X", "X", "."],
             ["X", "X", ".", "X", "."]];
 
@@ -123,29 +122,32 @@ def isValid(row, col) {
 
 
 def pathFinding(curRow, curCol) {
-    res = false;
 
     if(curRow == (rows - 1) && curCol == (cols - 1)) {
         board[curRow][ curCol] = "#";
-        res = true;
+        return true;
     }
-     else if(isValid(curRow, curCol))
+     else if(isValid(curRow, curCol)
+          && board[curRow][curCol] != "X"
+          && board[curRow][ curCol] != "#")
      {
-            if(board[curRow][curCol] != "X" && board[curRow][ curCol] != "#") {
-                board[curRow][ curCol] = "#";
-                res = res || pathFinding(curRow + 1, curCol);
-                res = res || pathFinding(curRow - 1, curCol);
-                res = res || pathFinding(curRow, curCol + 1);
-                res = res || pathFinding(curRow, curCol - 1);
-                if(!res) {
-                    board[curRow][curCol] = ".";
-                }
-            }
+
+        res = false;
+        board[curRow][ curCol] = "#";
+        res = res || pathFinding(curRow + 1, curCol);
+        res = res || pathFinding(curRow - 1, curCol);
+        res = res || pathFinding(curRow, curCol + 1);
+        res = res || pathFinding(curRow, curCol - 1);
+        if(!res) {
+            board[curRow][curCol] = ".";
+            return false;
+        }
+
+        return true;
 
      }
 
-     return res;
-
+    return false;
 }
 
 foundPath = pathFinding(0, 0);
