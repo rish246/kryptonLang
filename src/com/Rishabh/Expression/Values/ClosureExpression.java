@@ -36,11 +36,11 @@ public class ClosureExpression extends Expression {
 
     public void prettyPrint(String indent) {
         System.out.println("Closure");
-
         System.out.println(indent + "|");
         System.out.print(indent + "|-");_functionBody.prettyPrint(indent + "    ");
-
     }
+
+    // Do i want the refactor... Absolutely yes
 
     public List<String> getDiagnostics() {
         return _diagnostics;
