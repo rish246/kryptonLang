@@ -17,7 +17,7 @@
 
     board = [   [".", ".", "X", "X", "X"],
                 [".", "X", ".", ".", "."],
-                [".", ".", ".", ".", "X"],
+                [".", ".", ".", ".", "."],
                 [".", ".", "X", "X", "."],
                 ["X", "X", ".", "X", "."]];
 
@@ -41,18 +41,18 @@
             board[curRow][ curCol] = "#";
             res = true;
         }
-         else if(isValid(curRow, curCol))
+         else if(isValid(curRow, curCol)
+              && board[curRow][curCol] != "X"
+              && board[curRow][ curCol] != "#")
          {
-                if(board[curRow][curCol] != "X" && board[curRow][ curCol] != "#") {
-                    board[curRow][ curCol] = "#";
-                    res = res || pathFinding(curRow + 1, curCol);
-                    res = res || pathFinding(curRow - 1, curCol);
-                    res = res || pathFinding(curRow, curCol + 1);
-                    res = res || pathFinding(curRow, curCol - 1);
-                    if(!res) {
-                        board[curRow][curCol] = ".";
-                    }
-                }
+            board[curRow][ curCol] = "#";
+            res = res || pathFinding(curRow + 1, curCol);
+            res = res || pathFinding(curRow - 1, curCol);
+            res = res || pathFinding(curRow, curCol + 1);
+            res = res || pathFinding(curRow, curCol - 1);
+            if(!res) {
+                board[curRow][curCol] = ".";
+            }
 
          }
 

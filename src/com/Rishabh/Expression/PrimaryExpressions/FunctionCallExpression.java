@@ -52,9 +52,10 @@ public class FunctionCallExpression extends Expression {
         // Get the closure from the symbol
         ClosureExpression closure = (ClosureExpression) res._value;
 
+
         Environment newEnv = new Environment(null);
         // Bind formal args with actual args
-        List<IdentifierExpression> formalArgs = closure._functionExp._formalArgs;
+        List<IdentifierExpression> formalArgs = closure._formalArgs;
 
         if(formalArgs.size() != _actualArgs.size()) {
             _diagnostics.add("Invalid number of arguements passed in function " + _functionName + ", expected " + formalArgs.size() + ", got " + _actualArgs.size());
@@ -65,6 +66,8 @@ public class FunctionCallExpression extends Expression {
         // Map function name to the closure in the body
         newEnv.set(_functionName, res);
 
+        // Functionname -> res()
+
         // evaluate the actual arg and add the entry in newEnv
         for(int i=0; i<_actualArgs.size(); i++) {
             EvalResult curArgResult = _actualArgs.get(i).evaluate(env);
@@ -74,14 +77,16 @@ public class FunctionCallExpression extends Expression {
             }
 
             Symbol newBinding = new Symbol(null, curArgResult._value, curArgResult._type);
-            newEnv.set(formalArgs.get(i)._lexeme, newBinding);
+            String nextFormalArg = formalArgs.get(i)._lexeme;
+            newEnv.set(nextFormalArg, newBinding);
         }
 
         newEnv._ParentEnv = closure._closureEnv;
 
-        Expression funcBody = closure._functionExp._body;
+        Expression funcBody = closure._functionBody;
 
         EvalResult funcResult = funcBody.evaluate(newEnv);
+
         _diagnostics.addAll(funcBody.getDiagnostics());        // If the value != null... then value and type of the function is same
         // Maybe this is where is the second nullPtrExc
         if(funcResult == null) {

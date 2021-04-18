@@ -49,6 +49,18 @@ public class BinaryExpression extends Expression {
     @Override
     public EvalResult evaluate(Environment env) throws Exception {
 
+        // Logical operators are not evaluated the same way... take them out
+        if(isLogicalOperator(_operatorToken)) {
+            EvalResult result = evalLogicalExpression(env);
+            if(result == null) {
+                _diagnostics.add("Invalid logical operation");
+            }
+            return result;
+        }
+
+
+
+
         EvalResult leftRes = _left.evaluate(env);
         _diagnostics.addAll(_left.getDiagnostics());
 
@@ -95,13 +107,6 @@ public class BinaryExpression extends Expression {
         }
         else if (leftType.equals("boolean") && rightType.equals("boolean")) {
             switch (_operatorToken) {
-                case LogicalAndToken:
-                    boolean leftValue = (boolean) leftRes._value;
-                    if(!leftValue)
-                        return new EvalResult(false, "boolean");
-                    return new EvalResult((boolean) rightRes._value, "boolean");
-                case LogicalOrToken:
-                    return new EvalResult(((boolean) leftRes._value || (boolean) rightRes._value), "boolean");
                 case EqualityToken:
                     return new EvalResult(leftRes._value == rightRes._value, "boolean");
                 case NotEqualsToken:
@@ -181,8 +186,7 @@ public class BinaryExpression extends Expression {
 
         }
 
-        
-    
+
 
         else if(leftType.equals("string")) {
             switch(_operatorToken) {
@@ -200,6 +204,66 @@ public class BinaryExpression extends Expression {
         _diagnostics.add("Undefined operator " + _operatorToken + " for types " + leftType + " and " + rightType);
         return null;
 
+    }
+
+    private EvalResult evalLogicalExpression(Environment env) throws Exception {
+
+        switch (_operatorToken) {
+            case LogicalAndToken: {
+                EvalResult leftRes = _left.evaluate(env);
+                String leftType = leftRes._type;
+                boolean leftValue = (boolean) leftRes._value;
+                if(leftType != "boolean") {
+                    _diagnostics.add("Undefined operator " + _operatorToken + " for type " + leftType);
+                    return null;
+                }
+
+                if(!leftValue)
+                    return new EvalResult(false, "boolean");
+
+                EvalResult rightRes = _right.evaluate(env);
+                String rightType = leftRes._type;
+                if(rightType != "boolean") {
+                    _diagnostics.add("Undefined operator " + _operatorToken + " for type " + leftType);
+                    return null;
+                }
+
+                boolean rightValue = (boolean) rightRes._value;
+                return new EvalResult(rightValue, "boolean");
+
+            }
+
+            case LogicalOrToken: {
+                EvalResult leftRes = _left.evaluate(env);
+                String leftType = leftRes._type;
+                boolean leftValue = (boolean) leftRes._value;
+                if(leftType != "boolean") {
+                    _diagnostics.add("Undefined operator " + _operatorToken + " for type " + leftType);
+                    return null;
+                }
+
+                if(leftValue)
+                    return new EvalResult(true, "boolean");
+
+                EvalResult rightRes = _right.evaluate(env);
+                String rightType = leftRes._type;
+                if(rightType != "boolean") {
+                    _diagnostics.add("Undefined operator " + _operatorToken + " for type " + leftType);
+                    return null;
+                }
+
+                boolean rightValue = (boolean) rightRes._value;
+                return new EvalResult(rightValue, "boolean");
+            }
+
+        }
+
+        _diagnostics.add("Invalid Operator " + _operatorToken);
+        return null;
+    }
+
+    private boolean isLogicalOperator(TokenType operatorToken) {
+        return operatorToken == TokenType.LogicalAndToken || operatorToken == TokenType.LogicalOrToken;
     }
 
 }

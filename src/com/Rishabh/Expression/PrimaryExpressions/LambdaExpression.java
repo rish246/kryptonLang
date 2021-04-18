@@ -10,16 +10,14 @@ import com.Rishabh.Utilities.Symbol;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FunctionExpression extends Expression {
+public class LambdaExpression extends Expression {
     public Expression _body;
-    public String _name;
     public List<IdentifierExpression> _formalArgs = new ArrayList<>();
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public FunctionExpression(String name, Expression body, List<IdentifierExpression> formalArgs) {
-        super(ExpressionType.FuncExpression);
-        _name = name;
+    public LambdaExpression(Expression body, List<IdentifierExpression> formalArgs) {
+        super(ExpressionType.LambdaExpression);
         _body = body;
         _formalArgs = formalArgs;
     }
@@ -28,20 +26,14 @@ public class FunctionExpression extends Expression {
 
         Environment closureEnv = new Environment(env._table, env._ParentEnv);
 
-        ClosureExpression funcClosure = new ClosureExpression(_name, _body, closureEnv, _formalArgs);
+        ClosureExpression funcClosure = new ClosureExpression(null, _body, closureEnv, _formalArgs);
 
-        // Only do this if the name is not null
-        Symbol newClosure = new Symbol("closure", funcClosure, "closure");
-
-        env.set(_name, newClosure);
-
-        return new EvalResult(null, "functionExpression");
+        return new EvalResult(funcClosure, "Closure");
 
     }
 
     public void prettyPrint(String indent) {
-        System.out.println("Function");
-        System.out.println(indent + "|- " + indent + _name);
+        System.out.println("Lambda");
         System.out.println(indent + "|");
         System.out.println(indent + "|- Formal Args");
         System.out.println(indent + "    " + "|");
@@ -57,7 +49,4 @@ public class FunctionExpression extends Expression {
         return _diagnostics;
     }
 
-    public boolean isExpressionPrimary() {
-        return _name == null;
-    }
 }

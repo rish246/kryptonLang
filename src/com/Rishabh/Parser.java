@@ -1,19 +1,14 @@
 package com.Rishabh;
 
-import com.Rishabh.Expression.*;
+import com.Rishabh.Expression.Expression;
+import com.Rishabh.Expression.FunctionExpression;
+import com.Rishabh.Expression.LambdaExpression;
 import com.Rishabh.Expression.PrimaryExpressions.*;
-import com.Rishabh.Expression.Statements.BlockExpression;
-import com.Rishabh.Expression.Statements.IfExpression;
-import com.Rishabh.Expression.Statements.PrintExpression;
-import com.Rishabh.Expression.Statements.WhileExpression;
-import com.Rishabh.Expression.Statements.ForExpression;
-import com.Rishabh.Expression.Statements.ReturnExpression;
-
+import com.Rishabh.Expression.Statements.*;
 import com.Rishabh.Expression.Values.BoolExperssion;
 import com.Rishabh.Expression.Values.ListExpression;
 import com.Rishabh.Expression.Values.NumberExpression;
 import com.Rishabh.Expression.Values.StringExpression;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -513,7 +508,7 @@ class Parser {
                 match(TokenType.ClosedParensToken);
                 Expression funcBody = parse();
 
-                return new FunctionExpression(null, funcBody, formalArgs);
+                return new LambdaExpression(funcBody, formalArgs);
 
 
 
