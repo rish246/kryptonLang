@@ -2,14 +2,13 @@ package com.Rishabh.Syntax.PrimaryExpressions;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
-import com.Rishabh.SyntaxTree;
-import com.Rishabh.TokenType;
 import com.Rishabh.Syntax.Expression;
+import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
-
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BinaryExpression extends Expression {
     Expression _left, _right;
@@ -116,14 +115,14 @@ public class BinaryExpression extends Expression {
         }
         else if(leftType.equals("list") && rightType.equals("list")) {
             // return new EvalResult of type list
-            List leftList = (List) leftRes._value;
-            List rightList = (List) rightRes._value;
+            List<EvalResult> leftList = (List) leftRes._value;
+            List<EvalResult> rightList = (List) rightRes._value;
 
             switch(_operatorToken) {
                 case AddToken: {
-                    List<Expression> concatenatedList = new ArrayList<>();
-                    concatenatedList.addAll(leftList);
-                    concatenatedList.addAll(rightList);
+                    List<EvalResult> concatenatedList = new ArrayList<>();
+                    concatenatedList.addAll(copyList(leftList));
+                    concatenatedList.addAll(copyList(rightList));
                     return new EvalResult(concatenatedList, "list");
                 }
 
@@ -163,7 +162,7 @@ public class BinaryExpression extends Expression {
                 case AddToken: {
                     List leftList = (List) leftRes._value;
                     List<Object> newList = new ArrayList<>();
-                    newList.addAll(leftList);
+                    newList.addAll(copyList(leftList));
                     newList.add(rightRes);
 
                     return new EvalResult(newList, "list");
@@ -265,6 +264,14 @@ public class BinaryExpression extends Expression {
 
     private boolean isLogicalOperator(TokenType operatorToken) {
         return operatorToken == TokenType.LogicalAndToken || operatorToken == TokenType.LogicalOrToken;
+    }
+
+    private List<EvalResult> copyList(List<EvalResult> list) {
+        List<EvalResult> result = new ArrayList<>();
+        for(EvalResult exp : list) {
+            result.add(new EvalResult(exp._value, exp._type));
+        }
+        return result;
     }
 
 }

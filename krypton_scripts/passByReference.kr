@@ -23,4 +23,10 @@
     incrementByOne(numList, 4);
     printList(numList, 4);
 
+    print("");
+    secondNumList = numList + 10;
+    incrementByOne(secondNumList, 5);
+    secondNumList[0] = "Change";
+    printList(secondNumList, 5);
+
 }
