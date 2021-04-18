@@ -35,16 +35,17 @@
 
 
     def pathFinding(curRow, curCol) {
-        res = false;
 
         if(curRow == (rows - 1) && curCol == (cols - 1)) {
             board[curRow][ curCol] = "#";
-            res = true;
+            return true;
         }
          else if(isValid(curRow, curCol)
               && board[curRow][curCol] != "X"
               && board[curRow][ curCol] != "#")
          {
+
+            res = false;
             board[curRow][ curCol] = "#";
             res = res || pathFinding(curRow + 1, curCol);
             res = res || pathFinding(curRow - 1, curCol);
@@ -52,12 +53,14 @@
             res = res || pathFinding(curRow, curCol - 1);
             if(!res) {
                 board[curRow][curCol] = ".";
+                return false;
             }
+
+            return true;
 
          }
 
-         return res;
-
+        return false;
     }
 
     foundPath = pathFinding(0, 0);

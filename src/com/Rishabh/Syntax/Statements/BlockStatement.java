@@ -26,13 +26,13 @@ public class BlockStatement extends Statement {
 
             EvalResult curExpResult = exp.evaluate(currentBlockEnv);
             _diagnostics.addAll(exp.getDiagnostics());
-
             if(_diagnostics.size() > 0) {
                 return null;
             }
-            
-            if(exp._type == ExpressionType.ReturnExpression) {
+
+            if(exp.isStatement() && curExpResult._value != null) {
                 return new EvalResult(curExpResult._value, curExpResult._type);
+
             }
 
         }

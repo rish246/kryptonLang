@@ -332,7 +332,10 @@ class Parser {
 
 
                 match(TokenType.ClosedParensToken);
+
+                Statement.isEnclosingStmt = true;
                 SyntaxTree funcBody = parse();
+                Statement.isEnclosingStmt = false;
 
                 return new FunctionStatement(funcName, funcBody, formalArgs);
             }
@@ -340,11 +343,15 @@ class Parser {
             case ReturnToken: {
                 match(TokenType.ReturnToken);
 
+                // Only work if there is an enclosing function statement else throw a parse error
+                if(!Statement.isEnclosingStmt) {
+                    _diagnostics.add("Return statement should be enclosed in a lambda or a function definition.. at line number " + _lineNumbers[_position]);
+                }
+
                 Expression returnBody = parseExpression(0);
 
                 if(returnBody == null) {
                     _diagnostics.add("Empty return statements are not allowed");
-                    return null;
                 }
 
                 return new com.Rishabh.Expression.Statements.ReturnStatement(returnBody);
@@ -417,6 +424,7 @@ class Parser {
                 return new NumberExpression(value); // creating nullPoint Exception
 
             }
+
             case StringConstToken: {
                 return new StringExpression((String) NextToken()._value);
             }
@@ -510,7 +518,10 @@ class Parser {
 
 
                 match(TokenType.ClosedParensToken);
+                // Set Statement.isEnclosing = true as this lambda is enclosing the statement
+                Statement.isEnclosingStmt = true;
                 SyntaxTree funcBody = parse();
+                Statement.isEnclosingStmt = false;
 
                 return new LambdaExpression(funcBody, formalArgs);
 

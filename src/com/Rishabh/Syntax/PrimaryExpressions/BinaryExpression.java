@@ -248,7 +248,7 @@ public class BinaryExpression extends Expression {
 
                 EvalResult rightRes = _right.evaluate(env);
                 String rightType = leftRes._type;
-                if(rightType != "boolean") {
+                if(!rightType.equals("boolean")) {
                     _diagnostics.add("Undefined operator " + _operatorToken + " for type " + leftType);
                     return null;
                 }

@@ -43,24 +43,29 @@ public class IfStatement extends Statement {
 
 
         boolean condBranchOutput = (boolean) condBranchResult._value;
-        EvalResult ifExpResult = null;
 
         if (condBranchOutput) {
-            ifExpResult = _thenBranch.evaluate(env);
+            EvalResult ifExpResult = _thenBranch.evaluate(env);
             _diagnostics.addAll(_thenBranch.getDiagnostics());
+            if(_diagnostics.size() > 0) {
+                return null;
+            }
+
+            return ifExpResult;
         }
         else if (_elseBranch != null) {
-            ifExpResult = _elseBranch.evaluate(env);
+            EvalResult ifExpResult = _elseBranch.evaluate(env);
             _diagnostics.addAll(_elseBranch.getDiagnostics());
+            if(_diagnostics.size() > 0) {
+                return null;
+            }
+
+            return ifExpResult;
         }
 
 
-        if (ifExpResult == null)
-            return null;
+        return new EvalResult(null, "ifExpression");
 
-
-
-        return new EvalResult(ifExpResult._value, "ifExpression");
     }
 
     public void prettyPrint(String indent) {

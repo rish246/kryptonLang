@@ -31,4 +31,8 @@ public class SyntaxTree {
         return true;
     }
 
+    public boolean isStatement() {
+        return false;
+    }
+
 }
