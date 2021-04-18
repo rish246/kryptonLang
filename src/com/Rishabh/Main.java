@@ -1,7 +1,6 @@
 package com.Rishabh;
 
 
-import com.Rishabh.Expression.Expression;
 import com.Rishabh.Utilities.Environment;
 
 import java.io.File;
@@ -36,7 +35,7 @@ public class Main {
             String filename = args[0];
             try {
                 String program = readInputFile(filename);
-                Expression result = parseProgram(program);
+                SyntaxTree result = parseProgram(program);
 
                 // Line numbers are not being maintined for some reason
                 if(result == null)
@@ -59,7 +58,7 @@ public class Main {
         }
     }
 
-    private static EvalResult getEvalResult(Environment programEnv, Expression result) throws Exception {
+    private static EvalResult getEvalResult(Environment programEnv, SyntaxTree result) throws Exception {
         EvalResult answer = result.evaluate(programEnv);
         List<String> runtimeDiagnostics = result.getDiagnostics();
 
@@ -70,9 +69,9 @@ public class Main {
         return answer;
     }
 
-    private static Expression parseProgram(String program) {
+    private static SyntaxTree parseProgram(String program) {
         Parser parser = new Parser(program);
-        Expression result = parser.parse();
+        SyntaxTree result = parser.parse();
 
         if(parser._diagnostics.size() > 0) {
             printDiagnostics(parser._diagnostics);
@@ -102,7 +101,7 @@ public class Main {
 
 
 
-            Expression result;
+            SyntaxTree result;
             Parser parser;
 
             try {
@@ -203,3 +202,6 @@ public class Main {
 
 
 }
+
+// Statement... Which extend SyntaxTree(Type) {
+        // Just like Expression
