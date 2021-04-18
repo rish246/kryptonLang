@@ -1,0 +1,26 @@
+{
+    def printList(lst, len) {
+        for(i = 0; i < len; i = i + 1) {
+            print(lst[i]);
+        }
+    }
+
+    listOne = [1, 2, 3, 2, 5, "hello", "world", true];
+    # printList(listOne, 8);
+
+    listTwo = listOne;
+    listTwo[0] = "Zero";
+    # printList(listOne, 8);
+
+    def incrementByOne(lst, len) {
+        for(i = 0; i < len; i = i + 1) {
+            lst[i] = lst[i] + 1;
+        }
+    }
+
+    # lists are passed by reference just like in python
+    numList = [0, 1, 2, 3];
+    incrementByOne(numList, 4);
+    printList(numList, 4);
+
+}

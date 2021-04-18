@@ -81,17 +81,14 @@ _output_
 
 
 
-
-
 **Depth first search path finding algorithm in krypton**
 
 ```python
 def printBoard(board, rows, cols) {
-        curRow = "";
-        for(row = 0; row < rows; row = row + 1) {
-            printRow(board, row, cols);
-        }
-
+    curRow = "";
+    for(row = 0; row < rows; row = row + 1) {
+        printRow(board, row, cols);
+    }
 }
 
 def printRow(board, rowNum, cols) {
