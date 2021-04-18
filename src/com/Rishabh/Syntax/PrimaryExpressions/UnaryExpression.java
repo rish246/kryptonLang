@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UnaryExpression extends Expression {
-    SyntaxTree _body;
+    Expression _body;
     TokenType _operatorToken;
     List<String> _diagnostics = new ArrayList<>();
 //    ExpressionType _type;
 
-    public UnaryExpression(TokenType operatorToken, SyntaxTree body) {
+    public UnaryExpression(TokenType operatorToken, Expression body) {
         super(ExpressionType.UnaryExpression);
         _operatorToken = operatorToken;
         _body = body;

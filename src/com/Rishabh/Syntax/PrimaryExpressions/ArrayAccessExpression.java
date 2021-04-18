@@ -14,10 +14,10 @@ import java.util.List;
 public class ArrayAccessExpression extends Expression {
 
     public Token _identifier;
-    public SyntaxTree[] _indices;
+    public Expression[] _indices;
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ArrayAccessExpression(Token identifierToken, List<SyntaxTree> indices) {
+    public ArrayAccessExpression(Token identifierToken, List<Expression> indices) {
         super(ExpressionType.ArrayAccessExpression);
         _identifier = identifierToken;
         _indices = indices.toArray(new Expression[0]);
@@ -35,7 +35,7 @@ public class ArrayAccessExpression extends Expression {
 
         EvalResult ourList = new EvalResult((List) ourListEntry._value, ourListEntry._type);
         EvalResult finalResult = ourList;
-        for(SyntaxTree idx : _indices) {
+        for(Expression idx : _indices) {
 
             // check the finalResult should be a list
             if(finalResult._type != "list") {

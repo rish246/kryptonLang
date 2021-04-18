@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListExpression extends Expression {
-    public List<SyntaxTree> _elements;
+    public List<Expression> _elements;
     public List<String> _diagnostics;
 
-    public ListExpression(List<SyntaxTree> elements) {
+    public ListExpression(List<Expression> elements) {
         super(ExpressionType.ListExpression);
         _elements = elements;
         _diagnostics = new ArrayList<>();
@@ -31,7 +31,7 @@ public class ListExpression extends Expression {
     public EvalResult evaluate(Environment env) throws Exception{
         List<EvalResult> _results = new ArrayList<>();
 
-        for(SyntaxTree exp : _elements) {
+        for(Expression exp : _elements) {
             _results.add(exp.evaluate(env));
             _diagnostics.addAll(exp.getDiagnostics());
         }

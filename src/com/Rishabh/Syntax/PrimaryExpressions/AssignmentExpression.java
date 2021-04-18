@@ -3,7 +3,6 @@ package com.Rishabh.Syntax.PrimaryExpressions;
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
-import com.Rishabh.SyntaxTree;
 import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
@@ -12,13 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AssignmentExpression extends Expression {
-    SyntaxTree _left;
+    Expression _left;
     TokenType _operatorToken; // Assignment Token Always
-    SyntaxTree _right;
-    //    ExpressionType _type;
+    Expression _right;
     List<String> _diagnostics = new ArrayList<>();
 
-    public AssignmentExpression(SyntaxTree left, TokenType operatorToken, SyntaxTree right) {
+    public AssignmentExpression(Expression left, TokenType operatorToken, Expression right) {
         super(ExpressionType.AssignmentExpression);
         _left = left;
         _operatorToken = operatorToken;
@@ -64,13 +62,13 @@ public class AssignmentExpression extends Expression {
         Object rightValue = rightRes._value;
 
         // left's lexeme
-        if(_left._type == ExpressionType.IdentifierExpression) {
+        if(_left.getType() == ExpressionType.IdentifierExpression) {
             IdentifierExpression left = (IdentifierExpression) _left;
             Symbol res = env.set(left._lexeme, new Symbol(left._lexeme, rightValue, rightType));
             return new EvalResult(res._value, res._type);
         }
 
-        if(_left._type == ExpressionType.ArrayAccessExpression) {
+        if(_left.getType() == ExpressionType.ArrayAccessExpression) {
 
             com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) _left;
 
@@ -82,7 +80,7 @@ public class AssignmentExpression extends Expression {
 
             EvalResult finalResult = new EvalResult((List) ourListEntry._value, ourListEntry._type);
 
-            for(SyntaxTree index : curExp._indices) {
+            for(Expression index : curExp._indices) {
                 if(finalResult._type != "list") {
                     _diagnostics.add("Types " + finalResult._type + " are not subscriptable");
                     return null;
@@ -115,7 +113,7 @@ public class AssignmentExpression extends Expression {
         }
 
         else {
-            _diagnostics.add("Expression of type " + _left.getType() + " is not subsciptable");
+            _diagnostics.add("Expression of type " + _left.getType() + " is not a valid lvalue");
         }
 
         return null;

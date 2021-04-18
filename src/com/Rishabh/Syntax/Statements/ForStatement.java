@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ForStatement extends Statement {
-    public SyntaxTree _initializationCond;
-    public SyntaxTree _haltingCondition;
-    public SyntaxTree _progressExp;
+    public Expression _initializationCond;
+    public Expression _haltingCondition;
+    public Expression _progressExp;
     public SyntaxTree _body;
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ForStatement(SyntaxTree initializationCond, SyntaxTree haltingCondition, SyntaxTree progressExp, SyntaxTree body) {
+    public ForStatement(Expression initializationCond, Expression haltingCondition, Expression progressExp, SyntaxTree body) {
         super(ExpressionType.ForLoopExpression);
         _initializationCond = initializationCond;
         _haltingCondition = haltingCondition;

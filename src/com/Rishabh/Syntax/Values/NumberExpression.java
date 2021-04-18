@@ -12,7 +12,6 @@ public class NumberExpression extends Expression {
     public NumberExpression(int value) {
         super(ExpressionType.IntExpression);
         _value = value;
-//        super(ExpressionType.BinaryExpression);
     }
 
     @Override

@@ -17,10 +17,10 @@ public class PrintStatement extends Statement {
     public static final String TEXT_GREEN = "\u001B[32m";
 
 
-    public SyntaxTree _body;
+    public Expression _body;
     List<String> _diagnostics = new ArrayList<>();
 
-    public PrintStatement(SyntaxTree body) {
+    public PrintStatement(Expression body) {
         super(ExpressionType.printExpression);
         _body = body;
     }

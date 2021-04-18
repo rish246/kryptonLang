@@ -10,10 +10,10 @@ import com.Rishabh.Utilities.Environment;
 import java.util.List;
 
 public class ParensExpression extends Expression {
-    SyntaxTree _body;
+    Expression _body;
     Token _openParens, _closedParens;
 
-    public ParensExpression(Token openParens, SyntaxTree body, Token closedParens) {
+    public ParensExpression(Token openParens, Expression body, Token closedParens) {
         super(ExpressionType.ParensExpression);
         _openParens = openParens;
         _closedParens = closedParens;

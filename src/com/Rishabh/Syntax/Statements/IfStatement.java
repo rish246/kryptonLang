@@ -2,6 +2,7 @@ package com.Rishabh.Syntax.Statements;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
+import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Utilities.Environment;
@@ -10,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IfStatement extends Statement {
-    public SyntaxTree _conditionalBranch;
+    public Expression _conditionalBranch;
     public SyntaxTree _thenBranch;
     public SyntaxTree _elseBranch;
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public IfStatement(SyntaxTree conditionalBranch, SyntaxTree thenBranch, SyntaxTree elseBranch) {
+    public IfStatement(Expression conditionalBranch, SyntaxTree thenBranch, SyntaxTree elseBranch) {
         super(ExpressionType.IfExpression);
         _conditionalBranch = conditionalBranch;
         _thenBranch = thenBranch;

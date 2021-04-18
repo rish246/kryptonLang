@@ -2,6 +2,7 @@ package com.Rishabh.Syntax.Statements;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
+import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Utilities.Environment;
@@ -10,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WhileStatement extends Statement {
-    public SyntaxTree _conditionalBranch;
+    public Expression _conditionalBranch;
     public SyntaxTree _body;
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public WhileStatement(SyntaxTree conditionalBranch, SyntaxTree body) {
+    public WhileStatement(Expression conditionalBranch, SyntaxTree body) {
         super(ExpressionType.WhileExpression);
         _conditionalBranch = conditionalBranch;
         _body = body;

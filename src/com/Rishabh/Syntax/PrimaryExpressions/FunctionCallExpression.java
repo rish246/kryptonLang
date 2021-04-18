@@ -14,11 +14,11 @@ import java.util.List;
 
 public class FunctionCallExpression extends Expression {
     public String _functionName;
-    public List<SyntaxTree> _actualArgs;
+    public List<Expression> _actualArgs;
     public List<String> _diagnostics = new ArrayList<>();
 
 
-    public FunctionCallExpression(String lexeme, List<SyntaxTree> actualArgs) {
+    public FunctionCallExpression(String lexeme, List<Expression> actualArgs) {
         super(ExpressionType.FunctionCallExpression);
         _functionName = lexeme;
         _actualArgs = actualArgs;

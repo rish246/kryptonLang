@@ -2,6 +2,7 @@ package com.Rishabh.Expression.Statements;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
+import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Utilities.Environment;
@@ -9,11 +10,11 @@ import com.Rishabh.Utilities.Environment;
 import java.util.ArrayList;
 import java.util.List;
 public class ReturnStatement extends Statement {
-    public SyntaxTree _body;
+    public Expression _body;
     //    ExpressionType _type;
     List<String> _diagnostics = new ArrayList<>();
 
-    public ReturnStatement(SyntaxTree body) {
+    public ReturnStatement(Expression body) {
         super(ExpressionType.ReturnExpression);
         _body = body;
     }

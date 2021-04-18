@@ -1,8 +1,10 @@
 package com.Rishabh;
 
 import com.Rishabh.Expression.Statements.ForStatement;
+import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.LambdaExpression;
 import com.Rishabh.Syntax.PrimaryExpressions.*;
+import com.Rishabh.Syntax.Statement;
 import com.Rishabh.Syntax.Statements.*;
 import com.Rishabh.Syntax.Values.BoolExperssion;
 import com.Rishabh.Syntax.Values.NumberExpression;
@@ -162,8 +164,8 @@ class Parser {
     }
 
 
-    private SyntaxTree parseExpression(int parentPrecedence) {
-        SyntaxTree left;
+    private Expression parseExpression(int parentPrecedence) {
+        Expression left;
 
         int unaryOperatorPrec = getUnaryOperatorPrecedence(CurrentToken()._type);
         if (unaryOperatorPrec != 0 && unaryOperatorPrec >= parentPrecedence)
@@ -190,9 +192,12 @@ class Parser {
 
             TokenType binOperator = NextToken()._type;
 
-            SyntaxTree right = parseExpression(curPrecedence);
 
-            if(binOperator == TokenType.AssignmentToken) {
+            Expression right = parseExpression(curPrecedence);
+
+
+            if(binOperator == TokenType.AssignmentToken)
+            {
                 return new AssignmentExpression(left, binOperator, right);
             }
 
@@ -204,13 +209,14 @@ class Parser {
 
     }
 
-    private SyntaxTree parseStatement() {
+    // First change statements
+    private Statement parseStatement() {
         switch(CurrentToken()._type) {
             case IfKeywordToken: {
                 match(TokenType.IfKeywordToken);
                 match(TokenType.OpenParensToken);
 
-                SyntaxTree condBranch = parseExpression(0);
+                Expression condBranch = parseExpression(0);
  
                 match(TokenType.ClosedParensToken);
                 SyntaxTree thenBranch = parse();
@@ -268,7 +274,7 @@ class Parser {
             case WhileKeywordToken: {
                 match(TokenType.WhileKeywordToken);
                 match(TokenType.OpenParensToken);
-                SyntaxTree condition = parseExpression(0);
+                Expression condition = parseExpression(0);
 
                 match(TokenType.ClosedParensToken);
                 SyntaxTree whileBody = parse();
@@ -280,15 +286,15 @@ class Parser {
                 match(TokenType.ForKeywordToken);
                 match(TokenType.OpenParensToken);
                 // parse the conditions
-                SyntaxTree initCondition = parseExpression(0);
+                Expression initCondition = parseExpression(0);
               
                 match(TokenType.SemiColonToken);
 
-                SyntaxTree haltingCondtion = parseExpression(0);
+                Expression haltingCondtion = parseExpression(0);
               
                 match(TokenType.SemiColonToken);
 
-                SyntaxTree progressExp = parseExpression(0);
+                Expression progressExp = parseExpression(0);
                 
                 match(TokenType.ClosedParensToken);
                 SyntaxTree forBody = parse();
@@ -334,7 +340,7 @@ class Parser {
             case ReturnToken: {
                 match(TokenType.ReturnToken);
 
-                SyntaxTree returnBody = parseExpression(0);
+                Expression returnBody = parseExpression(0);
 
                 if(returnBody == null) {
                     _diagnostics.add("Empty return statements are not allowed");
@@ -349,7 +355,7 @@ class Parser {
             case PrintExpToken: {
                 match(TokenType.PrintExpToken);
                 match(TokenType.OpenParensToken);
-                SyntaxTree printExpBody = parseExpression(0);
+                Expression printExpBody = parseExpression(0);
 
                 match(TokenType.ClosedParensToken);
                 return new PrintStatement(printExpBody);
@@ -363,11 +369,11 @@ class Parser {
     }
 
 
-    private List<SyntaxTree> parseCommaSeparatedExpressions(TokenType delimiterType) {
-        List<SyntaxTree> listElements = new ArrayList<>();
+    private List<Expression> parseCommaSeparatedExpressions(TokenType delimiterType) {
+        List<Expression> listElements = new ArrayList<>();
 
         if(CurrentToken()._type != delimiterType) {
-            SyntaxTree firstElement = parseExpression(0);
+            Expression firstElement = parseExpression(0);
             if(firstElement == null) {
                 _diagnostics.add("Error at line number " + _lineNumbers[_position]);
                 return null;
@@ -380,7 +386,7 @@ class Parser {
 
         while(CurrentToken()._type != delimiterType) {
             match(TokenType.CommaSeparatorToken);
-            SyntaxTree nextElement = parseExpression(0);
+            Expression nextElement = parseExpression(0);
             if(nextElement == null) {
                 next();
                 continue;
@@ -392,13 +398,13 @@ class Parser {
     }
 
 
-    private SyntaxTree parsePrimaryExp() {
+    private Expression parsePrimaryExp() {
         switch (CurrentToken()._type) {
             case OpenParensToken:
                 // return a tree for parens
                 Token left = NextToken();
 
-                SyntaxTree body = parseExpression(0);
+                Expression body = parseExpression(0);
 
                 Token right = match(TokenType.ClosedParensToken);
 
@@ -430,7 +436,7 @@ class Parser {
                     // Match openParens
                     match(TokenType.OpenParensToken);
 
-                    List<SyntaxTree> actualArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
+                    List<Expression> actualArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
 
                     match(TokenType.ClosedParensToken);
 
@@ -441,10 +447,10 @@ class Parser {
 
                 // ArraySuperScriptable expression
                 else if(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
-                    List<SyntaxTree> indices = new ArrayList<>();
+                    List<Expression> indices = new ArrayList<>();
                     while(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
                         match(TokenType.OpenSquareBracketToken);
-                        SyntaxTree nextIdx = parseExpression(0);
+                        Expression nextIdx = parseExpression(0);
                         if(nextIdx == null) {
                             _diagnostics.add("Unexpected expression at line number " + _lineNumbers[_position]);
                             return null;
@@ -469,7 +475,7 @@ class Parser {
                 // Make a new List
                 match(TokenType.OpenSquareBracketToken);
 
-                List<SyntaxTree> listElements = parseCommaSeparatedExpressions(TokenType.ClosedSquareBracketToken);
+                List<Expression> listElements = parseCommaSeparatedExpressions(TokenType.ClosedSquareBracketToken);
 
                 if(listElements == null) {
                     return null;

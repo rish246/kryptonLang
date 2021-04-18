@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BinaryExpression extends Expression {
-    SyntaxTree _left, _right;
+    Expression _left, _right;
     TokenType _operatorToken;
 //    ExpressionType _type;
     List<String> _diagnostics = new ArrayList<>();
 
-    public BinaryExpression(SyntaxTree left, TokenType operatorToken, SyntaxTree right) {
+    public BinaryExpression(Expression left, TokenType operatorToken, Expression right) {
         super(ExpressionType.BinaryExpression);
         _left = left;
         _operatorToken = operatorToken;
