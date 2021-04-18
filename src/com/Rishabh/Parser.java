@@ -1,7 +1,7 @@
 package com.Rishabh;
 
 import com.Rishabh.Expression.Expression;
-import com.Rishabh.Expression.FunctionExpression;
+import com.Rishabh.Expression.Statements.FunctionExpression;
 import com.Rishabh.Expression.LambdaExpression;
 import com.Rishabh.Expression.PrimaryExpressions.*;
 import com.Rishabh.Expression.Statements.*;

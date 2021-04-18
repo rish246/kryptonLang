@@ -2,7 +2,7 @@ package com.Rishabh.Expression;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
-import com.Rishabh.Expression.PrimaryExpressions.ClosureExpression;
+import com.Rishabh.Expression.Values.ClosureExpression;
 import com.Rishabh.Expression.PrimaryExpressions.IdentifierExpression;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
