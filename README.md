@@ -3,6 +3,35 @@
 ## Krypton is a small, dynamically typed and strongly typed programming language.
 
 ### This is under construction for now.
+**First class functions in krypton**
+
+```python
+def printList(head) {
+    if(head["value"] != -1) {
+        print(head["value"]);
+        printList(head["next"]);
+    }
+}
+
+headNode = {"value" : 1, "next" : -1};
+firstNode = {"value" : 2, "next" : -1};
+secondNode = {"value" : 3, "next" : -1};
+nullNode = {"value" : -1, "next" : -1};
+
+headNode["next"] = firstNode;
+firstNode["next"] = secondNode;
+secondNode["next"] = nullNode;
+
+print("Printing Linked List");
+printList(headNode);
+```
+
+![plot](./Program%20outputs/LinkedList.jpg)
+
+
+
+
+
 **Connected Components program in krypton**
 
 ```python

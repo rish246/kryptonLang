@@ -1,15 +1,17 @@
 package com.Rishabh.Expression.PrimaryExpressions;
 
 import com.Rishabh.EvalResult;
-import com.Rishabh.Syntax.Expression;
 import com.Rishabh.ExpressionType;
+import com.Rishabh.Syntax.Expression;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Token;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ArrayAccessExpression extends Expression {
 
@@ -26,44 +28,64 @@ public class ArrayAccessExpression extends Expression {
 
     public EvalResult evaluate(Environment env) throws Exception {
 
-        Symbol ourListEntry = env.get(_identifier._lexeme);
+        Symbol ourEntry = env.get(_identifier._lexeme);
         // Check if the lexeme is valid one
-        if(ourListEntry == null) {
+        if(ourEntry == null) {
             _diagnostics.add("Invalid identifier " + _identifier._lexeme);
             return null;
         }
 
-        EvalResult ourList = new EvalResult((List) ourListEntry._value, ourListEntry._type);
-        EvalResult finalResult = ourList;
-        for(Expression idx : _indices) {
+        if(ourEntry._type == "list") {
+            EvalResult ourList = new EvalResult((List) ourEntry._value, ourEntry._type);
+            EvalResult finalResult = ourList;
+            for(Expression idx : _indices) {
 
-            // check the finalResult should be a list
-            if(finalResult._type != "list") {
-                _diagnostics.add("Types " + finalResult._type + " are not subscriptable");
-                return null;
+                // check the finalResult should be a list
+                if(finalResult._type != "list") {
+                    _diagnostics.add("Types " + finalResult._type + " are not subscriptable");
+                    return null;
+                }
+
+                EvalResult curIdx = idx.evaluate(env);
+                // check if the idx is of type int
+                String curIdxType = curIdx._type;
+                if(!curIdxType.equals("int")) {
+                    _diagnostics.add("Indices must be integers only.. Found " + curIdxType);
+                    return null;
+                }
+
+                int curIdxValue = (int) curIdx._value;
+                // Valid shouldn't be out of bounds
+                List<EvalResult> curList = (List) finalResult._value;
+                if(curIdxValue >= curList.size()) {
+                    _diagnostics.add("Length " + curIdxValue + " out of bound for array " + _identifier._lexeme);
+                    return null;
+                }
+
+                finalResult = curList.get(curIdxValue);
             }
 
-            EvalResult curIdx = idx.evaluate(env);
-            // check if the idx is of type int
-            String curIdxType = curIdx._type;
-            if(!curIdxType.equals("int")) {
-                _diagnostics.add("Indices must be integers only.. Found " + curIdxType);
-                return null;
-            }
 
-            int curIdxValue = (int) curIdx._value;
-            // Valid shouldn't be out of bounds
-            List<EvalResult> curList = (List) finalResult._value;
-            if(curIdxValue >= curList.size()) {
-                _diagnostics.add("Length " + curIdxValue + " out of bound for array " + _identifier._lexeme);
-                return null;
-            }
+            return new EvalResult(finalResult._value, finalResult._type);
 
-            finalResult = curList.get(curIdxValue);
+        }
+
+        else if(ourEntry._type == "object"){
+
+            Map<Object, EvalResult> ourObject = (HashMap) ourEntry._value;
+
+            EvalResult firstIndex = _indices[0].evaluate(env);
+
+            EvalResult returnValue = ourObject.get(firstIndex._value);
+
+            return returnValue;
+
         }
 
 
-        return new EvalResult(finalResult._value, finalResult._type);
+        return null;
+
+
     }
     // Lets handle some exceptions now
 

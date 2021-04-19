@@ -1,6 +1,7 @@
 package com.Rishabh;
 
 import com.Rishabh.Expression.Statements.ForStatement;
+import com.Rishabh.Expression.Values.ObjectExpression;
 import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.LambdaExpression;
 import com.Rishabh.Syntax.PrimaryExpressions.*;
@@ -11,7 +12,9 @@ import com.Rishabh.Syntax.Values.NumberExpression;
 import com.Rishabh.Syntax.Values.StringExpression;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 class Parser {
@@ -406,6 +409,7 @@ class Parser {
 
 
     private Expression parsePrimaryExp() {
+
         switch (CurrentToken()._type) {
             case OpenParensToken:
                 // return a tree for parens
@@ -493,6 +497,23 @@ class Parser {
                 match(TokenType.ClosedSquareBracketToken);
 
                 return new com.Rishabh.Expression.Values.ListExpression(listElements);
+            }
+
+            case OpenBracketToken : {
+                match(TokenType.OpenBracketToken);
+                Map<Expression, Expression> bindings = new HashMap<>();
+                while(CurrentToken()._type != TokenType.ClosedBracket) {
+                    Expression key = parseExpression(0);
+                    match(TokenType.ColonOperator);
+                    Expression value = parseExpression(0);
+                    bindings.put(key, value);
+
+                    if(CurrentToken()._type == TokenType.ClosedBracket)
+                        continue;
+                    match(TokenType.CommaSeparatorToken);
+                }
+                match(TokenType.ClosedBracket);
+                return new ObjectExpression(bindings);
             }
 
 

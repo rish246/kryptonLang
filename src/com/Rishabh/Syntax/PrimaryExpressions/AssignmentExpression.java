@@ -7,8 +7,11 @@ import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
 
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AssignmentExpression extends Expression {
     Expression _left;
@@ -72,44 +75,66 @@ public class AssignmentExpression extends Expression {
 
             com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) _left;
 
-            Symbol ourListEntry = env.get(curExp._identifier._lexeme);
-            if(ourListEntry == null) {
+            Symbol ourEntry = env.get(curExp._identifier._lexeme);
+            if (ourEntry == null) {
                 _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme);
                 return null;
             }
 
-            EvalResult finalResult = new EvalResult((List) ourListEntry._value, ourListEntry._type);
+            if (ourEntry._type == "list") {
 
-            for(Expression index : curExp._indices) {
-                if(finalResult._type != "list") {
-                    _diagnostics.add("Types " + finalResult._type + " are not subscriptable");
-                    return null;
+
+                EvalResult finalResult = new EvalResult((List) ourEntry._value, ourEntry._type);
+
+                for (Expression index : curExp._indices) {
+                    if (finalResult._type != "list") {
+                        _diagnostics.add("Types " + finalResult._type + " are not subscriptable");
+                        return null;
+                    }
+
+                    EvalResult curIdx = index.evaluate(env);
+                    String curIdxType = curIdx._type;
+                    if (!curIdxType.equals("int")) {
+                        _diagnostics.add("Indices must be integers only.. Found " + curIdxType);
+                        return null;
+                    }
+
+                    int curIdxVal = (int) curIdx._value;
+
+                    List<EvalResult> curList = (List) finalResult._value;
+
+                    if (curIdxVal >= curList.size()) {
+                        _diagnostics.add("Length " + curIdxVal + " out of bound for array " + curExp._identifier._lexeme);
+                        return null;
+                    }
+
+                    finalResult = curList.get(curIdxVal);
                 }
 
-                EvalResult curIdx = index.evaluate(env);
-                String curIdxType = curIdx._type;
-                if(!curIdxType.equals("int")) {
-                    _diagnostics.add("Indices must be integers only.. Found " + curIdxType);
-                    return null;
-                }
+                // finalResult -> pointing at value to be changed
+                finalResult._value = rightRes._value;
+                finalResult._type = rightRes._type;
 
-                int curIdxVal = (int) curIdx._value;
-
-                List<EvalResult> curList = (List) finalResult._value;
-
-                if(curIdxVal >= curList.size()) {
-                    _diagnostics.add("Length " + curIdxVal + " out of bound for array " + curExp._identifier._lexeme);
-                    return null;
-                }
-
-                finalResult = curList.get(curIdxVal);
+                return finalResult;
             }
 
-            // finalResult -> pointing at value to be changed
-            finalResult._value = rightRes._value;
-            finalResult._type = rightRes._type;
+            else if(ourEntry._type == "object") {
+                // Extract the hashmap from the entry
+                Map<Object, EvalResult> ourObject = (HashMap) ourEntry._value;
+                // Evaluate left's indices first
+                com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression leftExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) _left;
 
-            return finalResult;
+                Expression[] keys = leftExp._indices;
+
+                EvalResult firstKeyRes = keys[0].evaluate(env);
+
+                ourObject.put(firstKeyRes._value, rightRes);
+                // env.put(->TheNewSymbol)
+                return rightRes;
+                // Return rightRes
+
+            }
+
         }
 
         else {

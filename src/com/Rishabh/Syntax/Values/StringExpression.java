@@ -9,7 +9,7 @@ public class StringExpression extends Expression {
     String _value;
 
     public StringExpression(String value) {
-        super(ExpressionType.IntExpression);
+        super(ExpressionType.StringExpression);
         _value = value;
     }
 
@@ -25,5 +25,14 @@ public class StringExpression extends Expression {
 
 }
 
-// @TODO -->
-// make a new enum DataType
+/*
+    {} -> Declare an object
+    // Parse -> {
+                    while(curExpression != }) {  ThisSucksAndMaybeThisDont  }
+    }
+    } BindingExpression --> BindingExpresssion (0) --> { 1, 2 }
+    // List of bindings
+
+
+
+ */

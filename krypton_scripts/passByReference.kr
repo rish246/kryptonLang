@@ -21,12 +21,22 @@
     # lists are passed by reference just like in python
     numList = [0, 1, 2, 3];
     incrementByOne(numList, 4);
-    printList(numList, 4);
+    # printList(numList, 4);
 
     print("");
     secondNumList = numList + 10;
     incrementByOne(secondNumList, 5);
     secondNumList[0] = "Change";
-    printList(secondNumList, 5);
+    # printList(secondNumList, 5);
+
+    def incrementNum(a) {
+        a = a + 1;
+    }
+
+    a = [1, 2, 3];
+    incrementByOne(a, 3);
+    printList(a, 3);
 
 }
+// BindingExpression --> (Expression - 5) {
+//

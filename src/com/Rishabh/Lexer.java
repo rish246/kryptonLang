@@ -156,6 +156,9 @@ class Lexer {
                     _position += 1;
                     return new Token(TokenType.GreaterThanToken, ">", null);
                 }
+            case ':':
+                _position += 1;
+                return new Token(TokenType.ColonOperator, ":", null);
             case '!':
                 if(_line.charAt(_position  + 1) == '=') {
                     _position += 2;
