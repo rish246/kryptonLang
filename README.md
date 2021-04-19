@@ -3,7 +3,44 @@
 ## Krypton is a small, dynamically typed and strongly typed programming language.
 
 ### This is under construction for now.
-**First class functions in krypton**
+**Binary Tree program using objects in krypton**
+
+```python
+def inorderTraversal(head) {
+    res = "";
+    if(head["value"] != -1) {
+        res = res + inorderTraversal(head["left"]);
+        res = res + head["value"] + ", ";
+        res = res + inorderTraversal(head["right"]);
+    }
+    return res;
+}
+
+nullNode = {"value" : -1, "left" : -1, "right" : -1};
+headNode = {"value" : 2, "left" : nullNode, "right" : nullNode};
+leftNode = {"value" : 1, "left" : nullNode, "right" : nullNode};
+rightNode = {"value" : 3, "left" : nullNode, "right" : nullNode};
+
+leftLeftNode = {"value" : 4, "left" : nullNode, "right" : nullNode};
+rightLeftNode = {"value" : 5, "left" : nullNode, "right" : nullNode};
+
+
+# start linking
+headNode["left"] = leftNode;
+headNode["right"] = rightNode;
+
+leftNode["left"] = leftLeftNode;
+rightNode["left"] = rightLeftNode;
+# print
+print("Inorder traversal of our binary tree");
+print(inorderTraversal(headNode));
+
+```
+
+![plot](./Program%20outputs/BinaryTree.jpg)
+
+
+**Linked List using objects in krypton**
 
 ```python
 def printList(head) {
