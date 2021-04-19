@@ -227,6 +227,8 @@ class Lexer {
                 return new Token(TokenType.NullValueToken, "null", null);
             case "len":
                 return new Token(TokenType.LengthToken, "len", null);
+            case "in":
+                return new Token(TokenType.InKeyword, "in", null);
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }

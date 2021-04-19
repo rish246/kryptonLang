@@ -1,5 +1,6 @@
 package com.Rishabh;
 
+import com.Rishabh.Expression.Statements.ForEachStatement;
 import com.Rishabh.Expression.Statements.ForStatement;
 import com.Rishabh.Expression.Values.ObjectExpression;
 import com.Rishabh.Syntax.Expression;
@@ -289,6 +290,21 @@ class Parser {
             case ForKeywordToken: {
                 match(TokenType.ForKeywordToken);
                 match(TokenType.OpenParensToken);
+                // Peek 1 if it is in keyword.. make a foreach expression
+                if(Peek(1)._type == TokenType.InKeyword) {
+
+                    // make a foreach
+                    IdentifierExpression iterator = (IdentifierExpression) parsePrimaryExp();
+                    match(TokenType.InKeyword);
+                    IdentifierExpression iterable = (IdentifierExpression) parsePrimaryExp();
+                    match(TokenType.ClosedParensToken);
+                    SyntaxTree foreachBody = parse();
+
+                    return new ForEachStatement(iterator, iterable, foreachBody);
+
+
+                }
+
                 // parse the conditions
                 Expression initCondition = parseExpression(0);
               
@@ -411,7 +427,7 @@ class Parser {
 
     private Expression parsePrimaryExp() {
 
-        switch (CurrentToken()._type) {
+        switch (CurrentToken()._type)  {
             case OpenParensToken:
                 // return a tree for parens
                 Token left = NextToken();

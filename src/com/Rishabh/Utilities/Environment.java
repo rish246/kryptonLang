@@ -21,7 +21,6 @@ public class Environment {
         // If entry already exists in the parent scope, update that ... else add a new entry
         for(Environment curEnv = this; curEnv != null; curEnv = curEnv._ParentEnv) {
             if(curEnv._table.containsKey(lexeme)) {
-                // Update the entry in the curEnv
                 curEnv._table.put(lexeme, entry);
                 return entry;
             }

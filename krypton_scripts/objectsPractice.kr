@@ -1,8 +1,8 @@
 {
-     def printList(lst, len) {
+     def printList(lst) {
         res = "";
-        for(i = 0; i < len; i = i + 1) {
-            res = res + lst[i] + ", ";
+        for(element in lst) {
+            res = res + element + ", ";
         }
         print(res);
     }
@@ -22,11 +22,10 @@
 
             isActive[node] = -1;
             nodeNeighbours = adjList[node];
-            len = nodeNeighbours[0];
 
             res = false;
-            for(i = 1; i < len; i = i + 1) {
-                res = res || hasCycle(nodeNeighbours[i]);
+            for(neighbour in nodeNeighbours) {
+                res = res || hasCycle(neighbour);
             }
 
             isActive[node] = 1;
@@ -45,12 +44,11 @@
     # first arg in list represents the length of the list
     # args from 2 to forward represent the neighbour nodes
     adj_list = {
-        1 : [3, 2, 4, 5],
-        2 : [3, 3, 4],
-        3 : [2, 4],
-        4 : [1],
-        5 : [1]
-
+        1 : [2, 4, 5],
+        2 : [3, 4],
+        3 : [4],
+        4 : [],
+        5 : []
     };
 
     isActive = [0] * 6;
