@@ -18,8 +18,8 @@ def countFrequencies(lst) {
     }
 
     counts = countHelper();
-    for(value in lst) {
-        print("Element " + value + " -> " + counts[value]);
+    for(entry in counts) {
+        print("Element " + entry[0] + " -> " + entry[1]);
     }
 }
 

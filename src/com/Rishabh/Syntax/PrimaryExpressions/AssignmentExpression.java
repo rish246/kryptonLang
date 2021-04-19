@@ -120,7 +120,7 @@ public class AssignmentExpression extends Expression {
 
             else if(ourEntry._type == "object") {
                 // Extract the hashmap from the entry
-                Map<Object, EvalResult> ourObject = (HashMap) ourEntry._value;
+                Map<String, EvalResult> ourObject = (HashMap) ourEntry._value;
                 // Evaluate left's indices first
                 com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression leftExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) _left;
 
@@ -133,8 +133,7 @@ public class AssignmentExpression extends Expression {
                 if(_diagnostics.size() > 0) {
                     return null;
                 }
-                ourObject.put(firstKeyRes._value, rightRes);
-                // env.put(->TheNewSymbol)
+                ourObject.put((firstKeyRes._value).toString(), rightRes);
                 return rightRes;
                 // Return rightRes
 

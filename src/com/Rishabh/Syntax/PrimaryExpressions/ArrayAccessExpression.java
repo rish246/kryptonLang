@@ -72,19 +72,21 @@ public class ArrayAccessExpression extends Expression {
 
         else if(ourEntry._type == "object"){
 
-            Map<Object, EvalResult> ourObject = (HashMap) ourEntry._value;
+            Map<String, EvalResult> ourObject = (HashMap) ourEntry._value;
 
             EvalResult firstIndex = _indices[0].evaluate(env);
+            _diagnostics.addAll(_indices[0].getDiagnostics());
+            if(firstIndex == null) {
+                return null;
+            }
 
-            EvalResult returnValue = ourObject.get(firstIndex._value);
+            EvalResult returnValue = ourObject.get((firstIndex._value).toString());
 
-            // If there is no return value.. x
             if(returnValue == null) {
                 return new EvalResult(0, "int");
             }
 
             return returnValue;
-
         }
 
 

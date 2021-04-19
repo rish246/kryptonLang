@@ -42,15 +42,11 @@ public class ObjectExpression extends Expression {
 
     @Override
     public EvalResult evaluate(Environment env) throws Exception{
-        Map<Object, EvalResult> finalResult = new HashMap<>();
+        Map<String, EvalResult> finalResult = new HashMap<>();
         for(Map.Entry<Expression, Expression> binding : _contents.entrySet()) {
             Expression key = binding.getKey();
             Expression value = binding.getValue();
 
-            if(key.getType() != ExpressionType.IntExpression && key.getType() != ExpressionType.StringExpression) {
-                _diagnostics.add("Object keys can be only of type int or string, found " + key.getType());
-                return null;
-            }
 
             EvalResult keyRes = key.evaluate(env);
             _diagnostics.addAll(key.getDiagnostics());
@@ -62,13 +58,18 @@ public class ObjectExpression extends Expression {
                 return null;
             }
 
+
+            if(keyRes._type != "int" && keyRes._type != "string") {
+                _diagnostics.add("Key should be of type int or string, found " + keyRes._type);
+                return null;
+            }
+
             if(valueRes == null || (valueRes._value == null && valueRes._type != "null")) {
                 _diagnostics.add("Invalid expression in the object body");
                 return null;
             }
 
-            finalResult.put(keyRes._value, valueRes);
-
+            finalResult.put((String) ((keyRes._value).toString()), valueRes);
         }
         return new EvalResult(finalResult, "object");
     }

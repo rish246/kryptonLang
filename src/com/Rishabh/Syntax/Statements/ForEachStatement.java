@@ -1,16 +1,18 @@
 package com.Rishabh.Expression.Statements;
 
 import com.Rishabh.EvalResult;
-import com.Rishabh.Syntax.Expression;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.PrimaryExpressions.IdentifierExpression;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Utilities.Environment;
+import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import com.Rishabh.Utilities.Symbol;
+import java.util.Map;
+
 public class ForEachStatement extends Statement {
     public IdentifierExpression _iterator;
     public IdentifierExpression _iterable;
@@ -72,6 +74,25 @@ public class ForEachStatement extends Statement {
                 }
             }
         }
+        else if(ourIterable._type == "object") {
+
+            Map<String, EvalResult> ourObject = (HashMap) ourIterable._value;
+            for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
+                EvalResult key = new EvalResult(binding.getKey(), "string");
+                EvalResult value = binding.getValue();
+                List<EvalResult> keyValueBinding = new ArrayList<>();
+                keyValueBinding.add(key);
+                keyValueBinding.add(value);
+                Symbol iteratorBinding = new Symbol(_iterator._lexeme, keyValueBinding, "list");
+
+                env.set(_iterator._lexeme, iteratorBinding);
+                _body.evaluate(env);
+            }
+
+
+
+        }
+
         else {
             _diagnostics.add("Items of type " + ourIterable._type + " are not iterable");
         }
