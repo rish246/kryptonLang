@@ -62,6 +62,11 @@ public class ObjectExpression extends Expression {
                 return null;
             }
 
+            if(valueRes == null || (valueRes._value == null && valueRes._type != "null")) {
+                _diagnostics.add("Invalid expression in the object body");
+                return null;
+            }
+
             finalResult.put(keyRes._value, valueRes);
 
         }
@@ -73,3 +78,6 @@ public class ObjectExpression extends Expression {
     }
 
 }
+
+// ForEachLoopInKrypton () {
+// }

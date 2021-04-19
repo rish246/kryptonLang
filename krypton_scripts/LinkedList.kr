@@ -1,19 +1,17 @@
 {
     def printList(head) {
-        if(head["value"] != -1) {
+        if(head != null) {
             print(head["value"]);
             printList(head["next"]);
         }
     }
 
-    headNode = {"value" : 1, "next" : -1};
-    firstNode = {"value" : 2, "next" : -1};
-    secondNode = {"value" : 3, "next" : -1};
-    nullNode = {"value" : -1, "next" : -1};
+    headNode = {"value" : 1, "next" : null};
+    firstNode = {"value" : 2, "next" : null};
+    secondNode = {"value" : 3, "next" : null};
 
     headNode["next"] = firstNode;
     firstNode["next"] = secondNode;
-    secondNode["next"] = nullNode;
 
     print("Printing Linked List");
     printList(headNode);
