@@ -46,8 +46,22 @@ public class ObjectExpression extends Expression {
         for(Map.Entry<Expression, Expression> binding : _contents.entrySet()) {
             Expression key = binding.getKey();
             Expression value = binding.getValue();
+
+            if(key.getType() != ExpressionType.IntExpression && key.getType() != ExpressionType.StringExpression) {
+                _diagnostics.add("Object keys can be only of type int or string, found " + key.getType());
+                return null;
+            }
+
             EvalResult keyRes = key.evaluate(env);
+            _diagnostics.addAll(key.getDiagnostics());
+
             EvalResult valueRes = value.evaluate(env);
+            _diagnostics.addAll(key.getDiagnostics());
+
+            if(_diagnostics.size() > 0) {
+                return null;
+            }
+
             finalResult.put(keyRes._value, valueRes);
 
         }

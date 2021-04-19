@@ -1,0 +1,32 @@
+{
+    def countFrequencies(lst, len) {
+
+        def countHelper() {
+            counts = {};
+            for(i = 0; i < 1000; i = i + 1) {
+                counts[i] = 0;
+            }
+
+            for(i = 0; i < len; i = i + 1) {
+                counts[lst[i]] = counts[lst[i]] + 1;
+            }
+
+            return counts;
+
+        }
+
+        counts = countHelper();
+        for(i = 0; i < 1000; i = i + 1) {
+            if(counts[i] != 0) {
+                print("" + i + " -> " + counts[i]);
+            }
+        }
+    }
+
+
+    ourList = [1, 2, 3, 2, 1, 6, 7];
+    ourListLen = 7;
+    countFrequencies(ourList, ourListLen);
+
+
+}

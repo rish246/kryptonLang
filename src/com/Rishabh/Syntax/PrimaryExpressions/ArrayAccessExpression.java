@@ -78,6 +78,11 @@ public class ArrayAccessExpression extends Expression {
 
             EvalResult returnValue = ourObject.get(firstIndex._value);
 
+            // If there is no return value.. x
+            if(returnValue == null) {
+                return new EvalResult(0, "int");
+            }
+
             return returnValue;
 
         }

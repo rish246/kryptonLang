@@ -1,0 +1,61 @@
+{
+     def printList(lst, len) {
+        res = "";
+        for(i = 0; i < len; i = i + 1) {
+            res = res + lst[i] + ", ";
+        }
+        print(res);
+    }
+
+
+    def findCycle(adjList, isActive) {
+
+        def hasCycle(node) {
+            print(node);
+            if(isActive[node] == -1) {
+                return true;
+            }
+
+            if(isActive[node] == 1) {
+                return false;
+            }
+
+            isActive[node] = -1;
+            nodeNeighbours = adjList[node];
+            len = nodeNeighbours[0];
+
+            res = false;
+            for(i = 1; i < len; i = i + 1) {
+                res = res || hasCycle(nodeNeighbours[i]);
+            }
+
+            isActive[node] = 1;
+            return res;
+
+        }
+
+
+        startingNode = 1;
+        return hasCycle(startingNode);
+
+    }
+
+
+    # cycle detection algorithm
+    # first arg in list represents the length of the list
+    # args from 2 to forward represent the neighbour nodes
+    adj_list = {
+        1 : [3, 2, 4, 5],
+        2 : [3, 3, 4],
+        3 : [2, 4],
+        4 : [1],
+        5 : [1]
+
+    };
+
+    isActive = [0] * 6;
+
+    hasCycle = findCycle(adj_list, isActive);
+    print(hasCycle);
+
+}

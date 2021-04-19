@@ -128,6 +128,11 @@ public class AssignmentExpression extends Expression {
 
                 EvalResult firstKeyRes = keys[0].evaluate(env);
 
+                // ForNow.. just evaluate the first key... we well modify later
+                _diagnostics.addAll(keys[0].getDiagnostics());
+                if(_diagnostics.size() > 0) {
+                    return null;
+                }
                 ourObject.put(firstKeyRes._value, rightRes);
                 // env.put(->TheNewSymbol)
                 return rightRes;

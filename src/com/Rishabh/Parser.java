@@ -8,6 +8,7 @@ import com.Rishabh.Syntax.PrimaryExpressions.*;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.Syntax.Statements.*;
 import com.Rishabh.Syntax.Values.BoolExperssion;
+import com.Rishabh.Syntax.Values.NullExpression;
 import com.Rishabh.Syntax.Values.NumberExpression;
 import com.Rishabh.Syntax.Values.StringExpression;
 
@@ -336,9 +337,9 @@ class Parser {
 
                 match(TokenType.ClosedParensToken);
 
-                Statement.isEnclosingStmt = true;
+                Statement.EnclosingStatements++;
                 SyntaxTree funcBody = parse();
-                Statement.isEnclosingStmt = false;
+                Statement.EnclosingStatements--;
 
                 return new FunctionStatement(funcName, funcBody, formalArgs);
             }
@@ -347,7 +348,7 @@ class Parser {
                 match(TokenType.ReturnToken);
 
                 // Only work if there is an enclosing function statement else throw a parse error
-                if(!Statement.isEnclosingStmt) {
+                if(Statement.EnclosingStatements == 0) {
                     _diagnostics.add("Return statement should be enclosed in a lambda or a function definition.. at line number " + _lineNumbers[_position]);
                 }
 
@@ -427,6 +428,11 @@ class Parser {
 
                 return new NumberExpression(value); // creating nullPoint Exception
 
+            }
+
+            case NullValueToken: {
+                match(TokenType.NullValueToken);
+                return new NullExpression();
             }
 
             case StringConstToken: {
@@ -540,9 +546,9 @@ class Parser {
 
                 match(TokenType.ClosedParensToken);
                 // Set Statement.isEnclosing = true as this lambda is enclosing the statement
-                Statement.isEnclosingStmt = true;
+                Statement.EnclosingStatements++;
                 SyntaxTree funcBody = parse();
-                Statement.isEnclosingStmt = false;
+                Statement.EnclosingStatements++;
 
                 return new LambdaExpression(funcBody, formalArgs);
 

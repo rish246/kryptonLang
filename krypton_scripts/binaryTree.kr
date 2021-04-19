@@ -1,7 +1,7 @@
 {
     def inorderTraversal(head) {
         res = "";
-        if(head["value"] != -1) {
+        if(head != null) {
             res = res + inorderTraversal(head["left"]);
             res = res + head["value"] + ", ";
             res = res + inorderTraversal(head["right"]);
@@ -9,13 +9,12 @@
         return res;
     }
 
-    nullNode = {"value" : -1, "left" : -1, "right" : -1};
-    headNode = {"value" : 2, "left" : nullNode, "right" : nullNode};
-    leftNode = {"value" : 1, "left" : nullNode, "right" : nullNode};
-    rightNode = {"value" : 3, "left" : nullNode, "right" : nullNode};
+    headNode = {"value" : 2, "left" : null, "right" : null};
+    leftNode = {"value" : 1, "left" : null, "right" : null};
+    rightNode = {"value" : 3, "left" : null, "right" : null};
 
-    leftLeftNode = {"value" : 4, "left" : nullNode, "right" : nullNode};
-    rightLeftNode = {"value" : 5, "left" : nullNode, "right" : nullNode};
+    leftLeftNode = {"value" : 4, "left" : null, "right" : null};
+    rightLeftNode = {"value" : 5, "left" : null, "right" : null};
 
 
     # start linking

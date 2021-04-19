@@ -145,7 +145,7 @@ public class BinaryExpression extends Expression {
             switch(_operatorToken) {
                 case MultToken: {
                     List leftList = (List) leftRes._value;
-                    List<Object> newList = new ArrayList<>();
+                    List<EvalResult> newList = new ArrayList<>();
                     int nTimes = (int) rightRes._value;
                     if(nTimes < 0) {
                         _diagnostics.add("Invalid value in the array assign expression");
@@ -153,7 +153,8 @@ public class BinaryExpression extends Expression {
                     }
 
                     for(int i=0; i<nTimes; i++) {
-                        newList.addAll(leftList);
+                        List<EvalResult> copiedList = copyList(leftList);
+                        newList.addAll(copiedList);
                     }
 
                     return new EvalResult(newList, "list");
@@ -175,9 +176,9 @@ public class BinaryExpression extends Expression {
 
             switch(_operatorToken) {
                 case AddToken: {
-                    List leftList = (List) leftRes._value;
+                    List<EvalResult> leftList = (List) leftRes._value;
                     List<Object> newList = new ArrayList<>();
-                    newList.addAll(leftList);
+                    newList.addAll(copyList(leftList));
                     newList.add(rightRes);
 
                     return new EvalResult(newList, "list");
@@ -196,6 +197,18 @@ public class BinaryExpression extends Expression {
                     return new EvalResult(leftRes._value.equals(rightRes._value), "boolean");
                 case NotEqualsToken:
                     return new EvalResult(!leftRes._value.equals(rightRes._value), "boolean");
+            }
+        }
+
+        else if(rightType.equals("null")) {
+            switch(_operatorToken) {
+                case EqualityToken: {
+                    return new EvalResult(leftType.equals("null"), "boolean");
+                }
+
+                case NotEqualsToken: {
+                    return new EvalResult(!leftType.equals("null"), "boolean");
+                }
             }
         }
 

@@ -6,7 +6,7 @@ import com.Rishabh.SyntaxTree;
 public class Statement extends SyntaxTree {
     public ExpressionType _type;
 
-    public static boolean isEnclosingStmt = false;
+    public static int EnclosingStatements = 0;
 
     public Statement(ExpressionType type) {
         super(type);

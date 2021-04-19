@@ -5,25 +5,21 @@ import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Utilities.Environment;
 
-public class BoolExperssion extends Expression {
-    boolean  _value;
+public class NullExpression extends Expression {
+//    ExpressionType _type;
 
-    public BoolExperssion(boolean value) {
-        super(ExpressionType.BoolExpression);
-        _value = value;
+    public NullExpression() {
+        super(ExpressionType.NullExpression);
     }
 
     @Override
     public void prettyPrint(String indent) {
-        System.out.println(indent + _value);
+        System.out.println(indent + "null");
     }
 
     @Override
     public EvalResult evaluate(Environment env) {
-        return new EvalResult(_value, "boolean");
+        return new EvalResult(null, "null");
     }
-}
 
-// Two expressions
-// null
-// len
+}
