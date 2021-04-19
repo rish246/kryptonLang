@@ -3,12 +3,41 @@
 ## Krypton is a small, dynamically typed and strongly typed programming language.
 
 ### This is under construction for now.
+
+**Foreach Loops in krypton**
+
+```python
+def countFrequencies(lst) {
+
+    def countHelper() {
+        counts = {};
+        for(value in lst) {
+            counts[value] = counts[value] + 1;
+        }
+        return counts;
+    }
+
+    counts = countHelper();
+    for(value in lst) {
+        print("Element " + value + " -> " + counts[value]);
+    }
+}
+
+
+ourList = [1, 2, 3, 2, 1, 6, 7];
+countFrequencies(ourList);
+
+```
+
+![plot](./Program%20outputs/countFrequency.jpg)
+
+
 **Binary Tree program using objects in krypton**
 
 ```python
 def inorderTraversal(head) {
     res = "";
-    if(head["value"] != -1) {
+    if(head != null) {
         res = res + inorderTraversal(head["left"]);
         res = res + head["value"] + ", ";
         res = res + inorderTraversal(head["right"]);
@@ -16,13 +45,12 @@ def inorderTraversal(head) {
     return res;
 }
 
-nullNode = {"value" : -1, "left" : -1, "right" : -1};
-headNode = {"value" : 2, "left" : nullNode, "right" : nullNode};
-leftNode = {"value" : 1, "left" : nullNode, "right" : nullNode};
-rightNode = {"value" : 3, "left" : nullNode, "right" : nullNode};
+headNode = {"value" : 2, "left" : null, "right" : null};
+leftNode = {"value" : 1, "left" : null, "right" : null};
+rightNode = {"value" : 3, "left" : null, "right" : null};
 
-leftLeftNode = {"value" : 4, "left" : nullNode, "right" : nullNode};
-rightLeftNode = {"value" : 5, "left" : nullNode, "right" : nullNode};
+leftLeftNode = {"value" : 4, "left" : null, "right" : null};
+rightLeftNode = {"value" : 5, "left" : null, "right" : null};
 
 
 # start linking
@@ -44,20 +72,18 @@ print(inorderTraversal(headNode));
 
 ```python
 def printList(head) {
-    if(head["value"] != -1) {
+    if(head != null) {
         print(head["value"]);
         printList(head["next"]);
     }
 }
 
-headNode = {"value" : 1, "next" : -1};
-firstNode = {"value" : 2, "next" : -1};
-secondNode = {"value" : 3, "next" : -1};
-nullNode = {"value" : -1, "next" : -1};
+headNode = {"value" : 1, "next" : null};
+firstNode = {"value" : 2, "next" : null};
+secondNode = {"value" : 3, "next" : null};
 
 headNode["next"] = firstNode;
 firstNode["next"] = secondNode;
-secondNode["next"] = nullNode;
 
 print("Printing Linked List");
 printList(headNode);
