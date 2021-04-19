@@ -430,6 +430,15 @@ class Parser {
 
             }
 
+            case LengthToken: {
+                match(TokenType.LengthToken);
+                match(TokenType.OpenParensToken);
+                Expression lenExpBody = parseExpression(0);
+                match(TokenType.ClosedParensToken);
+
+                return new LengthExpression(lenExpBody);
+            }
+
             case NullValueToken: {
                 match(TokenType.NullValueToken);
                 return new NullExpression();

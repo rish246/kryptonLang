@@ -225,6 +225,8 @@ class Lexer {
                 return new Token(TokenType.LambdaExpressionToken, "lambda", null);
             case "null":
                 return new Token(TokenType.NullValueToken, "null", null);
+            case "len":
+                return new Token(TokenType.LengthToken, "len", null);
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }
