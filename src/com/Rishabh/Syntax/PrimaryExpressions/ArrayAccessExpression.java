@@ -35,66 +35,62 @@ public class ArrayAccessExpression extends Expression {
             return null;
         }
 
-        if(ourEntry._type == "list") {
-            EvalResult ourList = new EvalResult((List) ourEntry._value, ourEntry._type);
-            EvalResult finalResult = ourList;
-            for(Expression idx : _indices) {
-
-                // check the finalResult should be a list
-                if(finalResult._type != "list") {
-                    _diagnostics.add("Types " + finalResult._type + " are not subscriptable");
-                    return null;
-                }
-
-                EvalResult curIdx = idx.evaluate(env);
-                // check if the idx is of type int
-                String curIdxType = curIdx._type;
-                if(!curIdxType.equals("int")) {
-                    _diagnostics.add("Indices must be integers only.. Found " + curIdxType);
-                    return null;
-                }
-
-                int curIdxValue = (int) curIdx._value;
-                // Valid shouldn't be out of bounds
-                List<EvalResult> curList = (List) finalResult._value;
-                if(curIdxValue >= curList.size()) {
-                    _diagnostics.add("Length " + curIdxValue + " out of bound for array " + _identifier._lexeme);
-                    return null;
-                }
-
-                finalResult = curList.get(curIdxValue);
-            }
-
-
-            return new EvalResult(finalResult._value, finalResult._type);
-
+        if(ourEntry._type != "list" && ourEntry._type != "object") {
+            _diagnostics.add("Data of type " + ourEntry._type + " is not indexable");
+            return null;
         }
 
-        else if(ourEntry._type == "object"){
-
-            Map<String, EvalResult> ourObject = (HashMap) ourEntry._value;
-
-            EvalResult firstIndex = _indices[0].evaluate(env);
-            _diagnostics.addAll(_indices[0].getDiagnostics());
-            if(firstIndex == null) {
+        EvalResult Initial = new EvalResult(ourEntry._value, ourEntry._type);
+        for(Expression index : _indices) {
+            Initial = getValue(Initial, index, env);
+            if(Initial == null)
                 return null;
-            }
-
-            EvalResult returnValue = ourObject.get((firstIndex._value).toString());
-
-            if(returnValue == null) {
-                return new EvalResult(0, "int");
-            }
-
-            return returnValue;
         }
 
 
-        return null;
+        return Initial;
 
 
     }
-    // Lets handle some exceptions now
+
+    private EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env) throws Exception {
+        if(curIterable._type != "list" && curIterable._type != "object") {
+            _diagnostics.add("Data of type " + curIterable._type + " is not indexable");
+            return null;
+        }
+
+        EvalResult indexRes = indexI.evaluate(env);
+        if(curIterable._type == "list") {
+            if(indexRes._type != "int") {
+                _diagnostics.add("Array indices should be of type int, found " + indexRes._type);
+                return null;
+            }
+
+            List<EvalResult> ourList = (List) curIterable._value;
+
+            int curIdx = (int) indexRes._value;
+            if(curIdx >= ourList.size()) {
+                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size());
+                return null;
+            }
+
+            return ourList.get((int) indexRes._value);
+
+        }
+        else {
+            if(indexRes._type != "int" && indexRes._type != "string") {
+                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type);
+                return null;
+            }
+
+            Map<String, EvalResult> ourMap = (HashMap) curIterable._value;
+            String curIdx = (indexRes._value).toString();
+
+
+            return ourMap.get(curIdx) == null ? (new EvalResult(0, "int")) : ourMap.get(curIdx);
+        }
+
+    }
 
 
     public void prettyPrint(String indent) {
@@ -116,3 +112,5 @@ public class ArrayAccessExpression extends Expression {
 
 }
 
+
+// Get the EvalIterable

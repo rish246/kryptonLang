@@ -54,9 +54,8 @@ public class FunctionCallExpression extends Expression {
         // Get the closure from the symbol
         ClosureExpression closure = (ClosureExpression) res._value;
 
-
         Environment newEnv = new Environment(null);
-        // Bind formal args with actual args
+
         List<IdentifierExpression> formalArgs = closure._formalArgs;
 
         if(formalArgs.size() != _actualArgs.size()) {
@@ -71,30 +70,13 @@ public class FunctionCallExpression extends Expression {
         // Functionname -> res()
 
         // evaluate the actual arg and add the entry in newEnv
-        for(int i=0; i<_actualArgs.size(); i++) {
-            EvalResult curArgResult = _actualArgs.get(i).evaluate(env);
-            _diagnostics.addAll(_actualArgs.get(i).getDiagnostics());
-            if(_diagnostics.size() > 0) {
-                return null;
-            }
-
-            if(curArgResult._value == null && curArgResult._type != "null") {
-                _diagnostics.add("Invalid function arguement of type " + curArgResult._type);
-                return null;
-            }
-
-            Symbol newBinding = new Symbol(null, curArgResult._value, curArgResult._type);
-            String nextFormalArg = formalArgs.get(i)._lexeme;
-            newEnv.set(nextFormalArg, newBinding);
-        }
+        if (bindFormalArgsWithActualArgs(env, newEnv, formalArgs)) return null;
 
         newEnv._ParentEnv = closure._closureEnv;
 
         SyntaxTree funcBody = closure._functionBody;
 
         EvalResult funcResult = funcBody.evaluate(newEnv);
-
-        // How can a function return a stateme
 
         _diagnostics.addAll(funcBody.getDiagnostics());        // If the value != null... then value and type of the function is same
         if(funcResult == null) {
@@ -105,6 +87,26 @@ public class FunctionCallExpression extends Expression {
 
         return funcResult;
 
+    }
+
+    private boolean bindFormalArgsWithActualArgs(Environment env, Environment newEnv, List<IdentifierExpression> formalArgs) throws Exception {
+        for(int i=0; i<_actualArgs.size(); i++) {
+            EvalResult curArgResult = _actualArgs.get(i).evaluate(env);
+            _diagnostics.addAll(_actualArgs.get(i).getDiagnostics());
+            if(_diagnostics.size() > 0) {
+                return true;
+            }
+
+            if(curArgResult._value == null && curArgResult._type != "null") {
+                _diagnostics.add("Invalid function arguement of type " + curArgResult._type);
+                return true;
+            }
+
+            Symbol newBinding = new Symbol(null, curArgResult._value, curArgResult._type);
+            String nextFormalArg = formalArgs.get(i)._lexeme;
+            newEnv.set(nextFormalArg, newBinding);
+        }
+        return false;
     }
 
 }

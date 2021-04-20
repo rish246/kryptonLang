@@ -27,24 +27,18 @@ public class BlockStatement extends Statement {
                 return new EvalResult(null, null);
             }
 
-
             EvalResult curExpResult = exp.evaluate(currentBlockEnv);
-
             _diagnostics.addAll(exp.getDiagnostics());
+
             if(_diagnostics.size() > 0) {
                 return null;
             }
-
-
 
             if(exp.isStatement() && curExpResult != null && curExpResult._value != null) {
                 return curExpResult;
             }
 
-
         }
-
-        // Where is the third expression.. The last assignment statement...
 
         return new EvalResult(null, "null");
     }

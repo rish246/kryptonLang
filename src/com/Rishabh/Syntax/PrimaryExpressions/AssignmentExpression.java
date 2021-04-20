@@ -58,86 +58,26 @@ public class AssignmentExpression extends Expression {
         if(rightRes == null)
             return null;
 
-        // get the errors in left expression as well
-
-
         String rightType = rightRes._type;
         Object rightValue = rightRes._value;
 
         // left's lexeme
         if(_left.getType() == ExpressionType.IdentifierExpression) {
-            IdentifierExpression left = (IdentifierExpression) _left;
-            Symbol res = env.set(left._lexeme, new Symbol(left._lexeme, rightValue, rightType));
-            return new EvalResult(res._value, res._type);
+            return assignIdentifier(env, rightType, rightValue);
         }
-
         if(_left.getType() == ExpressionType.ArrayAccessExpression) {
 
             com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) _left;
 
             Symbol ourEntry = env.get(curExp._identifier._lexeme);
+
             if (ourEntry == null) {
                 _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme);
                 return null;
             }
 
-            if (ourEntry._type == "list") {
-
-
-                EvalResult finalResult = new EvalResult((List) ourEntry._value, ourEntry._type);
-
-                for (Expression index : curExp._indices) {
-                    if (finalResult._type != "list") {
-                        _diagnostics.add("Types " + finalResult._type + " are not subscriptable");
-                        return null;
-                    }
-
-                    EvalResult curIdx = index.evaluate(env);
-                    String curIdxType = curIdx._type;
-                    if (!curIdxType.equals("int")) {
-                        _diagnostics.add("Indices must be integers only.. Found " + curIdxType);
-                        return null;
-                    }
-
-                    int curIdxVal = (int) curIdx._value;
-
-                    List<EvalResult> curList = (List) finalResult._value;
-
-                    if (curIdxVal >= curList.size()) {
-                        _diagnostics.add("Length " + curIdxVal + " out of bound for array " + curExp._identifier._lexeme);
-                        return null;
-                    }
-
-                    finalResult = curList.get(curIdxVal);
-                }
-
-                // finalResult -> pointing at value to be changed
-                finalResult._value = rightRes._value;
-                finalResult._type = rightRes._type;
-
-                return finalResult;
-            }
-
-            else if(ourEntry._type == "object") {
-                // Extract the hashmap from the entry
-                Map<String, EvalResult> ourObject = (HashMap) ourEntry._value;
-                // Evaluate left's indices first
-                com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression leftExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) _left;
-
-                Expression[] keys = leftExp._indices;
-
-                EvalResult firstKeyRes = keys[0].evaluate(env);
-
-                // ForNow.. just evaluate the first key... we well modify later
-                _diagnostics.addAll(keys[0].getDiagnostics());
-                if(_diagnostics.size() > 0) {
-                    return null;
-                }
-                ourObject.put((firstKeyRes._value).toString(), rightRes);
-                return rightRes;
-                // Return rightRes
-
-            }
+            // Assign values to iterables like arrays and objects
+            return assignIterable(env, rightRes, curExp, ourEntry);
 
         }
 
@@ -146,8 +86,69 @@ public class AssignmentExpression extends Expression {
         }
 
         return null;
+    }
 
-//        return new EvalResult(res._value, res._type);
+    private EvalResult assignIdentifier(Environment env, String rightType, Object rightValue) {
+        IdentifierExpression left = (IdentifierExpression) _left;
+        Symbol res = env.set(left._lexeme, new Symbol(left._lexeme, rightValue, rightType));
+        return new EvalResult(res._value, res._type);
+    }
+
+    private EvalResult assignIterable(Environment env, EvalResult rightRes, com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp, Symbol ourEntry) throws Exception {
+        if(ourEntry._type != "list" && ourEntry._type != "object") {
+            _diagnostics.add("Data of Type " + ourEntry._type + " is not indexable");
+            return null;
+        }
+
+        EvalResult Initial = new EvalResult(ourEntry._value, ourEntry._type);
+        for(Expression index : curExp._indices) {
+            Initial = getValue(Initial, index, env);
+            if(Initial == null) {
+                return null;
+            }
+        }
+
+        Initial._value = rightRes._value;
+        Initial._type = rightRes._type;
+        return Initial;
+    }
+
+    private EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env) throws Exception {
+        if(curIterable._type != "list" && curIterable._type != "object") {
+            _diagnostics.add("Data of type " + curIterable._type + " is not indexable");
+            return null;
+        }
+
+        EvalResult indexRes = indexI.evaluate(env);
+        if(curIterable._type == "list") {
+            if(indexRes._type != "int") {
+                _diagnostics.add("Array indices should be of type int, found " + indexRes._type);
+                return null;
+            }
+
+            List<EvalResult> ourList = (List) curIterable._value;
+
+            int curIdx = (int) indexRes._value;
+            if(curIdx >= ourList.size()) {
+                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size());
+                return null;
+            }
+
+            return ourList.get((int) indexRes._value);
+
+        }
+        else {
+            if(indexRes._type != "int" && indexRes._type != "string") {
+                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type);
+                return null;
+            }
+
+            Map<String, EvalResult> ourMap = (HashMap) curIterable._value;
+            String curIdx = (indexRes._value).toString();
+
+
+            return ourMap.get(curIdx) == null ? (new EvalResult(0, "int")) : ourMap.get(curIdx);
+        }
 
     }
 

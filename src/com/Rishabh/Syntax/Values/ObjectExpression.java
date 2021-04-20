@@ -77,8 +77,4 @@ public class ObjectExpression extends Expression {
     public List<String> getDiagnostics() {
         return _diagnostics;
     }
-
 }
-
-// ForEachLoopInKrypton () {
-// }

@@ -2,6 +2,7 @@ package com.Rishabh.Expression.Statements;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
+import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.PrimaryExpressions.IdentifierExpression;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.SyntaxTree;
@@ -15,12 +16,12 @@ import java.util.Map;
 
 public class ForEachStatement extends Statement {
     public IdentifierExpression _iterator;
-    public IdentifierExpression _iterable;
+    public Expression _iterable;
     public SyntaxTree _body;
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ForEachStatement(IdentifierExpression iterator, IdentifierExpression iterable, SyntaxTree body){
+    public ForEachStatement(IdentifierExpression iterator, Expression iterable, SyntaxTree body){
         super(ExpressionType.ForLoopExpression);
         _iterator = iterator;
         _iterable = iterable;
@@ -28,77 +29,62 @@ public class ForEachStatement extends Statement {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-//        // evaluate conditionalBranch
-//        // Create a new env
-//        Environment newEnv = new Environment(env);
-//
-//        _initializationCond.evaluate(newEnv);
-//        _diagnostics.addAll(_initializationCond.getDiagnostics());
-//
-//        EvalResult haltCondResult = _haltingCondition.evaluate(newEnv);
-//        _diagnostics.addAll(_haltingCondition.getDiagnostics());
-//
-//        if(_diagnostics.size() > 0) {
-//            _diagnostics.add("Error in the for loop body");
-//            return null;
-//        }
-//
-//        while((boolean)haltCondResult._value) {
-//            _body.evaluate(newEnv);
-//            _diagnostics.addAll(_body.getDiagnostics());
-//
-//            _progressExp.evaluate(newEnv);
-//            _diagnostics.addAll(_progressExp.getDiagnostics());
-//            if(_diagnostics.size() > 0) {
-//                return null;
-//            }
-//
-//            haltCondResult = _haltingCondition.evaluate(newEnv);
-//        }
 
-        Symbol ourIterable = env.get(_iterable._lexeme);
-        if(ourIterable == null) {
-            _diagnostics.add("Undefined variable " + _iterable._lexeme);
+        EvalResult ourIterable = _iterable.evaluate(env);
+        _diagnostics.addAll(_iterable.getDiagnostics());
+        if(_diagnostics.size() > 0) {
+            return null;
         }
 
         if(ourIterable._type == "list") {
-            List<EvalResult> ourList = (List) ourIterable._value;
-
-            for (EvalResult element : ourList) {
-                Symbol iteratorBinding = new Symbol(_iterator._lexeme, element._value, element._type);
-                env.set(_iterator._lexeme, iteratorBinding);
-                _body.evaluate(env);
-                _diagnostics.addAll(_body.getDiagnostics());
-                if(_diagnostics.size() > 0) {
-                    return null;
-                }
-            }
+            if (iterateList(env, ourIterable)) return null;
         }
         else if(ourIterable._type == "object") {
-
-            Map<String, EvalResult> ourObject = (HashMap) ourIterable._value;
-            for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
-                EvalResult key = new EvalResult(binding.getKey(), "string");
-                EvalResult value = binding.getValue();
-                List<EvalResult> keyValueBinding = new ArrayList<>();
-                keyValueBinding.add(key);
-                keyValueBinding.add(value);
-                Symbol iteratorBinding = new Symbol(_iterator._lexeme, keyValueBinding, "list");
-
-                env.set(_iterator._lexeme, iteratorBinding);
-                _body.evaluate(env);
-            }
-
-
-
+            if (iterateObject(env, ourIterable)) return null;
         }
-
         else {
             _diagnostics.add("Items of type " + ourIterable._type + " are not iterable");
         }
 
         return new EvalResult(null, "forEachExpression");
 
+    }
+
+    private boolean iterateObject(Environment env, EvalResult ourIterable) throws Exception {
+        Map<String, EvalResult> ourObject = (HashMap) ourIterable._value;
+        for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
+            EvalResult key = new EvalResult(binding.getKey(), "string");
+            EvalResult value = binding.getValue();
+
+            List<EvalResult> keyValueBinding = new ArrayList<>();
+            keyValueBinding.add(key);
+            keyValueBinding.add(value);
+            Symbol iteratorBinding = new Symbol(_iterator._lexeme, keyValueBinding, "list");
+
+            env.set(_iterator._lexeme, iteratorBinding);
+            _body.evaluate(env);
+
+            _diagnostics.addAll(_body.getDiagnostics());
+            if(_diagnostics.size() > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean iterateList(Environment env, EvalResult ourIterable) throws Exception {
+        List<EvalResult> ourList = (List) ourIterable._value;
+
+        for (EvalResult element : ourList) {
+            Symbol iteratorBinding = new Symbol(_iterator._lexeme, element._value, element._type);
+            env.set(_iterator._lexeme, iteratorBinding);
+            _body.evaluate(env);
+            _diagnostics.addAll(_body.getDiagnostics());
+            if(_diagnostics.size() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void prettyPrint(String indent) {
