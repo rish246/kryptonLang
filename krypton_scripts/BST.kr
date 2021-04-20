@@ -1,0 +1,154 @@
+{
+    def createNode(value) {
+        return {"value" : value, "left" : null, "right" : null};
+    }
+
+
+    def insertNode(head, node) {
+        if(head == null) {
+            return node;
+        }
+
+        if(node["value"] < head["value"]) {
+            leftTree = insertNode(head["left"], node);
+            head["left"] = leftTree;
+            return head;
+        }
+
+        if(node["value"] > head["value"]) {
+            rightTree = insertNode(head["right"], node);
+            head["right"] = rightTree;
+            return head;
+        }
+
+        return head;
+
+    }
+
+    def findValue(head, value) {
+        if(head == null) {
+            return false;
+        }
+
+        if(head["value"] == value) {
+            return true;
+        }
+
+        if(head["value"] < value) {
+            return findValue(head["right"], value);
+        }
+
+        return findValue(head["left"], value);
+
+    }
+
+
+
+    def deleteValue(head, value) {
+
+        def findMax(head) {
+            if(head["right"] == null) {
+                return head;
+            }
+            return findMax(head["right"]);
+        }
+
+
+        def removeValues(head) {
+            if(head["value"] > value) {
+                LeftTree = removeValues(head["left"]);
+                head["left"] = LeftTree;
+                return head;
+            }
+            else if(head["value"] < value) {
+                RightTree = removeValues(head["right"]);
+                head["right"] = RightTree;
+                return head;
+            }
+            else {
+                if(head["left"] == null && head["right"] == null) {
+                    return null;
+                }
+
+                else if(head["right"] == null) {
+                    return head["left"];
+                }
+
+                else if(head["left"] == null) {
+                    return head["right"];
+                }
+                else {
+                    maxLeftTree = findMax(head["left"]);
+                    head["value"] = maxLeftTree["value"];
+                    head["left"] = deleteValue(head["left"], head["value"]);
+                    return head;
+                }
+
+                return null;
+
+            }
+
+        }
+        doesValueExist = findValue(head, value);
+        if(!doesValueExist) {
+            print("Oops.. the value does not exist");
+            return head;
+        }
+
+        head = removeValues(head);
+
+        return head;
+    }
+
+
+
+
+    def inorderTraversal(head) {
+        res = "";
+        if(head != null) {
+            res = res + inorderTraversal(head["left"]);
+            res = res + head["value"] + ", ";
+            res = res + inorderTraversal(head["right"]);
+        }
+        return res;
+    }
+
+
+    # lets create the BST
+    head = insertNode(null, createNode(4));
+    # print("Original Tree " + inorderTraversal(head));
+    insertNode(head, createNode(3));
+    insertNode(head, createNode(5));
+    insertNode(head, createNode(2));
+    insertNode(head, createNode(7));
+    insertNode(head, createNode(6));
+
+    # print("Final Tree " + inorderTraversal(head));
+
+    print("Our Tree : " + inorderTraversal(head));
+
+    # print("Finding values in bst");
+    # print("2 : " + findValue(head, 2));
+    # print("3 : " + findValue(head, 3));
+    # print("9 : " + findValue(head, 9));
+    # print("-1 : " + findValue(head, -1));
+
+
+    print("Remove values from bst");
+    print("Remove 4");
+    head = deleteValue(head, 4);
+    print("Final Tree");
+    print(inorderTraversal(head));
+
+    print("Remove 7");
+    head = deleteValue(head, 7);
+    print("Final Tree");
+    print(inorderTraversal(head));
+
+    print("Remove 2");
+    head = deleteValue(head, 2);
+
+    print("Final Tree");
+    print(inorderTraversal(head));
+
+}

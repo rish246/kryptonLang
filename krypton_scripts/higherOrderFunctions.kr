@@ -1,65 +1,63 @@
 {
-    def printList(lst, len) {
-        res = "";
-        for(i = 0; i < len; i = i + 1) {
-            res = res + lst[i] + ", ";
-        }
-        print(res);
-    }
-    def map(func, list, lenList) {
+
+    def map(func, list) {
         result = [];
 
-        for(i = 0; i < lenList; i = i + 1) {
-            result = result + func(list[i]);
+        for(value in list) {
+            result = result + func(value);
         }
 
         print("Initial list");
-        printList(list, lenList);
+        print(list);
 
         print("FInal list");
-        printList(result, lenList);
+        print(result);
     }
+    print("Map function result");
+    map(lambda(x) { return x + 1; }, [1, 2, 3]);
 
-    map(lambda(x) { return x + 1; }, [1, 2, 3], 3);
 
-
-    def filter(func, list, lenList) {
+    def filter(func, list) {
         result = [];
-        resultLen = 0;
 
-        for(i = 0; i < lenList; i = i + 1) {
-            if(func(list[i])) {
-                result = result + list[i];
-                resultLen = resultLen + 1;
+        for(value in list) {
+            if(func(value)) {
+                result = result + value;
             }
         }
 
         print("Initial list");
-        printList(list, lenList);
+        print(list);
 
         print("FInal list");
-        printList(result, resultLen);
+        print(result);
 
     }
 
-    filter(lambda(x) { return x % 2 == 0; }, [1, 2, 3, 4], 4);
+
+    print("");
+    print("Filter function result");
+    filter(lambda(x) { return x % 2 == 0; }, [1, 2, 3, 4]);
 
     ##########################################
     # last higher order function --> reduce
-    def reduce(func, list, acc, lenList) {
+    def reduce(func, list, acc) {
         result = acc;
-        for(i = 0; i < lenList; i = i + 1) {
-            result = func(result, list[i]);
+        for(value in list) {
+            result = func(result, value);
         }
 
         print("Initial list");
-        printList(list, lenList);
+        print(list);
 
         print("final result");
         print(result);
 
     }
 
-    reduce(lambda(acc, x) { return acc + x; }, [1, 2, 3], 0, 3);
+    print("");
+    print("Reduce function result");
+
+    reduce(lambda(acc, x) { return acc + x; }, [1, 2, 3], 0);
 
 }

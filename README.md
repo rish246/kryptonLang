@@ -3,6 +3,187 @@
 ## Krypton is a small, dynamically typed and strongly typed programming language.
 
 ### This is under construction for now.
+**Binary Search Tree In Krypton**
+
+
+_Structure of BST Node_
+```python
+def createNode(value) {
+    return {"value" : value, "left" : null, "right" : null};
+}
+```
+
+_Inorder Traversal of BST_
+```python
+def inorderTraversal(head) {
+    res = "";
+    if(head != null) {
+        res = res + inorderTraversal(head["left"]);
+        res = res + head["value"] + ", ";
+        res = res + inorderTraversal(head["right"]);
+    }
+    return res;
+}
+```
+
+_Adding Values to a BST_
+```python
+def insertNode(head, node) {
+    if(head == null) {
+        return node;
+    }
+
+    if(node["value"] < head["value"]) {
+        leftTree = insertNode(head["left"], node);
+        head["left"] = leftTree;
+        return head;
+    }
+
+    if(node["value"] > head["value"]) {
+        rightTree = insertNode(head["right"], node);
+        head["right"] = rightTree;
+        return head;
+    }
+
+    return head;
+}
+
+# lets create the BST
+head = insertNode(null, createNode(4));
+print("Original Tree " + inorderTraversal(head));
+insertNode(head, createNode(3));
+insertNode(head, createNode(5));
+insertNode(head, createNode(2));
+insertNode(head, createNode(7));
+insertNode(head, createNode(6));
+
+print("Final Tree " + inorderTraversal(head));
+
+
+
+```
+
+_output_
+![plot](./Program%20outputs/BST/InsertElements.jpg)
+
+_Finding values in BST_
+
+```python
+def findValue(head, value) {
+    if(head == null) {
+        return false;
+    }
+
+    if(head["value"] == value) {
+        return true;
+    }
+
+    if(head["value"] < value) {
+        return findValue(head["right"], value);
+    }
+
+    return findValue(head["left"], value);
+}
+
+# lets create the BST
+print("Our Tree : " + inorderTraversal(head));
+
+print("Finding values in bst");
+print("2 : " + findValue(head, 2));
+print("3 : " + findValue(head, 3));
+print("9 : " + findValue(head, 9));
+print("-1 : " + findValue(head, -1));
+
+```
+_output_
+![plot](./Program%20outputs/BST/FindValues.jpg)
+
+
+_Delete values from BST_
+```python
+def deleteValue(head, value) {
+
+    def findMax(head) {
+        if(head["right"] == null) {
+            return head;
+        }
+        return findMax(head["right"]);
+    }
+
+
+    def removeValues(head) {
+        if(head["value"] > value) {
+            LeftTree = removeValues(head["left"]);
+            head["left"] = LeftTree;
+            return head;
+        }
+        else if(head["value"] < value) {
+            RightTree = removeValues(head["right"]);
+            head["right"] = RightTree;
+            return head;
+        }
+        else {
+            if(head["left"] == null && head["right"] == null) {
+                return null;
+            }
+
+            else if(head["right"] == null) {
+                return head["left"];
+            }
+
+            else if(head["left"] == null) {
+                return head["right"];
+            }
+            else {
+                maxLeftTree = findMax(head["left"]);
+                head["value"] = maxLeftTree["value"];
+                head["left"] = deleteValue(head["left"], head["value"]);
+                return head;
+            }
+
+            return null;
+
+        }
+
+    }
+    doesValueExist = findValue(head, value);
+    if(!doesValueExist) {
+        print("Oops.. the value does not exist");
+        return head;
+    }
+
+    head = removeValues(head);
+
+    return head;
+}
+
+
+
+print("Remove values from bst");
+print("Remove 4");
+head = deleteValue(head, 4);
+print("Final Tree");
+print(inorderTraversal(head));
+
+print("Remove 7");
+head = deleteValue(head, 7);
+print("Final Tree");
+print(inorderTraversal(head));
+
+print("Remove 2");
+head = deleteValue(head, 2);
+
+print("Final Tree");
+print(inorderTraversal(head));
+
+
+
+```
+
+_output_
+![plot](./Program%20outputs/BST/RemoveValues.jpg)
+
+
 
 **Foreach Loops in krypton**
 
@@ -391,89 +572,77 @@ _output_
 
 **Map, filter and reduce on lists**
 
-_Helper function to print the lists_
-
-```python
-def printList(lst, len) {
-    for(i = 0; i < len; i = i + 1) {
-        print(lst[i]);
-    }
-}
-```
-
 1. _Map_
 
 ```python
-def map(func, list, lenList) {
+def map(func, list) {
     result = [];
 
-    for(i = 0; i < lenList; i = i + 1) {
-        result = result + func(list[i]);
+    for(value in list) {
+        result = result + func(value);
     }
 
     print("Initial list");
-    printList(list, lenList);
+    print(list);
 
     print("FInal list");
-    printList(result, lenList);
+    print(result);
 }
 
-# call #
-map(lambda(x) { return x + 1; }, [1, 2, 3], 3);
+print("Map function result");
+map(lambda(x) { return x + 1; }, [1, 2, 3]);
 ```
 
-_output_
-![plot](./Program%20outputs/mapListHOF.jpg)
 
 2. _Filter_
 
 ```python
-def filter(func, list, lenList) {
+def filter(func, list) {
     result = [];
-    resultLen = 0;
 
-    for(i = 0; i < lenList; i = i + 1) {
-        if(func(list[i])) {
-            result = result + list[i];
-            resultLen = resultLen + 1;
+    for(value in list) {
+        if(func(value)) {
+            result = result + value;
         }
     }
 
     print("Initial list");
-    printList(list, lenList);
+    print(list);
 
     print("FInal list");
-    printList(result, resultLen);
+    print(result);
 
 }
-
-# call #
-filter(lambda(x) { return x % 2 == 0; }, [1, 2, 3, 4], 4);
+print("");
+print("Filter function result");
+filter(lambda(x) { return x % 2 == 0; }, [1, 2, 3, 4]);
 ```
 
-_output_
-![plot](./Program%20outputs/filterListHOF.jpg)
 
 3. Reduce
 
 ```python
-def reduce(func, list, acc, lenList) {
+def reduce(func, list, acc) {
     result = acc;
-    for(i = 0; i < lenList; i = i + 1) {
-        result = func(result, list[i]);
+    for(value in list) {
+        result = func(result, value);
     }
 
     print("Initial list");
-    printList(list, lenList);
+    print(list);
 
     print("final result");
     print(result);
 
 }
+
+print("");
+print("Reduce function result");
+reduce(lambda(acc, x) { return acc + x; }, [1, 2, 3], 0);
 ```
 
 _output_
-![plot](./Program%20outputs/reduceListHOF.jpg)
+![plot](./Program%20outputs/higerOrderFunctionsCombined.jpg)
 
 
 **Nth fibonacci number using dynamic programming in krypton**

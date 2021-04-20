@@ -1,59 +1,16 @@
 {
-     def printList(lst) {
-        res = "";
-        for(element in lst) {
-            res = res + element + ", ";
+     def func(x) {
+        if(x == null) {
+            return {1 : 2};
         }
-        print(res);
-    }
-
-
-    def findCycle(adjList, isActive) {
-
-        def hasCycle(node) {
-            print(node);
-            if(isActive[node] == -1) {
-                return true;
-            }
-
-            if(isActive[node] == 1) {
-                return false;
-            }
-
-            isActive[node] = -1;
-            nodeNeighbours = adjList[node];
-
-            res = false;
-            for(neighbour in nodeNeighbours) {
-                res = res || hasCycle(neighbour);
-            }
-
-            isActive[node] = 1;
-            return res;
-
+        else if(x[1] == 3) {
+            return false;
         }
 
+        return null;
+     }
 
-        startingNode = 1;
-        return hasCycle(startingNode);
-
-    }
-
-
-    # cycle detection algorithm
-    # first arg in list represents the length of the list
-    # args from 2 to forward represent the neighbour nodes
-    adj_list = {
-        1 : [2, 4, 5],
-        2 : [3, 4],
-        3 : [4],
-        4 : [],
-        5 : []
-    };
-
-    isActive = [0] * 6;
-
-    hasCycle = findCycle(adj_list, isActive);
-    print(hasCycle);
+     nullValue = func({1 : 2});
+     print(nullValue);
 
 }

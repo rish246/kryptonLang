@@ -78,6 +78,11 @@ public class FunctionCallExpression extends Expression {
                 return null;
             }
 
+            if(curArgResult._value == null && curArgResult._type != "null") {
+                _diagnostics.add("Invalid function arguement of type " + curArgResult._type);
+                return null;
+            }
+
             Symbol newBinding = new Symbol(null, curArgResult._value, curArgResult._type);
             String nextFormalArg = formalArgs.get(i)._lexeme;
             newEnv.set(nextFormalArg, newBinding);
@@ -89,13 +94,14 @@ public class FunctionCallExpression extends Expression {
 
         EvalResult funcResult = funcBody.evaluate(newEnv);
 
+        // How can a function return a stateme
+
         _diagnostics.addAll(funcBody.getDiagnostics());        // If the value != null... then value and type of the function is same
-        // Maybe this is where is the second nullPtrExc
         if(funcResult == null) {
             return null;
         }
-
         _diagnostics.addAll(funcBody.getDiagnostics());
+
 
         return funcResult;
 

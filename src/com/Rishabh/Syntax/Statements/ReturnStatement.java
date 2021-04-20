@@ -40,9 +40,13 @@ public class ReturnStatement extends Statement {
         EvalResult bodyResult = _body.evaluate(env);
         _diagnostics.addAll(_body.getDiagnostics());
 
-        
+        if(bodyResult == null) {
+            _diagnostics.add("Error in the body of return statement");
+            return null;
+        }
 
-        if(bodyResult == null || bodyResult._value == null || bodyResult._type == null) {
+
+        if(bodyResult._value == null && bodyResult._type != "null") {
             _diagnostics.add("Error in the body of return statement");
             return null;
         }
