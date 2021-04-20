@@ -174,7 +174,7 @@ class Parser {
 
         int unaryOperatorPrec = getUnaryOperatorPrecedence(CurrentToken()._type);
         if (unaryOperatorPrec != 0 && unaryOperatorPrec >= parentPrecedence)
-            left = new UnaryExpression(NextToken()._type, parseExpression(unaryOperatorPrec));
+            left = new UnaryExpression(NextToken()._type, parseExpression(unaryOperatorPrec), CurrentLineNumber());
         else {
             left = parsePrimaryExp();
         }
@@ -203,10 +203,10 @@ class Parser {
 
             if(binOperator == TokenType.AssignmentToken)
             {
-                return new AssignmentExpression(left, binOperator, right);
+                return new AssignmentExpression(left, binOperator, right, CurrentLineNumber());
             }
 
-            left = new BinaryExpression(left, binOperator, right);
+            left = new BinaryExpression(left, binOperator, right, CurrentLineNumber());
 
         }
 
@@ -233,7 +233,7 @@ class Parser {
                     match(TokenType.ElseKeywordToken);
                     elseBranch = parse();
                 }
-                return new IfStatement(condBranch, thenBranch, elseBranch);
+                return new IfStatement(condBranch, thenBranch, elseBranch, CurrentLineNumber());
             }
 
             case OpenBracketToken: {
@@ -273,7 +273,7 @@ class Parser {
                 }
                 match(TokenType.ClosedBracket);
 
-                return new BlockStatement(parsedExpressions);
+                return new BlockStatement(parsedExpressions, CurrentLineNumber());
             }
 
             case WhileKeywordToken: {
@@ -284,7 +284,7 @@ class Parser {
                 match(TokenType.ClosedParensToken);
                 SyntaxTree whileBody = parse();
 
-                return new WhileStatement(condition, whileBody);
+                return new WhileStatement(condition, whileBody, CurrentLineNumber());
             }
 
             case ForKeywordToken: {
@@ -308,7 +308,7 @@ class Parser {
                 match(TokenType.ClosedParensToken);
                 SyntaxTree forBody = parse();
 
-                return new ForStatement(initCondition, haltingCondtion, progressExp, forBody);
+                return new ForStatement(initCondition, haltingCondtion, progressExp, forBody, CurrentLineNumber());
             }
 
             case FunctionDefineToken: {
@@ -324,7 +324,7 @@ class Parser {
                     if(_diagnostics.size() > 0)
                         return null;
 
-                    formalArgs.add(new IdentifierExpression(firstArg._lexeme));
+                    formalArgs.add(new IdentifierExpression(firstArg._lexeme, CurrentLineNumber()));
 
                 }
 
@@ -335,7 +335,7 @@ class Parser {
                     if(_diagnostics.size() > 0)
                         return null;
 
-                    formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme));
+                    formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme, CurrentLineNumber()));
 
                 }
 
@@ -346,7 +346,7 @@ class Parser {
                 SyntaxTree funcBody = parse();
                 Statement.EnclosingStatements--;
 
-                return new FunctionStatement(funcName, funcBody, formalArgs);
+                return new FunctionStatement(funcName, funcBody, formalArgs, CurrentLineNumber());
             }
 
             case ReturnToken: {
@@ -363,7 +363,7 @@ class Parser {
                     _diagnostics.add("Empty return statements are not allowed");
                 }
 
-                return new com.Rishabh.Expression.Statements.ReturnStatement(returnBody);
+                return new com.Rishabh.Expression.Statements.ReturnStatement(returnBody, CurrentLineNumber());
 
 
             }
@@ -374,7 +374,7 @@ class Parser {
                 Expression printExpBody = parseExpression(0);
 
                 match(TokenType.ClosedParensToken);
-                return new PrintStatement(printExpBody);
+                return new PrintStatement(printExpBody, CurrentLineNumber());
             }
 
             default:
@@ -391,9 +391,12 @@ class Parser {
         match(TokenType.ClosedParensToken);
         SyntaxTree foreachBody = parse();
 
-        return new ForEachStatement(iterator, iterable, foreachBody);
+        return new ForEachStatement(iterator, iterable, foreachBody, CurrentLineNumber());
     }
 
+    private int CurrentLineNumber() {
+        return _lineNumbers[_position];
+    }
 
     private List<Expression> parseCommaSeparatedExpressions(TokenType delimiterType) {
         List<Expression> listElements = new ArrayList<>();
@@ -435,13 +438,13 @@ class Parser {
 
                 Token right = match(TokenType.ClosedParensToken);
 
-                return new ParensExpression(left, body, right);
+                return new ParensExpression(left, body, right, CurrentLineNumber());
             case IntToken: {
                 Token currentToken = match(TokenType.IntToken); // it does
 
                 int value = (currentToken._value == null) ? Integer.MIN_VALUE : (int) currentToken._value;
 
-                return new NumberExpression(value); // creating nullPoint Exception
+                return new NumberExpression(value, CurrentLineNumber()); // creating nullPoint Exception
 
             }
 
@@ -451,16 +454,16 @@ class Parser {
                 Expression lenExpBody = parseExpression(0);
                 match(TokenType.ClosedParensToken);
 
-                return new LengthExpression(lenExpBody);
+                return new LengthExpression(lenExpBody, CurrentLineNumber());
             }
 
             case NullValueToken: {
                 match(TokenType.NullValueToken);
-                return new NullExpression();
+                return new NullExpression(CurrentLineNumber());
             }
 
             case StringConstToken: {
-                return new StringExpression((String) NextToken()._value);
+                return new StringExpression((String) NextToken()._value, CurrentLineNumber());
             }
 
             case BoolTokenKeyword: {
@@ -468,7 +471,7 @@ class Parser {
 
                 boolean value = (boolean) currentToken._value;
 
-                return new BoolExperssion(value);
+                return new BoolExperssion(value, CurrentLineNumber());
             }
 
             case IdentifierToken: {
@@ -483,7 +486,7 @@ class Parser {
                     match(TokenType.ClosedParensToken);
 
 
-                    return new com.Rishabh.Expression.PrimaryExpressions.FunctionCallExpression(currentToken._lexeme, actualArgs);
+                    return new com.Rishabh.Expression.PrimaryExpressions.FunctionCallExpression(currentToken._lexeme, actualArgs, CurrentLineNumber());
 
                 }
 
@@ -506,11 +509,11 @@ class Parser {
                         return null;
                     }
 
-                    return new com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression(currentToken, indices);
+                    return new com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression(currentToken, indices, CurrentLineNumber());
 
                 }
 
-                return new IdentifierExpression(currentToken._lexeme); // just value of 1
+                return new IdentifierExpression(currentToken._lexeme, CurrentLineNumber()); // just value of 1
             }
 
             case OpenSquareBracketToken: {
@@ -526,7 +529,7 @@ class Parser {
 
                 match(TokenType.ClosedSquareBracketToken);
 
-                return new com.Rishabh.Expression.Values.ListExpression(listElements);
+                return new com.Rishabh.Expression.Values.ListExpression(listElements, CurrentLineNumber());
             }
 
             case OpenBracketToken : {
@@ -543,7 +546,7 @@ class Parser {
                     match(TokenType.CommaSeparatorToken);
                 }
                 match(TokenType.ClosedBracket);
-                return new ObjectExpression(bindings);
+                return new ObjectExpression(bindings, CurrentLineNumber());
             }
 
 
@@ -556,14 +559,14 @@ class Parser {
                     // Create a formal here
                     Token firstArg = match(TokenType.IdentifierToken);
 
-                    formalArgs.add(new IdentifierExpression(firstArg._lexeme));
+                    formalArgs.add(new IdentifierExpression(firstArg._lexeme, CurrentLineNumber()));
 
                 }
 
                 while(CurrentToken()._type != TokenType.ClosedParensToken) {
                     match(TokenType.CommaSeparatorToken);
                     Token nextIdentifier = match(TokenType.IdentifierToken);
-                    formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme));
+                    formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme, CurrentLineNumber()));
 
                 }
 
@@ -574,7 +577,7 @@ class Parser {
                 SyntaxTree funcBody = parse();
                 Statement.EnclosingStatements++;
 
-                return new LambdaExpression(funcBody, formalArgs);
+                return new LambdaExpression(funcBody, formalArgs, CurrentLineNumber());
 
 
             }

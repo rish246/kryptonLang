@@ -18,8 +18,8 @@ public class FunctionCallExpression extends Expression {
     public List<String> _diagnostics = new ArrayList<>();
 
 
-    public FunctionCallExpression(String lexeme, List<Expression> actualArgs) {
-        super(ExpressionType.FunctionCallExpression);
+    public FunctionCallExpression(String lexeme, List<Expression> actualArgs, int lineNumber) {
+        super(ExpressionType.FunctionCallExpression, lineNumber);
         _functionName = lexeme;
         _actualArgs = actualArgs;
     }
@@ -46,7 +46,7 @@ public class FunctionCallExpression extends Expression {
         Symbol res = env.get(_functionName);
 
         if(res == null) {
-            _diagnostics.add("Undefined function : " + _functionName);
+            _diagnostics.add("Undefined function : " + _functionName+ " at line number " + getLineNumber());
             return null;
         }
 
@@ -59,7 +59,7 @@ public class FunctionCallExpression extends Expression {
         List<IdentifierExpression> formalArgs = closure._formalArgs;
 
         if(formalArgs.size() != _actualArgs.size()) {
-            _diagnostics.add("Invalid number of arguements passed in function " + _functionName + ", expected " + formalArgs.size() + ", got " + _actualArgs.size());
+            _diagnostics.add("Invalid number of arguements passed in function " + _functionName + ", expected " + formalArgs.size() + ", got " + _actualArgs.size()+ " at line number " + getLineNumber());
             return null;
         }
 
@@ -98,7 +98,7 @@ public class FunctionCallExpression extends Expression {
             }
 
             if(curArgResult._value == null && curArgResult._type != "null") {
-                _diagnostics.add("Invalid function arguement of type " + curArgResult._type);
+                _diagnostics.add("Invalid function arguement of type " + curArgResult._type+ " at line number " + getLineNumber());
                 return true;
             }
 

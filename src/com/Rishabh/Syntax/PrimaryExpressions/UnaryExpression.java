@@ -16,8 +16,8 @@ public class UnaryExpression extends Expression {
     List<String> _diagnostics = new ArrayList<>();
 //    ExpressionType _type;
 
-    public UnaryExpression(TokenType operatorToken, Expression body) {
-        super(ExpressionType.UnaryExpression);
+    public UnaryExpression(TokenType operatorToken, Expression body, int lineNumber) {
+        super(ExpressionType.UnaryExpression, lineNumber);
         _operatorToken = operatorToken;
         _body = body;
     }
@@ -58,10 +58,10 @@ public class UnaryExpression extends Expression {
 
                 break;
             default:
-                throw new Exception("Unknown binary operator" + _operatorToken);
+                throw new Exception("Unknown binary operator" + _operatorToken+ " at line number " + getLineNumber());
         }
 
-        _diagnostics.add("Invalid type for Unary operator " + _operatorToken + ".. Expected int got " + bodyResType);
+        _diagnostics.add("Invalid type for Unary operator " + _operatorToken + ".. Expected int got " + bodyResType+ " at line number " + getLineNumber());
 
         return null;
     }

@@ -19,8 +19,8 @@ public class AssignmentExpression extends Expression {
     Expression _right;
     List<String> _diagnostics = new ArrayList<>();
 
-    public AssignmentExpression(Expression left, TokenType operatorToken, Expression right) {
-        super(ExpressionType.AssignmentExpression);
+    public AssignmentExpression(Expression left, TokenType operatorToken, Expression right, int lineNumber) {
+        super(ExpressionType.AssignmentExpression, lineNumber);
         _left = left;
         _operatorToken = operatorToken;
         _right = right;
@@ -51,7 +51,6 @@ public class AssignmentExpression extends Expression {
 
     public EvalResult evaluate(Environment env) throws Exception {
 
-
         EvalResult rightRes = _right.evaluate(env);
         _diagnostics.addAll(_right.getDiagnostics());
 
@@ -72,7 +71,7 @@ public class AssignmentExpression extends Expression {
             Symbol ourEntry = env.get(curExp._identifier._lexeme);
 
             if (ourEntry == null) {
-                _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme);
+                _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme + " at line number " + getLineNumber());
                 return null;
             }
 
@@ -82,7 +81,7 @@ public class AssignmentExpression extends Expression {
         }
 
         else {
-            _diagnostics.add("Expression of type " + _left.getType() + " is not a valid lvalue");
+            _diagnostics.add("Expression of type " + _left.getType() + " is not a valid lvalue" + " at line number " + getLineNumber());
         }
 
         return null;
@@ -96,7 +95,7 @@ public class AssignmentExpression extends Expression {
 
     private EvalResult assignIterable(Environment env, EvalResult rightRes, com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp, Symbol ourEntry) throws Exception {
         if(ourEntry._type != "list" && ourEntry._type != "object") {
-            _diagnostics.add("Data of Type " + ourEntry._type + " is not indexable");
+            _diagnostics.add("Data of Type " + ourEntry._type + " is not indexable" + " at line number " + getLineNumber());
             return null;
         }
 
@@ -115,14 +114,14 @@ public class AssignmentExpression extends Expression {
 
     private EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env) throws Exception {
         if(curIterable._type != "list" && curIterable._type != "object") {
-            _diagnostics.add("Data of type " + curIterable._type + " is not indexable");
+            _diagnostics.add("Data of type " + curIterable._type + " is not indexable" + " at line number " + getLineNumber());
             return null;
         }
 
         EvalResult indexRes = indexI.evaluate(env);
         if(curIterable._type == "list") {
             if(indexRes._type != "int") {
-                _diagnostics.add("Array indices should be of type int, found " + indexRes._type);
+                _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " + getLineNumber());
                 return null;
             }
 
@@ -130,7 +129,7 @@ public class AssignmentExpression extends Expression {
 
             int curIdx = (int) indexRes._value;
             if(curIdx >= ourList.size()) {
-                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size());
+                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + getLineNumber());
                 return null;
             }
 
@@ -139,7 +138,7 @@ public class AssignmentExpression extends Expression {
         }
         else {
             if(indexRes._type != "int" && indexRes._type != "string") {
-                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type);
+                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type + " at line number " + getLineNumber());
                 return null;
             }
 
@@ -153,3 +152,6 @@ public class AssignmentExpression extends Expression {
     }
 
 }
+
+
+// I think i am ready for the adding line numbers to runTimeErrors

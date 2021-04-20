@@ -8,8 +8,15 @@ import java.util.List;
 public class SyntaxTree {
     public ExpressionType _type;
 
-    public SyntaxTree(ExpressionType type) {
+    public int getLineNumber() {
+        return _lineNumber;
+    }
+
+    public int _lineNumber;
+
+    public SyntaxTree(ExpressionType type, int lineNumber) {
         _type = type;
+        _lineNumber = lineNumber;
     }
 
     public ExpressionType getType() {

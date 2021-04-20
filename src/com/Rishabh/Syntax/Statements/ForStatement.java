@@ -18,8 +18,8 @@ public class ForStatement extends Statement {
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ForStatement(Expression initializationCond, Expression haltingCondition, Expression progressExp, SyntaxTree body) {
-        super(ExpressionType.ForLoopExpression);
+    public ForStatement(Expression initializationCond, Expression haltingCondition, Expression progressExp, SyntaxTree body, int lineNumber) {
+        super(ExpressionType.ForLoopExpression, lineNumber);
         _initializationCond = initializationCond;
         _haltingCondition = haltingCondition;
         _progressExp = progressExp;
@@ -38,7 +38,7 @@ public class ForStatement extends Statement {
         _diagnostics.addAll(_haltingCondition.getDiagnostics());
 
         if(_diagnostics.size() > 0) {
-            _diagnostics.add("Error in the for loop body");
+            _diagnostics.add("Error in the for loop body"+ " at line number " + getLineNumber());
             return null;
         }
 

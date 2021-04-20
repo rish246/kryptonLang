@@ -8,8 +8,8 @@ import com.Rishabh.Utilities.Environment;
 public class BoolExperssion extends Expression {
     boolean  _value;
 
-    public BoolExperssion(boolean value) {
-        super(ExpressionType.BoolExpression);
+    public BoolExperssion(boolean value, int lineNumber) {
+        super(ExpressionType.BoolExpression, lineNumber);
         _value = value;
     }
 

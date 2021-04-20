@@ -13,8 +13,8 @@ public class ParensExpression extends Expression {
     Expression _body;
     Token _openParens, _closedParens;
 
-    public ParensExpression(Token openParens, Expression body, Token closedParens) {
-        super(ExpressionType.ParensExpression);
+    public ParensExpression(Token openParens, Expression body, Token closedParens, int lineNumber) {
+        super(ExpressionType.ParensExpression, lineNumber);
         _openParens = openParens;
         _closedParens = closedParens;
         _body = body;

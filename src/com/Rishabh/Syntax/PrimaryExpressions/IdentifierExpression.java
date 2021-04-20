@@ -13,8 +13,8 @@ public class IdentifierExpression extends Expression {
     public String _lexeme;
     public List<String> _diagnostics = new ArrayList<>();
 
-    public IdentifierExpression(String lexeme) {
-        super(ExpressionType.IdentifierExpression);
+    public IdentifierExpression(String lexeme, int lineNumber) {
+        super(ExpressionType.IdentifierExpression, lineNumber);
         _lexeme = lexeme;
     }
 
@@ -33,7 +33,7 @@ public class IdentifierExpression extends Expression {
         Symbol res = env.get(_lexeme);
 
         if(res == null) {
-            _diagnostics.add("Undefined variable : " + _lexeme);
+            _diagnostics.add("Undefined variable : " + _lexeme+ " at line number " + getLineNumber());
             return null;
         }
 

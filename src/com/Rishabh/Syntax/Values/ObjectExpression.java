@@ -15,8 +15,8 @@ public class ObjectExpression extends Expression {
     public Map<Expression, Expression> _contents;
     public List<String> _diagnostics;
 
-    public ObjectExpression(Map<Expression, Expression> contents) {
-        super(ExpressionType.ObjectExpression);
+    public ObjectExpression(Map<Expression, Expression> contents, int lineNumber) {
+        super(ExpressionType.ObjectExpression, lineNumber);
         _contents = contents;
         _diagnostics = new ArrayList<>();
     }
@@ -60,12 +60,12 @@ public class ObjectExpression extends Expression {
 
 
             if(keyRes._type != "int" && keyRes._type != "string") {
-                _diagnostics.add("Key should be of type int or string, found " + keyRes._type);
+                _diagnostics.add("Key should be of type int or string, found " + keyRes._type+ " at line number " + getLineNumber());
                 return null;
             }
 
             if(valueRes == null || (valueRes._value == null && valueRes._type != "null")) {
-                _diagnostics.add("Invalid expression in the object body");
+                _diagnostics.add("Invalid expression in the object body"+ " at line number " + getLineNumber());
                 return null;
             }
 

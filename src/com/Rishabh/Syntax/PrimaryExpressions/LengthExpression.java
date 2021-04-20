@@ -14,8 +14,8 @@ public class LengthExpression extends Expression {
     Expression _body;
     List<String> _diagnostics = new ArrayList<>();
 
-    public LengthExpression(Expression body) {
-        super(ExpressionType.LengthExpression);
+    public LengthExpression(Expression body, int lineNumber) {
+        super(ExpressionType.LengthExpression, lineNumber);
         _body = body;
     }
 
@@ -31,7 +31,7 @@ public class LengthExpression extends Expression {
 
 
         if(bodyRes._type != "list" && bodyRes._type != "object" && bodyRes._type != "string") {
-            _diagnostics.add("Expressions of Type " + bodyRes._type + " has no property len");
+            _diagnostics.add("Expressions of Type " + bodyRes._type + " has no property len"+ " at line number " + getLineNumber());
             return null;
         }
 
@@ -53,7 +53,7 @@ public class LengthExpression extends Expression {
             }
         }
 
-        _diagnostics.add("Invalid value passed in length expression");
+        _diagnostics.add("Invalid value passed in length expression"+ " at line number " + getLineNumber());
         return null;
 
     }

@@ -16,8 +16,8 @@ public class BinaryExpression extends Expression {
 //    ExpressionType _type;
     List<String> _diagnostics = new ArrayList<>();
 
-    public BinaryExpression(Expression left, TokenType operatorToken, Expression right) {
-        super(ExpressionType.BinaryExpression);
+    public BinaryExpression(Expression left, TokenType operatorToken, Expression right, int lineNumber) {
+        super(ExpressionType.BinaryExpression, lineNumber);
         _left = left;
         _operatorToken = operatorToken;
         _right = right;
@@ -53,7 +53,7 @@ public class BinaryExpression extends Expression {
         if(isLogicalOperator(_operatorToken)) {
             EvalResult result = evalLogicalExpression(env);
             if(result == null) {
-                _diagnostics.add("Invalid logical operation");
+                _diagnostics.add("Invalid logical operation"+ " at line number " + getLineNumber());
             }
             return result;
         }
@@ -68,7 +68,7 @@ public class BinaryExpression extends Expression {
         _diagnostics.addAll(_right.getDiagnostics());
 
         if(leftRes == null || rightRes == null) {
-            _diagnostics.add("Error in the Binary Expression");
+            _diagnostics.add("Error in the Binary Expression"+ " at line number " + getLineNumber());
             return null;
         }
 
@@ -148,7 +148,7 @@ public class BinaryExpression extends Expression {
                     List<EvalResult> newList = new ArrayList<>();
                     int nTimes = (int) rightRes._value;
                     if(nTimes < 0) {
-                        _diagnostics.add("Invalid value in the array assign expression");
+                        _diagnostics.add("Invalid value in the array assign expression"+ " at line number " + getLineNumber());
                         return null;
                     }
 
@@ -214,7 +214,7 @@ public class BinaryExpression extends Expression {
 
         
 
-        _diagnostics.add("Undefined operator " + _operatorToken + " for types " + leftType + " and " + rightType);
+        _diagnostics.add("Undefined operator " + _operatorToken + " for types " + leftType + " and " + rightType+ " at line number " + getLineNumber());
         return null;
 
     }

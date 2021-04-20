@@ -14,8 +14,8 @@ public class ReturnStatement extends Statement {
     //    ExpressionType _type;
     List<String> _diagnostics = new ArrayList<>();
 
-    public ReturnStatement(Expression body) {
-        super(ExpressionType.ReturnExpression);
+    public ReturnStatement(Expression body, int lineNumber) {
+        super(ExpressionType.ReturnExpression, lineNumber);
         _body = body;
     }
 
@@ -41,13 +41,13 @@ public class ReturnStatement extends Statement {
         _diagnostics.addAll(_body.getDiagnostics());
 
         if(bodyResult == null) {
-            _diagnostics.add("Error in the body of return statement");
+            _diagnostics.add("Error in the body of return statement"+ " at line number " + getLineNumber());
             return null;
         }
 
 
         if(bodyResult._value == null && bodyResult._type != "null") {
-            _diagnostics.add("Error in the body of return statement");
+            _diagnostics.add("Error in the body of return statement"+ " at line number " + getLineNumber());
             return null;
         }
 

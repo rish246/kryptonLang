@@ -8,8 +8,8 @@ public class Statement extends SyntaxTree {
 
     public static int EnclosingStatements = 0;
 
-    public Statement(ExpressionType type) {
-        super(type);
+    public Statement(ExpressionType type, int lineNumber) {
+        super(type, lineNumber);
     }
 
     public boolean isStatement() {

@@ -19,8 +19,8 @@ public class ArrayAccessExpression extends Expression {
     public Expression[] _indices;
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ArrayAccessExpression(Token identifierToken, List<Expression> indices) {
-        super(ExpressionType.ArrayAccessExpression);
+    public ArrayAccessExpression(Token identifierToken, List<Expression> indices, int lineNumber) {
+        super(ExpressionType.ArrayAccessExpression, lineNumber);
         _identifier = identifierToken;
         _indices = indices.toArray(new Expression[0]);
     }
@@ -31,12 +31,12 @@ public class ArrayAccessExpression extends Expression {
         Symbol ourEntry = env.get(_identifier._lexeme);
         // Check if the lexeme is valid one
         if(ourEntry == null) {
-            _diagnostics.add("Invalid identifier " + _identifier._lexeme);
+            _diagnostics.add("Invalid identifier " + _identifier._lexeme + " at line number " + getLineNumber());
             return null;
         }
 
         if(ourEntry._type != "list" && ourEntry._type != "object") {
-            _diagnostics.add("Data of type " + ourEntry._type + " is not indexable");
+            _diagnostics.add("Data of type " + ourEntry._type + " is not indexable at line number " + getLineNumber());
             return null;
         }
 
@@ -55,14 +55,14 @@ public class ArrayAccessExpression extends Expression {
 
     private EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env) throws Exception {
         if(curIterable._type != "list" && curIterable._type != "object") {
-            _diagnostics.add("Data of type " + curIterable._type + " is not indexable");
+            _diagnostics.add("Data of type " + curIterable._type + " is not indexable at line number " + getLineNumber());
             return null;
         }
 
         EvalResult indexRes = indexI.evaluate(env);
         if(curIterable._type == "list") {
             if(indexRes._type != "int") {
-                _diagnostics.add("Array indices should be of type int, found " + indexRes._type);
+                _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " + getLineNumber());
                 return null;
             }
 
@@ -70,7 +70,7 @@ public class ArrayAccessExpression extends Expression {
 
             int curIdx = (int) indexRes._value;
             if(curIdx >= ourList.size()) {
-                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size());
+                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + getLineNumber());
                 return null;
             }
 
@@ -79,7 +79,7 @@ public class ArrayAccessExpression extends Expression {
         }
         else {
             if(indexRes._type != "int" && indexRes._type != "string") {
-                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type);
+                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type + " at line number " + getLineNumber());
                 return null;
             }
 

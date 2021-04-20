@@ -9,8 +9,8 @@ public class NumberExpression extends Expression {
     int _value;
 //    ExpressionType _type;
 
-    public NumberExpression(int value) {
-        super(ExpressionType.IntExpression);
+    public NumberExpression(int value, int lineNumber) {
+        super(ExpressionType.IntExpression, lineNumber);
         _value = value;
     }
 

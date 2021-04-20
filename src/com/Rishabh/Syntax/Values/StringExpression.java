@@ -8,8 +8,8 @@ import com.Rishabh.Utilities.Environment;
 public class StringExpression extends Expression {
     String _value;
 
-    public StringExpression(String value) {
-        super(ExpressionType.StringExpression);
+    public StringExpression(String value, int lineNumber) {
+        super(ExpressionType.StringExpression, lineNumber);
         _value = value;
     }
 
@@ -24,15 +24,3 @@ public class StringExpression extends Expression {
     }
 
 }
-
-/*
-    {} -> Declare an object
-    // Parse -> {
-                    while(curExpression != }) {  ThisSucksAndMaybeThisDont  }
-    }
-    } BindingExpression --> BindingExpresssion (0) --> { 1, 2 }
-    // List of bindings
-
-
-
- */

@@ -8,8 +8,8 @@ import com.Rishabh.Utilities.Environment;
 public class NullExpression extends Expression {
 //    ExpressionType _type;
 
-    public NullExpression() {
-        super(ExpressionType.NullExpression);
+    public NullExpression( int lineNumber) {
+        super(ExpressionType.NullExpression, lineNumber);
     }
 
     @Override

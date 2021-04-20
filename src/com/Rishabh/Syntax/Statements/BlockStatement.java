@@ -13,8 +13,8 @@ public class BlockStatement extends Statement {
     public List<SyntaxTree> _expressionList;
     private List<String> _diagnostics = new ArrayList<>();
 
-    public BlockStatement(List<SyntaxTree> expressions) {
-        super(ExpressionType.BlockExpression);
+    public BlockStatement(List<SyntaxTree> expressions, int lineNumber) {
+        super(ExpressionType.BlockExpression, lineNumber);
         _expressionList = expressions;
     }
 

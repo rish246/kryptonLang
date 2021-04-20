@@ -18,8 +18,8 @@ public class ClosureExpression extends Expression {
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ClosureExpression(String name, SyntaxTree funcBody, Environment closureEnv, List<IdentifierExpression> formalArgs) {
-        super(ExpressionType.ClosureExpression);
+    public ClosureExpression(String name, SyntaxTree funcBody, Environment closureEnv, List<IdentifierExpression> formalArgs, int lineNumber) {
+        super(ExpressionType.ClosureExpression, lineNumber);
         _functionBody = funcBody;
         _closureEnv = closureEnv;
         _name = name;
@@ -30,7 +30,6 @@ public class ClosureExpression extends Expression {
         _functionBody.evaluate(_closureEnv);
         _diagnostics.addAll(_functionBody.getDiagnostics());
         return new EvalResult(null, "functionExpression");
-
     }
 
     public void prettyPrint(String indent) {

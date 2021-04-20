@@ -16,8 +16,8 @@ public class WhileStatement extends Statement {
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public WhileStatement(Expression conditionalBranch, SyntaxTree body) {
-        super(ExpressionType.WhileExpression);
+    public WhileStatement(Expression conditionalBranch, SyntaxTree body, int lineNumber) {
+        super(ExpressionType.WhileExpression, lineNumber);
         _conditionalBranch = conditionalBranch;
         _body = body;
     }
@@ -31,7 +31,7 @@ public class WhileStatement extends Statement {
             return null;
 
         if (!condBranchResult._type.equals("boolean")) {
-            _diagnostics.add("The conditional branch in while expression need to be of type boolean");
+            _diagnostics.add("The conditional branch in while expression need to be of type boolean"+ " at line number " + getLineNumber());
             return null;
         }
 

@@ -14,8 +14,8 @@ public class ListExpression extends Expression {
     public List<Expression> _elements;
     public List<String> _diagnostics;
 
-    public ListExpression(List<Expression> elements) {
-        super(ExpressionType.ListExpression);
+    public ListExpression(List<Expression> elements, int lineNumber) {
+        super(ExpressionType.ListExpression, lineNumber);
         _elements = elements;
         _diagnostics = new ArrayList<>();
 //        super(ExpressionType.BinaryExpression);
@@ -34,6 +34,9 @@ public class ListExpression extends Expression {
         for(Expression exp : _elements) {
             _results.add(exp.evaluate(env));
             _diagnostics.addAll(exp.getDiagnostics());
+            if(_diagnostics.size() > 0) {
+                return null;
+            }
         }
 
         return new EvalResult(_results, "list");

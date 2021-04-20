@@ -21,8 +21,8 @@ public class PrintStatement extends Statement {
     public Expression _body;
     List<String> _diagnostics = new ArrayList<>();
 
-    public PrintStatement(Expression body) {
-        super(ExpressionType.printExpression);
+    public PrintStatement(Expression body, int lineNumber) {
+        super(ExpressionType.printExpression, lineNumber);
         _body = body;
     }
 

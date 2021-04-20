@@ -17,8 +17,8 @@ public class IfStatement extends Statement {
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public IfStatement(Expression conditionalBranch, SyntaxTree thenBranch, SyntaxTree elseBranch) {
-        super(ExpressionType.IfExpression);
+    public IfStatement(Expression conditionalBranch, SyntaxTree thenBranch, SyntaxTree elseBranch, int lineNumber) {
+        super(ExpressionType.IfExpression, lineNumber);
         _conditionalBranch = conditionalBranch;
         _thenBranch = thenBranch;
         _elseBranch = elseBranch;
@@ -30,14 +30,14 @@ public class IfStatement extends Statement {
         _diagnostics.addAll(_conditionalBranch.getDiagnostics());
 
         if (condBranchResult == null) {
-            _diagnostics.add("Error in the conditional branch of the if Expression");
+            _diagnostics.add("Error in the conditional branch of the if Expression"+ " at line number " + getLineNumber());
             return null;
         }
         else if (!condBranchResult._type.equals("boolean")) {
-            _diagnostics.add("The conditional branch in if expression need to be of type boolean");
+            _diagnostics.add("The conditional branch in if expression need to be of type boolean"+ " at line number " + getLineNumber());
             return null;
         } else if(_thenBranch == null) {
-            _diagnostics.add("Then branch of If expression can not be null");
+            _diagnostics.add("Then branch of If expression can not be null"+ " at line number " + getLineNumber());
             return null;
         }
 

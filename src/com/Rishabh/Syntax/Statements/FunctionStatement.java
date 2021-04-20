@@ -19,8 +19,8 @@ public class FunctionStatement extends Statement {
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public FunctionStatement(String name, SyntaxTree body, List<IdentifierExpression> formalArgs) {
-        super(ExpressionType.FuncExpression);
+    public FunctionStatement(String name, SyntaxTree body, List<IdentifierExpression> formalArgs, int lineNumber) {
+        super(ExpressionType.FuncExpression, lineNumber);
         _name = name;
         _body = body;
         _formalArgs = formalArgs;
@@ -30,7 +30,7 @@ public class FunctionStatement extends Statement {
 
         Environment closureEnv = new Environment(env._table, env._ParentEnv);
 
-        ClosureExpression funcClosure = new ClosureExpression(_name, _body, closureEnv, _formalArgs);
+        ClosureExpression funcClosure = new ClosureExpression(_name, _body, closureEnv, _formalArgs, getLineNumber());
 
         // Only do this if the name is not null
         Symbol newClosure = new Symbol("closure", funcClosure, "closure");

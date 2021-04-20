@@ -16,8 +16,8 @@ public class LambdaExpression extends Expression {
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public LambdaExpression(SyntaxTree body, List<IdentifierExpression> formalArgs) {
-        super(ExpressionType.LambdaExpression);
+    public LambdaExpression(SyntaxTree body, List<IdentifierExpression> formalArgs, int lineNumber) {
+        super(ExpressionType.LambdaExpression, lineNumber);
         _body = body;
         _formalArgs = formalArgs;
     }
@@ -26,7 +26,7 @@ public class LambdaExpression extends Expression {
 
         Environment closureEnv = new Environment(env._table, env._ParentEnv);
 
-        ClosureExpression funcClosure = new ClosureExpression(null, _body, closureEnv, _formalArgs);
+        ClosureExpression funcClosure = new ClosureExpression(null, _body, closureEnv, _formalArgs, getLineNumber());
 
         return new EvalResult(funcClosure, "Closure");
 

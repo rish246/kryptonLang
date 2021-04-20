@@ -21,8 +21,8 @@ public class ForEachStatement extends Statement {
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ForEachStatement(IdentifierExpression iterator, Expression iterable, SyntaxTree body){
-        super(ExpressionType.ForLoopExpression);
+    public ForEachStatement(IdentifierExpression iterator, Expression iterable, SyntaxTree body, int lineNumber){
+        super(ExpressionType.ForLoopExpression, lineNumber);
         _iterator = iterator;
         _iterable = iterable;
         _body = body;
