@@ -12,14 +12,13 @@ def newEdge(source, destination, weight) {
 
 def minCost_Kruskal(edgeList, nVertices) {
 
+    def swap(lst, i, j) {
+        temp = lst[i];
+        lst[i] = lst[j];
+        lst[j] = temp;
+    }
+
     def sort(edgeList, func) {
-        
-        def swap(lst, i, j) {
-            temp = lst[i];
-            lst[i] = lst[j];
-            lst[j] = temp;
-        }
-    
         for(i = 0; i < len(edgeList); i = i + 1) {
             for(j = 1; j < len(edgeList); j = j + 1) {
                 if(func(edgeList[j], edgeList[j - 1])) {
@@ -43,7 +42,7 @@ def minCost_Kruskal(edgeList, nVertices) {
             }
         }
 
-        return minCost;
+        return [minCost, minCostTree];
     }
 
 
@@ -61,8 +60,10 @@ def main() {
     e5 = newEdge(1, 2, 3);
 
     edgeList = [e1, e2, e3, e4, e5];
-    print("Kruskal's Algorithm implementation in krypton");
-    print("Minimum Cost -> " + minCost_Kruskal(edgeList, 4));
+    print("Minimum Cost spanning tree algorithm implementation in krypton");
+    [minCost, minCostTree] = minCost_Kruskal(edgeList, 4);
+    print("Minimum Cost -> " + minCost);
+    print(minCostTree);
 
 }
 

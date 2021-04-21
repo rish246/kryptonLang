@@ -7,7 +7,7 @@ import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
 
-
+import javax.xml.xpath.XPathEvaluationResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +64,11 @@ public class AssignmentExpression extends Expression {
         if(_left.getType() == ExpressionType.IdentifierExpression) {
             return assignIdentifier(env, rightType, rightValue);
         }
+        // Implement it here first
+        if(_left.getType() == ExpressionType.ListExpression) {
+            return assignList(env, rightType, rightValue);
+        }
+
         if(_left.getType() == ExpressionType.ArrayAccessExpression) {
 
             com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) _left;
@@ -85,6 +90,42 @@ public class AssignmentExpression extends Expression {
         }
 
         return null;
+    }
+
+    private EvalResult assignList(Environment env, String rightType, Object rightValue) throws Exception {
+        // Get the elements from the list
+        com.Rishabh.Expression.Values.ListExpression LeftList = (com.Rishabh.Expression.Values.ListExpression) _left;
+        // For Each element check it is of type identifierExpression
+        List<Expression> listElements = LeftList._elements;
+
+        for(Expression element : listElements) {
+            if (element.getType() != ExpressionType.IdentifierExpression) {
+                _diagnostics.add("Elements of list must be identifier expressions, found " + element.getType() + " at line number " + getLineNumber());
+                return null;
+            }
+        }
+        // if everyThing is alright
+        if(!rightType.equals("list")) {
+            _diagnostics.add("Cannot destructure " + rightType + " into a list. Error at line number " + getLineNumber());
+            return null;
+        }
+
+        List<EvalResult> rightList = (List) rightValue;
+        if(rightList.size() != listElements.size()) {
+            _diagnostics.add("Dimension mismatch in expression.. the elements in lvalue and rvalue must be same, Error at line number " + getLineNumber());
+            return null;
+        }
+
+
+        for(int i = 0; i < listElements.size(); i++) {
+            IdentifierExpression curIdentifier = (IdentifierExpression) listElements.get(i);
+            EvalResult rightExpResult = rightList.get(i);
+
+            env.set(curIdentifier._lexeme, new Symbol(curIdentifier._lexeme, rightExpResult._value, rightExpResult._type));
+        }
+
+        return new EvalResult(rightList, "list");
+
     }
 
     private EvalResult assignIdentifier(Environment env, String rightType, Object rightValue) {
