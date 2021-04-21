@@ -106,7 +106,7 @@ public class AssignmentExpression extends Expression {
         }
         // if everyThing is alright
         if(!rightType.equals("list")) {
-            _diagnostics.add("Cannot destructure " + rightType + " into a list. Error at line number " + getLineNumber());
+            _diagnostics.add("Cannot de-structure " + rightType + " into a list. Error at line number " + getLineNumber());
             return null;
         }
 

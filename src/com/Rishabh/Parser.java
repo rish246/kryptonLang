@@ -291,12 +291,13 @@ class Parser {
                 match(TokenType.ForKeywordToken);
                 match(TokenType.OpenParensToken);
                 // Peek 1 if it is in keyword.. make a foreach expression
-                if(Peek(1)._type == TokenType.InKeyword) {
-                    return parseForeachStatement();
-                }
 
                 Expression initCondition = parseExpression(0);
-              
+
+                if(CurrentToken()._type == TokenType.InKeyword) {
+                    return parseForeachStatement(initCondition);
+                }
+
                 match(TokenType.SemiColonToken);
 
                 Expression haltingCondtion = parseExpression(0);
@@ -384,10 +385,9 @@ class Parser {
         
     }
 
-    private ForEachStatement parseForeachStatement() {
-        IdentifierExpression iterator = (IdentifierExpression) parsePrimaryExp();
+    private ForEachStatement parseForeachStatement(Expression iterator) {
         match(TokenType.InKeyword);
-        Expression iterable = parsePrimaryExp();
+        Expression iterable = parsePrimaryExp(); // This will do it
         match(TokenType.ClosedParensToken);
         SyntaxTree foreachBody = parse();
 

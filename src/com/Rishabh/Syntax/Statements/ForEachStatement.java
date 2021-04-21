@@ -1,6 +1,7 @@
 package com.Rishabh.Expression.Statements;
 
 import com.Rishabh.EvalResult;
+import com.Rishabh.Expression.Values.ListExpression;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.PrimaryExpressions.IdentifierExpression;
@@ -15,13 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 public class ForEachStatement extends Statement {
-    public IdentifierExpression _iterator;
+    public Expression _iterator;
     public Expression _iterable;
     public SyntaxTree _body;
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ForEachStatement(IdentifierExpression iterator, Expression iterable, SyntaxTree body, int lineNumber){
+    public ForEachStatement(Expression iterator, Expression iterable, SyntaxTree body, int lineNumber){
         super(ExpressionType.ForLoopExpression, lineNumber);
         _iterator = iterator;
         _iterable = iterable;
@@ -52,32 +53,72 @@ public class ForEachStatement extends Statement {
 
     private boolean iterateObject(Environment env, EvalResult ourIterable) throws Exception {
         Map<String, EvalResult> ourObject = (HashMap) ourIterable._value;
+
         for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
-            EvalResult key = new EvalResult(binding.getKey(), "string");
-            EvalResult value = binding.getValue();
+            List<EvalResult> keyValuePair = getKeyValuePair(binding);
 
-            List<EvalResult> keyValueBinding = new ArrayList<>();
-            keyValueBinding.add(key);
-            keyValueBinding.add(value);
-            Symbol iteratorBinding = new Symbol(_iterator._lexeme, keyValueBinding, "list");
+            BindIteratorToKeyValPair(env, keyValuePair);
 
-            env.set(_iterator._lexeme, iteratorBinding);
-            _body.evaluate(env);
-
-            _diagnostics.addAll(_body.getDiagnostics());
-            if(_diagnostics.size() > 0) {
+            if(_diagnostics.size() > 0)
                 return true;
-            }
+
+            _body.evaluate(env);
+            _diagnostics.addAll(_body.getDiagnostics());
+
+            if(_diagnostics.size() > 0)
+                return true;
+
         }
         return false;
+    }
+
+    private void BindIteratorToKeyValPair(Environment env, List<EvalResult> keyValuePair) {
+        if(_iterator.getType() == ExpressionType.IdentifierExpression) {
+            IdentifierExpression ourIdentifierIterator = (IdentifierExpression) _iterator;
+            Symbol iteratorBinding = new Symbol(ourIdentifierIterator._lexeme, keyValuePair, "list");
+            env.set(ourIdentifierIterator._lexeme, iteratorBinding);
+        }
+
+        else if(_iterator.getType() == ExpressionType.ListExpression) {
+            BindListIteratorToList(env, keyValuePair);
+        }
+
+        else {
+            _diagnostics.add("Expression of type " + _iterator.getType() + " is not valid in foreach loop");
+        }
+    }
+
+    private void BindListIteratorToList(Environment env, List<EvalResult> ourList) {
+        var elements = (ListExpression) _iterator;
+        List<Expression> leftList =  elements._elements;
+
+        if(ourList.size() != leftList.size()) {
+            _diagnostics.add("Dimension mismatch in expression.. the elements in lvalue and rvalue must be same, Error at line number " + getLineNumber());
+        }
+
+        for(int i = 0; i < ourList.size(); i++) {
+            var curIdentifier = (IdentifierExpression) leftList.get(i);
+            EvalResult rightExpResult = ourList.get(i);
+            env.set(curIdentifier._lexeme, new Symbol(curIdentifier._lexeme, rightExpResult._value, rightExpResult._type));
+        }
+    }
+
+
+    private List<EvalResult> getKeyValuePair(Map.Entry<String, EvalResult> binding) {
+        EvalResult key = new EvalResult(binding.getKey(), "string");
+        EvalResult value = binding.getValue();
+
+        List<EvalResult> keyValueBinding = new ArrayList<>();
+        keyValueBinding.add(key);
+        keyValueBinding.add(value);
+        return keyValueBinding;
     }
 
     private boolean iterateList(Environment env, EvalResult ourIterable) throws Exception {
         List<EvalResult> ourList = (List) ourIterable._value;
 
         for (EvalResult element : ourList) {
-            Symbol iteratorBinding = new Symbol(_iterator._lexeme, element._value, element._type);
-            env.set(_iterator._lexeme, iteratorBinding);
+            BindIdentifierIteratorToListElement(env, element);
             _body.evaluate(env);
             _diagnostics.addAll(_body.getDiagnostics());
             if(_diagnostics.size() > 0) {
@@ -86,6 +127,28 @@ public class ForEachStatement extends Statement {
         }
         return false;
     }
+
+    private void BindIdentifierIteratorToListElement(Environment env, EvalResult element) {
+        if(_iterator.getType() == ExpressionType.IdentifierExpression) {
+            var ourIterator = (IdentifierExpression) _iterator;
+            Symbol iteratorBinding = new Symbol(ourIterator._lexeme, element._value, element._type);
+            env.set(ourIterator._lexeme, iteratorBinding);
+            return;
+        }
+        else if(_iterator.getType() == ExpressionType.ListExpression) {
+            if(element._type != "list") {
+                _diagnostics.add("Cannot bind a list to a type " + element._type + " at line number " + getLineNumber());
+                return;
+            }
+
+            List<EvalResult> currentListElement = (List) element._value;
+            BindListIteratorToList(env, currentListElement);
+            return;
+        }
+
+        _diagnostics.add("Invalid iterator type " + _iterator.getType() + " at line number " + getLineNumber());
+    }
+
 
     public void prettyPrint(String indent) {
         System.out.println("ForEachExpression");

@@ -6,8 +6,8 @@
 **Kruskal's Algorithm in krypton**
 
 ```python
-def newEdge(source, destination, weight) {
-    return {"source" : source, "dest" : destination, "weight" : weight};
+def newEdge(source, destination, weight, name) {
+    return {"source" : source, "dest" : destination, "weight" : weight, "name" : name};
 }
 
 def minCost_Kruskal(edgeList, nVertices) {
@@ -53,17 +53,26 @@ def minCost_Kruskal(edgeList, nVertices) {
 
 
 def main() {
-    e1 = newEdge(1, 3, 4);
-    e2 = newEdge(3, 4, 7);
-    e3 = newEdge(4, 2, 6);
-    e4 = newEdge(3, 2, 5);
-    e5 = newEdge(1, 2, 3);
+    e1 = newEdge(1, 3, 4, "e1");
+    e2 = newEdge(3, 4, 7, "e2");
+    e3 = newEdge(4, 2, 6, "e3");
+    e4 = newEdge(3, 2, 5, "e4");
+    e5 = newEdge(1, 2, 3, "e5");
 
     edgeList = [e1, e2, e3, e4, e5];
     print("Minimum Cost spanning tree algorithm implementation in krypton");
     [minCost, minCostTree] = minCost_Kruskal(edgeList, 4);
     print("Minimum Cost -> " + minCost);
-    print(minCostTree);
+
+    print("-------------------------");
+
+    print("Min Cost Spanning Tree");
+    for(edge in minCostTree) {
+        print("-------------------------");
+        for([key, value] in edge) {
+            print("" + key + "->" + value);
+        }
+    }
 
 }
 
