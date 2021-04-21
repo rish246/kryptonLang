@@ -12,13 +12,14 @@ def newEdge(source, destination, weight) {
 
 def minCost_Kruskal(edgeList, nVertices) {
 
-    def swap(lst, i, j) {
-        temp = lst[i];
-        lst[i] = lst[j];
-        lst[j] = temp;
-    }
-
     def sort(edgeList, func) {
+        
+        def swap(lst, i, j) {
+            temp = lst[i];
+            lst[i] = lst[j];
+            lst[j] = temp;
+        }
+    
         for(i = 0; i < len(edgeList); i = i + 1) {
             for(j = 1; j < len(edgeList); j = j + 1) {
                 if(func(edgeList[j], edgeList[j - 1])) {
@@ -70,10 +71,6 @@ main();
 ```
 
 ![plot](./Program%20outputs/KruskalAlgo.jpg)
-
-
-
-
 
 
 
