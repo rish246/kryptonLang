@@ -3,7 +3,7 @@
 ## Krypton is a small, dynamically typed and strongly typed programming language.
 
 ### This is under construction for now.
-**Foreach Loops in krypton**
+**Kruskal's Algorithm in krypton**
 
 ```python
 def newEdge(source, destination, weight) {
