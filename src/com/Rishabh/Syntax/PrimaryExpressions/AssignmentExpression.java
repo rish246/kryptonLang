@@ -107,6 +107,7 @@ public class AssignmentExpression extends Expression {
             }
         }
 
+
         Initial._value = rightRes._value;
         Initial._type = rightRes._type;
         return Initial;
@@ -145,13 +146,18 @@ public class AssignmentExpression extends Expression {
             Map<String, EvalResult> ourMap = (HashMap) curIterable._value;
             String curIdx = (indexRes._value).toString();
 
+            if(ourMap.get(curIdx) == null) {
+                ourMap.put(curIdx, new EvalResult(0, "int"));
+            }
 
-            return ourMap.get(curIdx) == null ? (new EvalResult(0, "int")) : ourMap.get(curIdx);
+            return ourMap.get(curIdx);
+
         }
 
     }
 
 }
+// x[0] -> x -> insert an evalResult() return that
 
 
 // I think i am ready for the adding line numbers to runTimeErrors

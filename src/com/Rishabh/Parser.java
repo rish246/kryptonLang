@@ -476,38 +476,19 @@ class Parser {
 
             case IdentifierToken: {
                 Token currentToken = match(TokenType.IdentifierToken);
-                // check if it is a function call
-                if(CurrentToken()._type == TokenType.OpenParensToken) {
-                    // Match openParens
-                    match(TokenType.OpenParensToken);
 
-                    List<Expression> actualArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
-
-                    match(TokenType.ClosedParensToken);
-
-
-                    return new com.Rishabh.Expression.PrimaryExpressions.FunctionCallExpression(currentToken._lexeme, actualArgs, CurrentLineNumber());
-
-                }
-
-                // ArraySuperScriptable expression
-                else if(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
+                if(CurrentToken()._type == TokenType.OpenSquareBracketToken || CurrentToken()._type == TokenType.OpenParensToken) {
                     List<Expression> indices = new ArrayList<>();
-                    while(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
-                        match(TokenType.OpenSquareBracketToken);
-                        Expression nextIdx = parseExpression(0);
-                        if(nextIdx == null) {
-                            _diagnostics.add("Unexpected expression at line number " + _lineNumbers[_position]);
-                            return null;
-                        }
-                        indices.add(nextIdx);
-                        match(TokenType.ClosedSquareBracketToken);
+                    while(CurrentToken()._type == TokenType.OpenSquareBracketToken || CurrentToken()._type == TokenType.OpenParensToken) {
+                        Expression Index = parseChainedExpression();
+                        indices.add(Index);
                     }
 
                     if(indices.size() == 0) {
                         _diagnostics.add("Subscript operator cannot be empty");
                         return null;
                     }
+
 
                     return new com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression(currentToken, indices, CurrentLineNumber());
 
@@ -591,5 +572,34 @@ class Parser {
         return null;
     }
 
+    private Expression parseChainedExpression() {
+        Expression result = null;
+
+        switch(CurrentToken()._type) {
+            case OpenSquareBracketToken: {
+                match(TokenType.OpenSquareBracketToken);
+                result = parseExpression(0);
+                match(TokenType.ClosedSquareBracketToken);
+
+                return result;
+            }
+
+            case OpenParensToken: {
+                Token left = match(TokenType.OpenParensToken);
+                List<Expression> actualArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
+                com.Rishabh.Expression.Values.ListExpression actualArgsList = new com.Rishabh.Expression.Values.ListExpression(actualArgs, CurrentLineNumber());
+                Token right = match(TokenType.ClosedParensToken);
+                return new ParensExpression(left, actualArgsList, right, CurrentLineNumber());
+            }
+        }
+
+
+        return result;
+    }
+
 }
 
+
+// Handling function calls as well
+// ( ListExpression )
+// ( parensExpression () )

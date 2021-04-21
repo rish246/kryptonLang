@@ -44,3 +44,5 @@ public class ClosureExpression extends Expression {
         return _diagnostics;
     }
 }
+
+// FunctionBody -> closureExpression

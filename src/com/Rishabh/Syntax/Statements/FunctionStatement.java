@@ -32,8 +32,7 @@ public class FunctionStatement extends Statement {
 
         ClosureExpression funcClosure = new ClosureExpression(_name, _body, closureEnv, _formalArgs, getLineNumber());
 
-        // Only do this if the name is not null
-        Symbol newClosure = new Symbol("closure", funcClosure, "closure");
+        Symbol newClosure = new Symbol("closure", funcClosure, "Closure");
 
         env.set(_name, newClosure);
 
