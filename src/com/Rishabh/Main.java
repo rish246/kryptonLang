@@ -167,11 +167,12 @@ public class Main {
         File inputFileObj = new File(myInputFile);
         Scanner inputFileReader = new Scanner(inputFileObj);
 
-        String programCode = "";
+        String programCode = "{\n";
         while (inputFileReader.hasNextLine()) {
             String nextLineFile = inputFileReader.nextLine().trim();
             programCode += nextLineFile + '\n';
         }
+        programCode += "}";
         return programCode;
     }
 

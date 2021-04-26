@@ -43,7 +43,11 @@ public class ForStatement extends Statement {
         }
 
         while((boolean)haltCondResult._value) {
-            _body.evaluate(newEnv);
+            EvalResult bodyResult = _body.evaluate(newEnv);
+            if(bodyResult._value != null) {
+                return bodyResult;
+            }
+
             _diagnostics.addAll(_body.getDiagnostics());
 
             _progressExp.evaluate(newEnv);
@@ -53,9 +57,12 @@ public class ForStatement extends Statement {
             }
 
             haltCondResult = _haltingCondition.evaluate(newEnv);
+
+            // If body produced a result -> (returned) -> (->)
+
         }
 
-        return new EvalResult(null, "forExpression");
+        return new EvalResult(null, "null");
 
     }
 

@@ -3,76 +3,114 @@
 ## Krypton is a small, dynamically typed and strongly typed programming language.
 
 ### This is under construction for now.
-**Kruskal's Algorithm in krypton**
+
+**Priority Queue implementation in krypton**
 
 ```python
-def newEdge(source, destination, weight, name) {
-    return {"source" : source, "dest" : destination, "weight" : weight, "name" : name};
+
+def swap(lst, idx1, idx2) {
+    temp = lst[idx1];
+    lst[idx1] = lst[idx2];
+    lst[idx2] = temp;
 }
 
-def minCost_Kruskal(edgeList, nVertices) {
+def insertItem(myPriorityQueue, item) {
+    def bubbleUp() {
+        curIdx = len(myPriorityQueue) - 1;
+        parentIdx = (curIdx - 1) / 2;
 
-    def swap(lst, i, j) {
-        temp = lst[i];
-        lst[i] = lst[j];
-        lst[j] = temp;
+        while(parentIdx >= 0 && myPriorityQueue[parentIdx] > myPriorityQueue[curIdx]) {
+            swap(myPriorityQueue, parentIdx, curIdx);
+            curIdx = parentIdx;
+            parentIdx = (curIdx - 1) / 2;
+        }
     }
 
-    def sort(edgeList, func) {
-        for(i = 0; i < len(edgeList); i = i + 1) {
-            for(j = 1; j < len(edgeList); j = j + 1) {
-                if(func(edgeList[j], edgeList[j - 1])) {
-                    swap(edgeList, j, j - 1);
+
+    myPriorityQueue = myPriorityQueue + item;
+    bubbleUp();
+    return myPriorityQueue;
+}
+
+
+def popItem(myPriorityQueue) {
+    def popEnd() {
+        newPQ = [];
+        for(i = 0; i < len(myPriorityQueue) - 1; i = i + 1) {
+            newPQ = newPQ + myPriorityQueue[i];
+        }
+        return newPQ;
+    }
+
+
+    def min(idx1, idx2) {
+
+        if(myPriorityQueue[idx1] < myPriorityQueue[idx2]) {
+            return [idx1, myPriorityQueue[idx1]];
+        }
+        return [idx2, myPriorityQueue[idx2]];
+    }
+
+    def bubbleDown() {
+        firstIdx = 0;
+
+        isBubblingDown = true;
+
+        while(isBubblingDown) {
+            leftChildIdx = 2 * firstIdx + 1;
+            rightChildIdx = 2 * firstIdx + 2;
+
+            if(leftChildIdx < len(myPriorityQueue) && rightChildIdx < len(myPriorityQueue)) {
+                [minIdx, minCost] = min(leftChildIdx, rightChildIdx);
+                if(myPriorityQueue[firstIdx] > minCost) {
+                    swap(myPriorityQueue, firstIdx, minIdx);
+                    firstIdx = minIdx;
                 }
             }
-        }
-    }
-
-    def calculateMinCost() {
-        isVisited = {};
-
-        minCost = 0;
-        minCostTree = [];
-        for (edge in edgeList) {
-            if (isVisited[edge["dest"]] == 0 || isVisited[edge["source"]] == 0) {
-                minCost = minCost + edge["weight"];
-                isVisited[edge["dest"]] = 1;
-                isVisited[edge["source"]] = 1;
-                minCostTree = minCostTree + edge;
+            else if(leftChildIdx < len(myPriorityQueue) && myPriorityQueue[leftChildIdx] < myPriorityQueue[firstIdx]) {
+                swap(myPriorityQueue, leftChildIdx, firstIdx);
+                firstIdx = leftChildIdx;
+            }
+            else if(rightChildIdx < len(myPriorityQueue)  && myPriorityQueue[rightChildIdx] < myPriorityQueue[firstIdx]) {
+                swap(myPriorityQueue, rightChildIdx, firstIdx);
+                firstIdx = rightChildIdx;
+            }
+            else {
+                isBubblingDown = false;
             }
         }
-
-        return [minCost, minCostTree];
     }
 
 
-    sort(edgeList, lambda(e1, e2) { return e1["weight"] < e2["weight"]; });
+    firstIdx = 0;
+    lastIdx = len(myPriorityQueue) - 1;
+    swap(myPriorityQueue, firstIdx, lastIdx);
+    myPriorityQueue = popEnd();
+    bubbleDown();
+    return myPriorityQueue;
 
-    return calculateMinCost();
 }
 
-
 def main() {
-    e1 = newEdge(1, 3, 4, "e1");
-    e2 = newEdge(3, 4, 7, "e2");
-    e3 = newEdge(4, 2, 6, "e3");
-    e4 = newEdge(3, 2, 5, "e4");
-    e5 = newEdge(1, 2, 3, "e5");
+    myPriorityQueue = [];
 
-    edgeList = [e1, e2, e3, e4, e5];
-    print("Minimum Cost spanning tree algorithm implementation in krypton");
-    [minCost, minCostTree] = minCost_Kruskal(edgeList, 4);
-    print("Minimum Cost -> " + minCost);
+    myPriorityQueue = insertItem(myPriorityQueue, 2);
+    myPriorityQueue = insertItem(myPriorityQueue, 4);
+    myPriorityQueue = insertItem(myPriorityQueue, 1);
+    myPriorityQueue = insertItem(myPriorityQueue, 5);
+    myPriorityQueue = insertItem(myPriorityQueue, -1);
+    myPriorityQueue = insertItem(myPriorityQueue, -7);
+    myPriorityQueue = insertItem(myPriorityQueue, -3);
+    myPriorityQueue = insertItem(myPriorityQueue, -2);
 
-    print("-------------------------");
 
-    print("Min Cost Spanning Tree");
-    for(edge in minCostTree) {
-        print("-------------------------");
-        for([key, value] in edge) {
-            print("" + key + "->" + value);
-        }
-    }
+
+    print(myPriorityQueue);
+
+
+    print("Removing Items");
+    myPriorityQueue = popItem(myPriorityQueue);
+    print(myPriorityQueue);
 
 }
 
@@ -80,14 +118,12 @@ main();
 
 ```
 
-![plot](./Program%20outputs/KruskalAlgo.jpg)
-
-
+![plot](./Program%20outputs/priorityQueue.jpg)
 
 **Binary Search Tree In Krypton**
 
-
 _Structure of BST Node_
+
 ```python
 def createNode(value) {
     return {"value" : value, "left" : null, "right" : null};
@@ -95,6 +131,7 @@ def createNode(value) {
 ```
 
 _Inorder Traversal of BST_
+
 ```python
 def inorderTraversal(head) {
     res = "";
@@ -108,6 +145,7 @@ def inorderTraversal(head) {
 ```
 
 _Adding Values to a BST_
+
 ```python
 def insertNode(head, node) {
     if(head == null) {
@@ -176,11 +214,12 @@ print("9 : " + findValue(head, 9));
 print("-1 : " + findValue(head, -1));
 
 ```
+
 _output_
 ![plot](./Program%20outputs/BST/FindValues.jpg)
 
-
 _Delete values from BST_
+
 ```python
 def deleteValue(head, value) {
 
@@ -264,8 +303,6 @@ print(inorderTraversal(head));
 _output_
 ![plot](./Program%20outputs/BST/RemoveValues.jpg)
 
-
-
 **Foreach Loops in krypton**
 
 ```python
@@ -292,7 +329,6 @@ countFrequencies(ourList);
 ```
 
 ![plot](./Program%20outputs/countFrequency.jpg)
-
 
 **Binary Tree program using objects in krypton**
 
@@ -329,7 +365,6 @@ print(inorderTraversal(headNode));
 
 ![plot](./Program%20outputs/BinaryTree.jpg)
 
-
 **Linked List using objects in krypton**
 
 ```python
@@ -352,10 +387,6 @@ printList(headNode);
 ```
 
 ![plot](./Program%20outputs/LinkedList.jpg)
-
-
-
-
 
 **Connected Components program in krypton**
 
@@ -431,9 +462,6 @@ printGrid(grid, nRows, nCols);
 
 _output_
 ![plot](./Program%20outputs/connectedComponents.jpg)
-
-
-
 
 **Depth first search path finding algorithm in krypton**
 
@@ -522,11 +550,6 @@ _output_
 ![plot](./Program%20outputs/dfs_pathfinding_grid_not_solved.jpg)
 ![plot](./Program%20outputs/dfs_pathfinding_grid.jpg)
 
-
-
-
-
-
 **Mergesort algorithm implementation in krypton**
 
 ```python
@@ -604,7 +627,6 @@ printList(mergeSort([1, 2, 3, 2, 1, 5, 3], 7), 7);
 _output_
 ![plot](./Program%20outputs/mergeSort.jpg)
 
-
 **Binary search in a sorted list in krypton**
 
 ```python
@@ -674,7 +696,6 @@ print("Map function result");
 map(lambda(x) { return x + 1; }, [1, 2, 3]);
 ```
 
-
 2. _Filter_
 
 ```python
@@ -698,7 +719,6 @@ print("");
 print("Filter function result");
 filter(lambda(x) { return x % 2 == 0; }, [1, 2, 3, 4]);
 ```
-
 
 3. Reduce
 
@@ -725,7 +745,6 @@ reduce(lambda(acc, x) { return acc + x; }, [1, 2, 3], 0);
 _output_
 ![plot](./Program%20outputs/higerOrderFunctionsCombined.jpg)
 
-
 **Nth fibonacci number using dynamic programming in krypton**
 
 ```python
@@ -744,8 +763,6 @@ def fibonacci(n) {
 
 _output_
 ![plot](./Program%20outputs/fibonacciDP.jpg)
-
-
 
 **Program for binary search in krypton**
 
@@ -956,8 +973,6 @@ filter(evenFunc, 50);
 
 ![plot](./Program%20outputs/LambdaExpressions.jpg)
 
-
-
 **Factorial DP using krypton**
 
 ```python
@@ -976,7 +991,3 @@ def factorialDP(n) {
 
 _output_
 ![plot](./Program%20outputs/factorialDP.jpg)
-
-
-
-

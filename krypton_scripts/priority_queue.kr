@@ -1,0 +1,108 @@
+
+def swap(lst, idx1, idx2) {
+    temp = lst[idx1];
+    lst[idx1] = lst[idx2];
+    lst[idx2] = temp;
+}
+
+def insertItem(myPriorityQueue, item) {
+    def bubbleUp() {
+        curIdx = len(myPriorityQueue) - 1;
+        parentIdx = (curIdx - 1) / 2;
+
+        while(parentIdx >= 0 && myPriorityQueue[parentIdx] > myPriorityQueue[curIdx]) {
+            swap(myPriorityQueue, parentIdx, curIdx);
+            curIdx = parentIdx;
+            parentIdx = (curIdx - 1) / 2;
+        }
+    }
+
+
+    myPriorityQueue = myPriorityQueue + item;
+    bubbleUp();
+    return myPriorityQueue;
+}
+
+
+def popItem(myPriorityQueue) {
+    def popEnd() {
+        newPQ = [];
+        for(i = 0; i < len(myPriorityQueue) - 1; i = i + 1) {
+            newPQ = newPQ + myPriorityQueue[i];
+        }
+        return newPQ;
+    }
+
+
+    def min(idx1, idx2) {
+
+        if(myPriorityQueue[idx1] < myPriorityQueue[idx2]) {
+            return [idx1, myPriorityQueue[idx1]];
+        }
+        return [idx2, myPriorityQueue[idx2]];
+    }
+
+    def bubbleDown() {
+        firstIdx = 0;
+
+        isBubblingDown = true;
+
+        while(isBubblingDown) {
+            leftChildIdx = 2 * firstIdx + 1;
+            rightChildIdx = 2 * firstIdx + 2;
+
+            if(leftChildIdx < len(myPriorityQueue) && rightChildIdx < len(myPriorityQueue)) {
+                [minIdx, minCost] = min(leftChildIdx, rightChildIdx);
+                if(myPriorityQueue[firstIdx] > minCost) {
+                    swap(myPriorityQueue, firstIdx, minIdx);
+                    firstIdx = minIdx;
+                }
+            }
+            else if(leftChildIdx < len(myPriorityQueue) && myPriorityQueue[leftChildIdx] < myPriorityQueue[firstIdx]) {
+                swap(myPriorityQueue, leftChildIdx, firstIdx);
+                firstIdx = leftChildIdx;
+            }
+            else if(rightChildIdx < len(myPriorityQueue)  && myPriorityQueue[rightChildIdx] < myPriorityQueue[firstIdx]) {
+                swap(myPriorityQueue, rightChildIdx, firstIdx);
+                firstIdx = rightChildIdx;
+            }
+            else {
+                isBubblingDown = false;
+            }
+        }            
+    }
+    
+    
+    firstIdx = 0;
+    lastIdx = len(myPriorityQueue) - 1;
+    swap(myPriorityQueue, firstIdx, lastIdx);
+    myPriorityQueue = popEnd();
+    bubbleDown();
+    return myPriorityQueue;
+
+}
+
+def main() {
+    myPriorityQueue = [];
+
+    myPriorityQueue = insertItem(myPriorityQueue, 2);
+    myPriorityQueue = insertItem(myPriorityQueue, 4);
+    myPriorityQueue = insertItem(myPriorityQueue, 1);
+    myPriorityQueue = insertItem(myPriorityQueue, 5);
+    myPriorityQueue = insertItem(myPriorityQueue, -1);
+    myPriorityQueue = insertItem(myPriorityQueue, -7);
+    myPriorityQueue = insertItem(myPriorityQueue, -3);
+    myPriorityQueue = insertItem(myPriorityQueue, -2);
+
+    
+
+    print(myPriorityQueue);
+
+
+    print("Removing Items");
+    myPriorityQueue = popItem(myPriorityQueue);
+    print(myPriorityQueue);
+
+}
+
+main();

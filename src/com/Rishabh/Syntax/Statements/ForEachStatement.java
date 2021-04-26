@@ -38,10 +38,10 @@ public class ForEachStatement extends Statement {
         }
 
         if(ourIterable._type == "list") {
-            if (iterateList(env, ourIterable)) return null;
+            return iterateList(env, ourIterable);
         }
         else if(ourIterable._type == "object") {
-            if (iterateObject(env, ourIterable)) return null;
+            return iterateObject(env, ourIterable);
         }
         else {
             _diagnostics.add("Items of type " + ourIterable._type + " are not iterable");
@@ -51,7 +51,7 @@ public class ForEachStatement extends Statement {
 
     }
 
-    private boolean iterateObject(Environment env, EvalResult ourIterable) throws Exception {
+    private EvalResult iterateObject(Environment env, EvalResult ourIterable) throws Exception {
         Map<String, EvalResult> ourObject = (HashMap) ourIterable._value;
 
         for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
@@ -60,16 +60,20 @@ public class ForEachStatement extends Statement {
             BindIteratorToKeyValPair(env, keyValuePair);
 
             if(_diagnostics.size() > 0)
-                return true;
+                return null;
 
-            _body.evaluate(env);
+            EvalResult bodyResult = _body.evaluate(env);
             _diagnostics.addAll(_body.getDiagnostics());
 
             if(_diagnostics.size() > 0)
-                return true;
+                return null;
+
+
+            if(bodyResult._value != null)
+                return bodyResult;
 
         }
-        return false;
+        return null;
     }
 
     private void BindIteratorToKeyValPair(Environment env, List<EvalResult> keyValuePair) {
@@ -114,18 +118,22 @@ public class ForEachStatement extends Statement {
         return keyValueBinding;
     }
 
-    private boolean iterateList(Environment env, EvalResult ourIterable) throws Exception {
+    private EvalResult iterateList(Environment env, EvalResult ourIterable) throws Exception {
         List<EvalResult> ourList = (List) ourIterable._value;
 
         for (EvalResult element : ourList) {
             BindIdentifierIteratorToListElement(env, element);
-            _body.evaluate(env);
+            EvalResult bodyResult = _body.evaluate(env);
             _diagnostics.addAll(_body.getDiagnostics());
             if(_diagnostics.size() > 0) {
-                return true;
+                return null;
+            }
+
+            if(bodyResult._value != null) {
+                return bodyResult;
             }
         }
-        return false;
+        return null;
     }
 
     private void BindIdentifierIteratorToListElement(Environment env, EvalResult element) {
