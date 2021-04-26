@@ -7,6 +7,7 @@ import com.Rishabh.Syntax.Statement;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Utilities.Environment;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,21 +45,26 @@ public class ForStatement extends Statement {
 
         while((boolean)haltCondResult._value) {
             EvalResult bodyResult = _body.evaluate(newEnv);
+            _diagnostics.addAll(_body.getDiagnostics());
+
+            if(bodyResult == null) {
+                return null;
+            }
+
             if(bodyResult._value != null) {
                 return bodyResult;
             }
 
-            _diagnostics.addAll(_body.getDiagnostics());
-
             _progressExp.evaluate(newEnv);
             _diagnostics.addAll(_progressExp.getDiagnostics());
+
+
+            haltCondResult = _haltingCondition.evaluate(newEnv);
+            _diagnostics.addAll(_haltingCondition.getDiagnostics());
+
             if(_diagnostics.size() > 0) {
                 return null;
             }
-
-            haltCondResult = _haltingCondition.evaluate(newEnv);
-
-            // If body produced a result -> (returned) -> (->)
 
         }
 

@@ -1,0 +1,50 @@
+def sort(lst, func) {
+
+	def swap(i, j) {
+		temp = lst[i];
+		lst[i] = lst[j];
+		lst[j] = temp;
+	}
+
+	for(i = 0; i < len(lst); i = i + 1) {
+		for(j = 1; j < len(lst); j = j + 1) {
+			if(func(lst[j], lst[j-1])) {
+				swap(j, j - 1);
+			}
+		}
+	}
+
+
+}
+
+
+def newStudent(name, rollNumber, marks) {
+	return {"name" : name, "roll" : rollNumber, "marks" : marks };
+}
+
+
+def getAverageMarks(students) {
+	totalMarks = 0;
+	for(student in students) {
+		print(student["marks"]);
+		totalMarks = totalMarks + student["marks"];
+	}
+
+	return (totalMarks / len(students));
+}
+
+
+def main() {
+
+	myList = [newStudent("Rishabh", 1, 70), newStudent("katna", 2, 36), newStudent("negi", 3, 84)]; 
+	print(myList);
+
+	sort(myList, lambda(x, y) { return x["marks"] < y["marks"]; });
+	print(myList);
+
+
+	print("Average marks = " + getAverageMarks(myList));
+}
+
+
+main();

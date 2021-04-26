@@ -20,12 +20,7 @@ public class Main {
 
     
     public static void main(String[] args) {
-        // Evaluate parse Tree -> generate parse Tree and evaluate the parse Tree
-        // For file... if(args[]) {}
-        // Execute file
-        //      parser
-        //      result
-        //      evaluate
+
         if(args.length == 0) {
             runRepl();
         }

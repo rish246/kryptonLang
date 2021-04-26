@@ -47,6 +47,7 @@ public class IfStatement extends Statement {
         if (condBranchOutput) {
             EvalResult ifExpResult = _thenBranch.evaluate(env);
             _diagnostics.addAll(_thenBranch.getDiagnostics());
+
             if(_diagnostics.size() > 0) {
                 return null;
             }

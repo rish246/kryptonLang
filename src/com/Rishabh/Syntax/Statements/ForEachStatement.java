@@ -37,12 +37,12 @@ public class ForEachStatement extends Statement {
             return null;
         }
 
-        if(ourIterable._type == "list") {
-            return iterateList(env, ourIterable);
+        if(ourIterable._type == "list" || ourIterable._type == "object") {
+            return Bind(_iterator, env, ourIterable);
         }
-        else if(ourIterable._type == "object") {
-            return iterateObject(env, ourIterable);
-        }
+//        else if(ourIterable._type == "object") {
+//            return iterateObject(env, ourIterable);
+//        }
         else {
             _diagnostics.add("Items of type " + ourIterable._type + " are not iterable");
         }
@@ -51,78 +51,25 @@ public class ForEachStatement extends Statement {
 
     }
 
-    private EvalResult iterateObject(Environment env, EvalResult ourIterable) throws Exception {
-        Map<String, EvalResult> ourObject = (HashMap) ourIterable._value;
+    /////////////////////////////////////////////////////////////////////////////////
 
-        for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
-            List<EvalResult> keyValuePair = getKeyValuePair(binding);
+    private EvalResult Bind(Expression left, Environment env, EvalResult right) throws Exception {
 
-            BindIteratorToKeyValPair(env, keyValuePair);
+        if(right._type == "list") {
+            return iterateList(left, env, right);
+        }
 
-            if(_diagnostics.size() > 0)
-                return null;
-
-            EvalResult bodyResult = _body.evaluate(env);
-            _diagnostics.addAll(_body.getDiagnostics());
-
-            if(_diagnostics.size() > 0)
-                return null;
-
-
-            if(bodyResult._value != null)
-                return bodyResult;
-
+        if(right._type == "object") {
+            return iterateObject(left, env, right);
         }
         return null;
     }
 
-    private void BindIteratorToKeyValPair(Environment env, List<EvalResult> keyValuePair) {
-        if(_iterator.getType() == ExpressionType.IdentifierExpression) {
-            IdentifierExpression ourIdentifierIterator = (IdentifierExpression) _iterator;
-            Symbol iteratorBinding = new Symbol(ourIdentifierIterator._lexeme, keyValuePair, "list");
-            env.set(ourIdentifierIterator._lexeme, iteratorBinding);
-        }
-
-        else if(_iterator.getType() == ExpressionType.ListExpression) {
-            BindListIteratorToList(env, keyValuePair);
-        }
-
-        else {
-            _diagnostics.add("Expression of type " + _iterator.getType() + " is not valid in foreach loop");
-        }
-    }
-
-    private void BindListIteratorToList(Environment env, List<EvalResult> ourList) {
-        var elements = (ListExpression) _iterator;
-        List<Expression> leftList =  elements._elements;
-
-        if(ourList.size() != leftList.size()) {
-            _diagnostics.add("Dimension mismatch in expression.. the elements in lvalue and rvalue must be same, Error at line number " + getLineNumber());
-        }
-
-        for(int i = 0; i < ourList.size(); i++) {
-            var curIdentifier = (IdentifierExpression) leftList.get(i);
-            EvalResult rightExpResult = ourList.get(i);
-            env.set(curIdentifier._lexeme, new Symbol(curIdentifier._lexeme, rightExpResult._value, rightExpResult._type));
-        }
-    }
-
-
-    private List<EvalResult> getKeyValuePair(Map.Entry<String, EvalResult> binding) {
-        EvalResult key = new EvalResult(binding.getKey(), "string");
-        EvalResult value = binding.getValue();
-
-        List<EvalResult> keyValueBinding = new ArrayList<>();
-        keyValueBinding.add(key);
-        keyValueBinding.add(value);
-        return keyValueBinding;
-    }
-
-    private EvalResult iterateList(Environment env, EvalResult ourIterable) throws Exception {
+    private EvalResult iterateList(Expression _iterator, Environment env, EvalResult ourIterable) throws Exception {
         List<EvalResult> ourList = (List) ourIterable._value;
 
         for (EvalResult element : ourList) {
-            BindIdentifierIteratorToListElement(env, element);
+            BindIterator(_iterator, env, element);
             EvalResult bodyResult = _body.evaluate(env);
             _diagnostics.addAll(_body.getDiagnostics());
             if(_diagnostics.size() > 0) {
@@ -136,7 +83,41 @@ public class ForEachStatement extends Statement {
         return null;
     }
 
-    private void BindIdentifierIteratorToListElement(Environment env, EvalResult element) {
+    private EvalResult iterateObject(Expression left, Environment env, EvalResult ourIterable) throws Exception {
+        Map<String, EvalResult> ourObject = (HashMap) ourIterable._value;
+
+        for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
+            List<EvalResult> keyValuePair = getKeyValuePair(binding);
+
+            BindIterator(left, env, new EvalResult(keyValuePair, "list"));
+
+            if(_diagnostics.size() > 0)
+                return null;
+
+            EvalResult bodyResult = _body.evaluate(env);
+            _diagnostics.addAll(_body.getDiagnostics());
+
+            if(_diagnostics.size() > 0)
+                return null;
+
+            if(bodyResult._value != null)
+                return bodyResult;
+
+        }
+        return null;
+    }
+
+    private List<EvalResult> getKeyValuePair(Map.Entry<String, EvalResult> binding) {
+        EvalResult key = new EvalResult(binding.getKey(), "string");
+        EvalResult value = binding.getValue();
+
+        List<EvalResult> keyValueBinding = new ArrayList<>();
+        keyValueBinding.add(key);
+        keyValueBinding.add(value);
+        return keyValueBinding;
+    }
+
+    private void BindIterator(Expression _iterator, Environment env, EvalResult element) throws Exception {
         if(_iterator.getType() == ExpressionType.IdentifierExpression) {
             var ourIterator = (IdentifierExpression) _iterator;
             Symbol iteratorBinding = new Symbol(ourIterator._lexeme, element._value, element._type);
@@ -148,12 +129,21 @@ public class ForEachStatement extends Statement {
                 _diagnostics.add("Cannot bind a list to a type " + element._type + " at line number " + getLineNumber());
                 return;
             }
-
             List<EvalResult> currentListElement = (List) element._value;
-            BindListIteratorToList(env, currentListElement);
+            var elements = (ListExpression) _iterator;
+            List<Expression> leftList =  elements._elements;
+
+            // Call BindIterator
+            if(leftList.size() != currentListElement.size()) {
+                _diagnostics.add("Dimension mismatch.. List of size " + currentListElement.size() + " cannot be bound to list of size " + leftList.size());
+                return;
+            }
+
+            for(int i=0; i < leftList.size(); i++)
+                BindIterator(leftList.get(i), env, currentListElement.get(i));
+
             return;
         }
-
         _diagnostics.add("Invalid iterator type " + _iterator.getType() + " at line number " + getLineNumber());
     }
 

@@ -57,21 +57,21 @@ public class AssignmentExpression extends Expression {
         if(rightRes == null)
             return null;
 
-        String rightType = rightRes._type;
-        Object rightValue = rightRes._value;
+        return Bind(_left, rightRes, env);
+    }
 
-        // left's lexeme
-        if(_left.getType() == ExpressionType.IdentifierExpression) {
-            return assignIdentifier(env, rightType, rightValue);
+
+    // make a method Bind which binds an expression to another expression
+    private EvalResult Bind(Expression left, EvalResult right, Environment env) throws Exception{
+        if(left.getType() == ExpressionType.IdentifierExpression) {
+            return assignIdentifier(left, env, right);
         }
-        // Implement it here first
-        if(_left.getType() == ExpressionType.ListExpression) {
-            return assignList(env, rightType, rightValue);
+        if(left.getType() == ExpressionType.ListExpression) {
+            return assignList(left, env, right);
         }
+        if(left.getType() == ExpressionType.ArrayAccessExpression) {
 
-        if(_left.getType() == ExpressionType.ArrayAccessExpression) {
-
-            com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) _left;
+            com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) left;
 
             Symbol ourEntry = env.get(curExp._identifier._lexeme);
 
@@ -80,57 +80,49 @@ public class AssignmentExpression extends Expression {
                 return null;
             }
 
-            // Assign values to iterables like arrays and objects
-            return assignIterable(env, rightRes, curExp, ourEntry);
-
+            return assignIterable(env, right, curExp, ourEntry);
         }
 
-        else {
-            _diagnostics.add("Expression of type " + _left.getType() + " is not a valid lvalue" + " at line number " + getLineNumber());
-        }
 
+        _diagnostics.add("Expression of type " + _left.getType() + " is not a valid lvalue" + " at line number " + getLineNumber());
         return null;
     }
 
-    private EvalResult assignList(Environment env, String rightType, Object rightValue) throws Exception {
+    private EvalResult assignList(Expression left, Environment env, EvalResult right) throws Exception {
+
+        String rightType = right._type;
+        Object rightValue = right._value;
         // Get the elements from the list
-        com.Rishabh.Expression.Values.ListExpression LeftList = (com.Rishabh.Expression.Values.ListExpression) _left;
+        com.Rishabh.Expression.Values.ListExpression LeftList = (com.Rishabh.Expression.Values.ListExpression) left;
         // For Each element check it is of type identifierExpression
         List<Expression> listElements = LeftList._elements;
 
-        for(Expression element : listElements) {
-            if (element.getType() != ExpressionType.IdentifierExpression) {
-                _diagnostics.add("Elements of list must be identifier expressions, found " + element.getType() + " at line number " + getLineNumber());
-                return null;
-            }
-        }
         // if everyThing is alright
         if(!rightType.equals("list")) {
             _diagnostics.add("Cannot de-structure " + rightType + " into a list. Error at line number " + getLineNumber());
             return null;
         }
 
-        List<EvalResult> rightList = (List) rightValue;
+        List<EvalResult> rightList = (List) rightValue; // We got the right res
         if(rightList.size() != listElements.size()) {
             _diagnostics.add("Dimension mismatch in expression.. the elements in lvalue and rvalue must be same, Error at line number " + getLineNumber());
             return null;
         }
 
-
         for(int i = 0; i < listElements.size(); i++) {
-            IdentifierExpression curIdentifier = (IdentifierExpression) listElements.get(i);
-            EvalResult rightExpResult = rightList.get(i);
-
-            env.set(curIdentifier._lexeme, new Symbol(curIdentifier._lexeme, rightExpResult._value, rightExpResult._type));
+            Bind(listElements.get(i), rightList.get(i), env);
         }
 
         return new EvalResult(rightList, "list");
 
     }
 
-    private EvalResult assignIdentifier(Environment env, String rightType, Object rightValue) {
-        IdentifierExpression left = (IdentifierExpression) _left;
-        Symbol res = env.set(left._lexeme, new Symbol(left._lexeme, rightValue, rightType));
+    private EvalResult assignIdentifier(Expression left, Environment env, EvalResult right) {
+        String rightType = right._type;
+        Object rightValue = right._value;
+
+        IdentifierExpression I_left = (IdentifierExpression) left;
+        Symbol res = env.set(I_left._lexeme, new Symbol(I_left._lexeme, rightValue, rightType));
         return new EvalResult(res._value, res._type);
     }
 
@@ -147,7 +139,6 @@ public class AssignmentExpression extends Expression {
                 return null;
             }
         }
-
 
         Initial._value = rightRes._value;
         Initial._type = rightRes._type;
@@ -198,7 +189,4 @@ public class AssignmentExpression extends Expression {
     }
 
 }
-// x[0] -> x -> insert an evalResult() return that
 
-
-// I think i am ready for the adding line numbers to runTimeErrors
