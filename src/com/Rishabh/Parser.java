@@ -563,6 +563,18 @@ class Parser {
 
             }
 
+            case InputKeyword: {
+                match(TokenType.InputKeyword);
+                match(TokenType.OpenParensToken);
+                String dataType = ((IdentifierExpression) parsePrimaryExp())._lexeme;
+                match(TokenType.CommaSeparatorToken);
+                String prompt = ((StringExpression) parsePrimaryExp())._value;
+                match(TokenType.ClosedParensToken);
+
+                return new ReadInputExpression(dataType, prompt, CurrentLineNumber());
+
+            }
+
             default:
                 _diagnostics.add("Unexpected primary expression, Instead got : " + CurrentToken()._lexeme + ", at line number " + _lineNumbers[_position]);
 
@@ -598,8 +610,3 @@ class Parser {
     }
 
 }
-
-
-// Handling function calls as well
-// ( ListExpression )
-// ( parensExpression () )

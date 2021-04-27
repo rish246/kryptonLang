@@ -36,14 +36,18 @@ public class WhileStatement extends Statement {
         }
 
         while((boolean) _conditionalBranch.evaluate(env)._value) {
-            _body.evaluate(env);
+            EvalResult bodyResult = _body.evaluate(env);
             _diagnostics.addAll(_body.getDiagnostics());
             if(_diagnostics.size() > 0) {
                 return null;
             }
+
+            if(bodyResult._value != null && bodyResult._type != "null") {
+                return bodyResult;
+            }
         }
 
-        return new EvalResult(null, "whileExpression");
+        return new EvalResult(null, "null");
 
     }
 

@@ -6,7 +6,7 @@ import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Utilities.Environment;
 
 public class StringExpression extends Expression {
-    String _value;
+    public String _value;
 
     public StringExpression(String value, int lineNumber) {
         super(ExpressionType.StringExpression, lineNumber);

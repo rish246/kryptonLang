@@ -1,0 +1,25 @@
+def guessNumber(originalAns) {
+    
+    foundAns = false;
+    while(!foundAns) {
+        newGuess = input(int, "Enter a number : ");
+        if(newGuess < originalAns) {
+            print("Enter a bigger Number");
+        }
+        else if(newGuess > originalAns) {
+            print("Enter a smaller number");
+        }
+        else {
+            print("You have won, Corrent ans = " + newGuess);
+            foundAns = true;
+        }
+    }
+
+}
+
+def main() {
+    guessNumber(73);
+
+}
+
+main();

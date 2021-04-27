@@ -4,6 +4,218 @@
 
 ### This is under construction for now.
 
+**Basic Tic-Tac-Toe in krytpon**
+
+```python
+
+def printBoard(board) {
+    for(row in board) {
+        print(row);
+    }
+}
+
+def isSame(lst) {
+    for(i = 1; i < len(lst); i = i + 1) {
+        if(lst[i] != lst[i-1]) {
+            return false;
+        }
+    }
+
+    return len(lst) == 3;
+}
+
+def getDiagonals(board, row, col) {
+    leftToRightDiagonal = [];
+    [r, c] = [row, col];
+    while(r < len(board) && c < len(board[0])) {
+        leftToRightDiagonal = leftToRightDiagonal + board[r][c];
+        r = r + 1;
+        c = c + 1;
+    }
+
+    [r, c] = [row - 1, col - 1];
+    while(r >= 0 && c >= 0) {
+        leftToRightDiagonal = leftToRightDiagonal + board[r][c];
+        r = r - 1;
+        c = c - 1;
+    }
+
+
+
+    rightToLeftDiagonal = [];
+    [r, c] = [row, col];
+    while(r >= 0 && c < len(board[0])) {
+        print("" + r + ", " + c);
+        rightToLeftDiagonal = rightToLeftDiagonal + board[r][c];
+        r = r - 1;
+        c = c + 1;
+    }
+
+    [r, c] = [row + 1, col - 1];
+    while(r < len(board) && c >= 0) {
+        rightToLeftDiagonal = rightToLeftDiagonal + board[r][c];
+        r = r + 1;
+        c = c - 1;
+    }
+
+
+    return [leftToRightDiagonal, rightToLeftDiagonal];
+}
+
+def checkGameOver(board, row, col) {
+    curRow = board[row];
+
+    if(isSame(curRow)) {
+        return true;
+    }
+
+    curCol = [];
+    for(r = 0; r < len(board); r = r + 1) {
+        curCol = curCol + board[r][col];
+    }
+
+    if(isSame(curCol)) {
+        return true;
+    }
+
+    [leftToRightDiagonal, rightToLeftDiagonal] = getDiagonals(board, row, col);
+
+    if(isSame(leftToRightDiagonal) || isSame(rightToLeftDiagonal)) {
+        return true;
+    }
+
+    return false;
+
+}
+
+
+def computerMove(board, computerChar) {
+    [computer_x, computer_y] = [0, 0];
+
+    for(row = 0; row < len(board); row = row + 1) {
+
+        for(col = 0; col < len(board); col = col + 1) {
+
+            if(board[row][col] == ".") {
+
+                board[row][col] = computerChar;
+
+                [computer_x, computer_y] = [row, col];
+
+                col = len(board);
+
+                row = len(board);
+            }
+        }
+    }
+
+    return [computer_x, computer_y];
+}
+
+
+def playerMove(board) {
+    isChosen = false;
+    [player_x, player_y] = [0, 0];
+
+    while(!isChosen) {
+        player_x = input(int, "Enter row : ");
+
+        player_y = input(int, "Enter col : ");
+
+        if(board[player_x][player_y] == ".") {
+            isChosen = true;
+        }
+        else {
+            print("Slot already filled.. chose again");
+        }
+    }
+
+    return [player_x, player_y];
+}
+
+
+def startGame(board, playerChar) {
+    computerChar = "O";
+    if(playerChar == "O") {
+        computerChar = "X";
+    }
+
+    isGameOver = false;
+    while(!isGameOver) {
+        printBoard(board);
+
+        [player_x, player_y] = playerMove(board);
+
+        board[player_x][player_y] = playerChar;
+
+        isGameOver = checkGameOver(board, player_x, player_y);
+
+        if(isGameOver) {
+            print("Player Won");
+            return 1;
+        }
+
+        [computer_x, computer_y] = computerMove(board, computerChar);
+
+        isGameOver = checkGameOver(board, computer_x, computer_y);
+
+        if(isGameOver) {
+            print("Player Lost");
+            return 1;
+        }
+
+    }
+
+}
+
+
+def getPlayerChar() {
+
+    isCharValid = false;
+    playerChar = "";
+    while(!isCharValid) {
+        playerChar = input(str, "Enter a symbol : X or O : ");
+
+        if(playerChar == "X" || playerChar == "O") {
+            isCharValid = true;
+        }
+        else {
+            print("Invalid Character entered.. Enter either X or O");
+        }
+
+    }
+
+    return playerChar;
+}
+
+def main() {
+    print("Lets play Tic-Tac-Toe");
+
+    continueGame = true;
+    while(continueGame) {
+        board = [[".", ".", "."], [".", ".", "."], [".", ".", "."]];
+        printBoard(board);
+
+        playerChar = getPlayerChar();
+
+        startGame(board, playerChar);
+
+        printBoard(board);
+
+        playAgain = input(str, "Do you want to play again.. Y or N : ");
+
+        continueGame = (playAgain == "Y");
+    }
+
+
+}
+
+main();
+
+```
+
+![plot](./Program%20outputs/tic-tac-toe.jpg)
+
 **Priority Queue implementation in krypton**
 
 ```python
