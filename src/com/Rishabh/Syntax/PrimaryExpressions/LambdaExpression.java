@@ -12,11 +12,11 @@ import java.util.List;
 
 public class LambdaExpression extends Expression {
     public SyntaxTree _body;
-    public List<IdentifierExpression> _formalArgs = new ArrayList<>();
+    public List<Expression> _formalArgs = new ArrayList<>();
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public LambdaExpression(SyntaxTree body, List<IdentifierExpression> formalArgs, int lineNumber) {
+    public LambdaExpression(SyntaxTree body, List<Expression> formalArgs, int lineNumber) {
         super(ExpressionType.LambdaExpression, lineNumber);
         _body = body;
         _formalArgs = formalArgs;
@@ -37,7 +37,7 @@ public class LambdaExpression extends Expression {
         System.out.println(indent + "|");
         System.out.println(indent + "|- Formal Args");
         System.out.println(indent + "    " + "|");
-        for(IdentifierExpression fArg : _formalArgs) {
+        for(Expression fArg : _formalArgs) {
             System.out.print(indent + "    " + "|-"); fArg.prettyPrint(indent + "    ");
         }
 

@@ -2,6 +2,7 @@ package com.Rishabh.Syntax.Statements;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
+import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.PrimaryExpressions.IdentifierExpression;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.Syntax.Values.ClosureExpression;
@@ -15,11 +16,11 @@ import java.util.List;
 public class FunctionStatement extends Statement {
     public SyntaxTree _body;
     public String _name;
-    public List<IdentifierExpression> _formalArgs = new ArrayList<>();
+    public List<Expression> _formalArgs = new ArrayList<>();
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public FunctionStatement(String name, SyntaxTree body, List<IdentifierExpression> formalArgs, int lineNumber) {
+    public FunctionStatement(String name, SyntaxTree body, List<Expression> formalArgs, int lineNumber) {
         super(ExpressionType.FuncExpression, lineNumber);
         _name = name;
         _body = body;
@@ -46,7 +47,7 @@ public class FunctionStatement extends Statement {
         System.out.println(indent + "|");
         System.out.println(indent + "|- Formal Args");
         System.out.println(indent + "    " + "|");
-        for(IdentifierExpression fArg : _formalArgs) {
+        for(Expression fArg : _formalArgs) {
             System.out.print(indent + "    " + "|-"); fArg.prettyPrint(indent + "    ");
         }
 

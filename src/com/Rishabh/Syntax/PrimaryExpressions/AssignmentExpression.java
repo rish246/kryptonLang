@@ -52,43 +52,44 @@ public class AssignmentExpression extends Expression {
     public EvalResult evaluate(Environment env) throws Exception {
 
         EvalResult rightRes = _right.evaluate(env);
+
         _diagnostics.addAll(_right.getDiagnostics());
 
         if(rightRes == null)
             return null;
 
-        return Bind(_left, rightRes, env);
+        return AssignmentExpression.Bind(_left, rightRes, env, _diagnostics, getLineNumber());
     }
 
 
     // make a method Bind which binds an expression to another expression
-    private EvalResult Bind(Expression left, EvalResult right, Environment env) throws Exception{
+    public static EvalResult Bind(Expression left, EvalResult right, Environment env, List<String> _diagnostics, int lineNumber) throws Exception{
         if(left.getType() == ExpressionType.IdentifierExpression) {
-            return assignIdentifier(left, env, right);
+            return AssignmentExpression.assignIdentifier(left, env, right, _diagnostics, lineNumber);
         }
         if(left.getType() == ExpressionType.ListExpression) {
-            return assignList(left, env, right);
+            return AssignmentExpression.assignList(left, env, right, _diagnostics, lineNumber);
         }
         if(left.getType() == ExpressionType.ArrayAccessExpression) {
 
-            com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) left;
+            var curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) left;
 
             Symbol ourEntry = env.get(curExp._identifier._lexeme);
 
             if (ourEntry == null) {
-                _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme + " at line number " + getLineNumber());
+                _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme + " at line number " +  lineNumber);
                 return null;
             }
 
-            return assignIterable(env, right, curExp, ourEntry);
+            return AssignmentExpression.assignIterable(env, right, curExp, ourEntry, _diagnostics, lineNumber);
         }
 
 
-        _diagnostics.add("Expression of type " + _left.getType() + " is not a valid lvalue" + " at line number " + getLineNumber());
+        _diagnostics.add("Expression of type " + left.getType() + " is not a valid lvalue" + " at line number " + lineNumber);
         return null;
     }
 
-    private EvalResult assignList(Expression left, Environment env, EvalResult right) throws Exception {
+    public static EvalResult assignList(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {
 
         String rightType = right._type;
         Object rightValue = right._value;
@@ -99,25 +100,25 @@ public class AssignmentExpression extends Expression {
 
         // if everyThing is alright
         if(!rightType.equals("list")) {
-            _diagnostics.add("Cannot de-structure " + rightType + " into a list. Error at line number " + getLineNumber());
+            _diagnostics.add("Cannot de-structure " + rightType + " into a list. Error at line number " + lineNumber);
             return null;
         }
 
         List<EvalResult> rightList = (List) rightValue; // We got the right res
         if(rightList.size() != listElements.size()) {
-            _diagnostics.add("Dimension mismatch in expression.. the elements in lvalue and rvalue must be same, Error at line number " + getLineNumber());
+            _diagnostics.add("Dimension mismatch in expression.. the elements in lvalue and rvalue must be same, Error at line number " + lineNumber);
             return null;
         }
 
         for(int i = 0; i < listElements.size(); i++) {
-            Bind(listElements.get(i), rightList.get(i), env);
+            AssignmentExpression.Bind(listElements.get(i), rightList.get(i), env, _diagnostics, lineNumber);
         }
 
         return new EvalResult(rightList, "list");
 
     }
 
-    private EvalResult assignIdentifier(Expression left, Environment env, EvalResult right) {
+    public static EvalResult assignIdentifier(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) {
         String rightType = right._type;
         Object rightValue = right._value;
 
@@ -126,15 +127,15 @@ public class AssignmentExpression extends Expression {
         return new EvalResult(res._value, res._type);
     }
 
-    private EvalResult assignIterable(Environment env, EvalResult rightRes, com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp, Symbol ourEntry) throws Exception {
+    public static EvalResult assignIterable(Environment env, EvalResult rightRes, com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp, Symbol ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
         if(ourEntry._type != "list" && ourEntry._type != "object") {
-            _diagnostics.add("Data of Type " + ourEntry._type + " is not indexable" + " at line number " + getLineNumber());
+            _diagnostics.add("Data of Type " + ourEntry._type + " is not indexable" + " at line number " + lineNumber);
             return null;
         }
 
         EvalResult Initial = new EvalResult(ourEntry._value, ourEntry._type);
         for(Expression index : curExp._indices) {
-            Initial = getValue(Initial, index, env);
+            Initial = AssignmentExpression.getValue(Initial, index, env, _diagnostics, lineNumber);
             if(Initial == null) {
                 return null;
             }
@@ -145,16 +146,16 @@ public class AssignmentExpression extends Expression {
         return Initial;
     }
 
-    private EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env) throws Exception {
+    public static EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env, List<String> _diagnostics, int lineNumber) throws Exception {
         if(curIterable._type != "list" && curIterable._type != "object") {
-            _diagnostics.add("Data of type " + curIterable._type + " is not indexable" + " at line number " + getLineNumber());
+            _diagnostics.add("Data of type " + curIterable._type + " is not indexable" + " at line number " + lineNumber);
             return null;
         }
 
         EvalResult indexRes = indexI.evaluate(env);
         if(curIterable._type == "list") {
             if(indexRes._type != "int") {
-                _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " + getLineNumber());
+                _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " +lineNumber);
                 return null;
             }
 
@@ -162,7 +163,7 @@ public class AssignmentExpression extends Expression {
 
             int curIdx = (int) indexRes._value;
             if(curIdx >= ourList.size()) {
-                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + getLineNumber());
+                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + lineNumber);
                 return null;
             }
 
@@ -171,7 +172,7 @@ public class AssignmentExpression extends Expression {
         }
         else {
             if(indexRes._type != "int" && indexRes._type != "string") {
-                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type + " at line number " + getLineNumber());
+                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type + " at line number " + lineNumber);
                 return null;
             }
 

@@ -4,11 +4,13 @@ import com.Rishabh.EvalResult;
 import com.Rishabh.Expression.Values.ListExpression;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
+import com.Rishabh.Syntax.PrimaryExpressions.AssignmentExpression;
 import com.Rishabh.Syntax.PrimaryExpressions.IdentifierExpression;
 import com.Rishabh.Syntax.PrimaryExpressions.ParensExpression;
 import com.Rishabh.Syntax.Values.ClosureExpression;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Token;
+import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
 
@@ -29,35 +31,51 @@ public class ArrayAccessExpression extends Expression {
         _indices = indices.toArray(new Expression[0]);
     }
 
+    /*
+        Evaluating a([i]|(x, y, z))+
+        1. Get the value of the identifier (a) from the env
+        2. check if the identifier exists
+        3. if it does not, throw error
+        4. if it is not of proper type, throw error
+        5. else evaluate the whole expression by calling Evaluate
 
+     */
     public EvalResult evaluate(Environment env) throws Exception {
-
-        Symbol ourEntry = env.get(_identifier._lexeme);
+        Symbol ourIdentifierEntry = env.get(_identifier._lexeme);
         // Check if the lexeme is valid one
-        if(ourEntry == null) {
+        if(ourIdentifierEntry == null) {
             _diagnostics.add("Invalid identifier " + _identifier._lexeme + " at line number " + getLineNumber());
             return null;
         }
 
-        if(ourEntry._type != "list" && ourEntry._type != "object" && ourEntry._type != "Closure") {
-            _diagnostics.add("Data of type " + ourEntry._type + " is not indexable" + " at line number " + getLineNumber());
+        if(ourIdentifierEntry._type != "list" && ourIdentifierEntry._type != "object" && ourIdentifierEntry._type != "Closure") {
+            _diagnostics.add("Data of type " + ourIdentifierEntry._type + " is not indexable" + " at line number " + getLineNumber());
             return null;
         }
 
 
+        return Evaluate(env, ourIdentifierEntry);
+    }
+
+    /*
+        Iterative evaluation of exp
+        a[1][2](3, "hello) -> ((a[1])[2])(3, "hello")
+
+     */
+    private EvalResult Evaluate(Environment env, Symbol ourEntry) throws Exception {
         EvalResult Initial = new EvalResult(ourEntry._value, ourEntry._type);
+
         for(Expression index : _indices) {
             if(index.getType() == ExpressionType.ParensExpression) {
                 Initial = callFunction(Initial, index, env);
             }
             else {
-                Initial = getValue(Initial, index, env); // If index._type == parensExpression -> functionCall
+                Initial = AssignmentExpression.getValue(Initial, index, env, _diagnostics, getLineNumber()); // If index._type == parensExpression -> functionCall
             }
 
             if(Initial == null)
                 return null;
         }
-
         return Initial;
     }
 
@@ -66,13 +84,13 @@ public class ArrayAccessExpression extends Expression {
             _diagnostics.add("Expression of type " + Initial._type + " can not be called, at line number " + getLineNumber());
             return null;
         }
-        ClosureExpression function = (ClosureExpression) Initial._value;
+        var function = (ClosureExpression) Initial._value;
         Environment functionEnv = function._closureEnv;
         SyntaxTree functionBody = function._functionBody;
         com.Rishabh.Expression.Values.ListExpression actualArgsList = (ListExpression) ((ParensExpression) index)._body;
         // elements
         List<Expression> actualArgs = actualArgsList._elements;
-        List<IdentifierExpression> formalArgs = function._formalArgs;
+        List<Expression> formalArgs = function._formalArgs;
 
         if(formalArgs.size() != actualArgs.size()) {
             _diagnostics.add("Expected " + formalArgs.size() + " arguements, got " + actualArgs.size() + " at line number " + getLineNumber());
@@ -89,68 +107,25 @@ public class ArrayAccessExpression extends Expression {
 
         return finalRes;
     }
-    private Environment bindFormalArgsWithActualArgs(Environment env, List<IdentifierExpression> formalArgs, List<Expression> _actualArgs) throws Exception {
+
+    /*
+        @TODO:
+            2. Make the ability to de-structure formal args --> Nicely done
+     */
+    private Environment bindFormalArgsWithActualArgs(Environment env, List<Expression> formalArgs, List<Expression> _actualArgs) throws Exception {
         Environment newEnv = new Environment(null);
 
         for(int i=0; i<_actualArgs.size(); i++) {
-            EvalResult curArgResult = _actualArgs.get(i).evaluate(env);
-            _diagnostics.addAll(_actualArgs.get(i).getDiagnostics());
-            if(_diagnostics.size() > 0) {
-                return null;
-            }
+            Expression curFormalArg = formalArgs.get(i);
+            Expression curActualArg = _actualArgs.get(i);
 
-            if(curArgResult._value == null && curArgResult._type != "null") {
-                _diagnostics.add("Invalid function arguement of type " + curArgResult._type+ " at line number " + getLineNumber());
-                return null;
-            }
+            EvalResult actualArgRes = curActualArg.evaluate(env);
 
-            Symbol newBinding = new Symbol(null, curArgResult._value, curArgResult._type);
-            String nextFormalArg = formalArgs.get(i)._lexeme;
-            newEnv.set(nextFormalArg, newBinding);
+            AssignmentExpression.Bind(curFormalArg, actualArgRes, newEnv, _diagnostics, getLineNumber());
         }
+
         return newEnv;
     }
-
-
-    private EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env) throws Exception {
-        if(curIterable._type != "list" && curIterable._type != "object") {
-            _diagnostics.add("Data of type " + curIterable._type + " is not indexable at line number " + getLineNumber());
-            return null;
-        }
-
-        EvalResult indexRes = indexI.evaluate(env);
-        if(curIterable._type == "list") {
-            if(indexRes._type != "int") {
-                _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " + getLineNumber());
-                return null;
-            }
-
-            List<EvalResult> ourList = (List) curIterable._value;
-
-            int curIdx = (int) indexRes._value;
-            if(curIdx >= ourList.size()) {
-                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + getLineNumber());
-                return null;
-            }
-
-            return ourList.get((int) indexRes._value);
-
-        }
-        else {
-            if(indexRes._type != "int" && indexRes._type != "string") {
-                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type + " at line number " + getLineNumber());
-                return null;
-            }
-
-            Map<String, EvalResult> ourMap = (HashMap) curIterable._value;
-            String curIdx = (indexRes._value).toString();
-
-
-            return ourMap.get(curIdx) == null ? (new EvalResult(0, "int")) : ourMap.get(curIdx);
-        }
-
-    }
-
 
     public void prettyPrint(String indent) {
         System.out.println("Array Access");

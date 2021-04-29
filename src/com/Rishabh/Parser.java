@@ -317,29 +317,7 @@ class Parser {
                 String funcName = match(TokenType.IdentifierToken)._lexeme;
                 match(TokenType.OpenParensToken);
                 // ParseFormalArgs
-                List<IdentifierExpression> formalArgs = new ArrayList<>();
-
-                if(CurrentToken()._type != TokenType.ClosedParensToken) {
-                    // Create a formal here
-                    Token firstArg = match(TokenType.IdentifierToken);
-                    if(_diagnostics.size() > 0)
-                        return null;
-
-                    formalArgs.add(new IdentifierExpression(firstArg._lexeme, CurrentLineNumber()));
-
-                }
-
-                while(CurrentToken()._type != TokenType.ClosedParensToken) {
-                    match(TokenType.CommaSeparatorToken);
-
-                    Token nextIdentifier = match(TokenType.IdentifierToken);
-                    if(_diagnostics.size() > 0)
-                        return null;
-
-                    formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme, CurrentLineNumber()));
-
-                }
-
+                List<Expression> formalArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
 
                 match(TokenType.ClosedParensToken);
 
@@ -401,26 +379,15 @@ class Parser {
     private List<Expression> parseCommaSeparatedExpressions(TokenType delimiterType) {
         List<Expression> listElements = new ArrayList<>();
 
-        if(CurrentToken()._type != delimiterType) {
-            Expression firstElement = parseExpression(0);
-            if(firstElement == null) {
-                _diagnostics.add("Error at line number " + _lineNumbers[_position]);
-                return null;
-            }
-            listElements.add(firstElement);
-
-        }
-
-
-
         while(CurrentToken()._type != delimiterType) {
-            match(TokenType.CommaSeparatorToken);
+            // parse
             Expression nextElement = parseExpression(0);
-            if(nextElement == null) {
-                next();
-                continue;
-            }
             listElements.add(nextElement);
+
+            if(CurrentToken()._type == delimiterType)
+                break;
+
+            match(TokenType.CommaSeparatorToken);
         }
 
         return listElements;
@@ -534,22 +501,7 @@ class Parser {
             case LambdaExpressionToken: {
                 match(TokenType.LambdaExpressionToken);
                 match(TokenType.OpenParensToken);
-                List<IdentifierExpression> formalArgs = new ArrayList<>();
-
-                if(CurrentToken()._type != TokenType.ClosedParensToken) {
-                    // Create a formal here
-                    Token firstArg = match(TokenType.IdentifierToken);
-
-                    formalArgs.add(new IdentifierExpression(firstArg._lexeme, CurrentLineNumber()));
-
-                }
-
-                while(CurrentToken()._type != TokenType.ClosedParensToken) {
-                    match(TokenType.CommaSeparatorToken);
-                    Token nextIdentifier = match(TokenType.IdentifierToken);
-                    formalArgs.add(new IdentifierExpression(nextIdentifier._lexeme, CurrentLineNumber()));
-
-                }
+                List<Expression> formalArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
 
 
                 match(TokenType.ClosedParensToken);

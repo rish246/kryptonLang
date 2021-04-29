@@ -14,11 +14,11 @@ public class ClosureExpression extends Expression {
     public SyntaxTree _functionBody;
     public Environment _closureEnv;
     public String _name;
-    public List<IdentifierExpression> _formalArgs;
+    public List<Expression> _formalArgs;
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ClosureExpression(String name, SyntaxTree funcBody, Environment closureEnv, List<IdentifierExpression> formalArgs, int lineNumber) {
+    public ClosureExpression(String name, SyntaxTree funcBody, Environment closureEnv, List<Expression> formalArgs, int lineNumber) {
         super(ExpressionType.ClosureExpression, lineNumber);
         _functionBody = funcBody;
         _closureEnv = closureEnv;
