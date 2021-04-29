@@ -35,7 +35,6 @@ def getDiagonals(board, row, col) {
     rightToLeftDiagonal = [];
     [r, c] = [row, col];
     while(r >= 0 && c < len(board[0])) {
-        print("" + r + ", " + c);
         rightToLeftDiagonal = rightToLeftDiagonal + board[r][c];
         r = r - 1;
         c = c + 1;
@@ -178,6 +177,7 @@ def getPlayerChar() {
     return playerChar;
 }
 
+
 def main() {
     print("Lets play Tic-Tac-Toe");
     
@@ -185,7 +185,6 @@ def main() {
     while(continueGame) {
         board = [[".", ".", "."], [".", ".", "."], [".", ".", "."]];
         printBoard(board);
-        
         playerChar = getPlayerChar();
 
         startGame(board, playerChar);
