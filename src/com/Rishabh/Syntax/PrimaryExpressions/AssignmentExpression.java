@@ -107,7 +107,7 @@ public class AssignmentExpression extends Expression {
 
         for(Map.Entry<Expression, Expression> leftEntry : leftObjectContents.entrySet()) {
             Expression keyExp = leftEntry.getKey();
-            String key = "";
+            String key;
             if(keyExp.getType() == ExpressionType.IntExpression) {
                 var intKey = (NumberExpression) keyExp;
                 key = Integer.toString(intKey._value);
@@ -123,6 +123,11 @@ public class AssignmentExpression extends Expression {
 
             Expression leftExp = leftObjectContents.get(keyExp);
             EvalResult rightRes = rightObject.get(key);
+
+            if(rightRes == null) {
+                _diagnostics.add("Key " + key + " is not present in the RHS of the assignement at line number " + lineNumber);
+                return null;
+            }
             AssignmentExpression.Bind(leftExp, rightRes, env, _diagnostics, lineNumber);
         }
 
