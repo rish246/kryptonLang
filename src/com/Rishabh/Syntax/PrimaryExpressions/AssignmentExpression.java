@@ -6,12 +6,13 @@ import com.Rishabh.Syntax.Expression;
 import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
-
-import javax.xml.xpath.XPathEvaluationResult;
+import com.Rishabh.Syntax.Values.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+
 
 public class AssignmentExpression extends Expression {
     Expression _left;
@@ -70,6 +71,9 @@ public class AssignmentExpression extends Expression {
         if(left.getType() == ExpressionType.ListExpression) {
             return AssignmentExpression.assignList(left, env, right, _diagnostics, lineNumber);
         }
+        if(left.getType() == ExpressionType.ObjectExpression) {
+            return AssignmentExpression.assignObject(left, env, right, _diagnostics, lineNumber);
+        }
         if(left.getType() == ExpressionType.ArrayAccessExpression) {
 
             var curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) left;
@@ -87,6 +91,42 @@ public class AssignmentExpression extends Expression {
 
         _diagnostics.add("Expression of type " + left.getType() + " is not a valid lvalue" + " at line number " + lineNumber);
         return null;
+    }
+
+    private static EvalResult assignObject(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {
+        // Get the left object
+        var leftObject = (com.Rishabh.Expression.Values.ObjectExpression) left;
+        Map<Expression, Expression> leftObjectContents = leftObject._contents;
+
+        // Typecast the right obj
+        if(right._type != "object") {
+            _diagnostics.add("Expected an object, found " + right._type + " at line number " + lineNumber);
+            return null;
+        }
+        Map<String, EvalResult> rightObject = (HashMap) right._value;
+
+        for(Map.Entry<Expression, Expression> leftEntry : leftObjectContents.entrySet()) {
+            Expression keyExp = leftEntry.getKey();
+            String key = "";
+            if(keyExp.getType() == ExpressionType.IntExpression) {
+                var intKey = (NumberExpression) keyExp;
+                key = Integer.toString(intKey._value);
+            }
+            else if(keyExp.getType() == ExpressionType.StringExpression) {
+                var strKey = (StringExpression) keyExp;
+                key = strKey._value;
+            }
+            else {
+                _diagnostics.add("Invalid key type in object, at line number " + lineNumber);
+                return null;
+            }
+
+            Expression leftExp = leftObjectContents.get(keyExp);
+            EvalResult rightRes = rightObject.get(key);
+            AssignmentExpression.Bind(leftExp, rightRes, env, _diagnostics, lineNumber);
+        }
+
+        return right;
     }
 
     public static EvalResult assignList(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {

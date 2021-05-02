@@ -6,7 +6,7 @@ import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Utilities.Environment;
 
 public class NumberExpression extends Expression {
-    int _value;
+    public int _value;
 //    ExpressionType _type;
 
     public NumberExpression(int value, int lineNumber) {
