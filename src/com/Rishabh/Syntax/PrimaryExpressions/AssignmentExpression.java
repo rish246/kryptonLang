@@ -7,11 +7,8 @@ import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
 import com.Rishabh.Syntax.Values.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
+import java.util.*;
 
 
 public class AssignmentExpression extends Expression {
@@ -49,7 +46,6 @@ public class AssignmentExpression extends Expression {
         return _diagnostics;
     }
 
-
     public EvalResult evaluate(Environment env) throws Exception {
 
         EvalResult rightRes = _right.evaluate(env);
@@ -61,7 +57,6 @@ public class AssignmentExpression extends Expression {
 
         return AssignmentExpression.Bind(_left, rightRes, env, _diagnostics, getLineNumber());
     }
-
 
     // make a method Bind which binds an expression to another expression
     public static EvalResult Bind(Expression left, EvalResult right, Environment env, List<String> _diagnostics, int lineNumber) throws Exception{
@@ -76,7 +71,7 @@ public class AssignmentExpression extends Expression {
         }
         if(left.getType() == ExpressionType.ArrayAccessExpression) {
 
-            var curExp = (com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression) left;
+            var curExp = (ArrayAccessExpression) left;
 
             Symbol ourEntry = env.get(curExp._identifier._lexeme);
 
@@ -95,7 +90,7 @@ public class AssignmentExpression extends Expression {
 
     private static EvalResult assignObject(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {
         // Get the left object
-        var leftObject = (com.Rishabh.Expression.Values.ObjectExpression) left;
+        var leftObject = (com.Rishabh.Syntax.Values.ObjectExpression) left;
         Map<Expression, Expression> leftObjectContents = leftObject._contents;
 
         // Typecast the right obj
@@ -138,8 +133,8 @@ public class AssignmentExpression extends Expression {
 
         String rightType = right._type;
         Object rightValue = right._value;
-        // Get the elements from the list
-        com.Rishabh.Expression.Values.ListExpression LeftList = (com.Rishabh.Expression.Values.ListExpression) left;
+        // Get the elements fro
+        var LeftList = (ListExpression) left;
         // For Each element check it is of type identifierExpression
         List<Expression> listElements = LeftList._elements;
 
@@ -172,8 +167,8 @@ public class AssignmentExpression extends Expression {
         return new EvalResult(res._value, res._type);
     }
 
-    public static EvalResult assignIterable(Environment env, EvalResult rightRes, com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression curExp, Symbol ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
-        if(ourEntry._type != "list" && ourEntry._type != "object") {
+    public static EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, Symbol ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
+        if(!Objects.equals(ourEntry._type, "list") && !Objects.equals(ourEntry._type, "object")) {
             _diagnostics.add("Data of Type " + ourEntry._type + " is not indexable" + " at line number " + lineNumber);
             return null;
         }
@@ -235,4 +230,6 @@ public class AssignmentExpression extends Expression {
     }
 
 }
+
+// why did it end in an infinite Loop -> Why?
 

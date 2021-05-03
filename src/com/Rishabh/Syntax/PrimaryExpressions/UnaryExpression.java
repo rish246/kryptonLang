@@ -3,7 +3,6 @@ package com.Rishabh.Syntax.PrimaryExpressions;
 import com.Rishabh.EvalResult;
 import com.Rishabh.Syntax.Expression;
 import com.Rishabh.ExpressionType;
-import com.Rishabh.SyntaxTree;
 import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 

@@ -1,23 +1,17 @@
-package com.Rishabh.Expression.PrimaryExpressions;
+package com.Rishabh.Syntax.PrimaryExpressions;
 
 import com.Rishabh.EvalResult;
-import com.Rishabh.Expression.Values.ListExpression;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
-import com.Rishabh.Syntax.PrimaryExpressions.AssignmentExpression;
-import com.Rishabh.Syntax.PrimaryExpressions.IdentifierExpression;
-import com.Rishabh.Syntax.PrimaryExpressions.ParensExpression;
 import com.Rishabh.Syntax.Values.ClosureExpression;
+import com.Rishabh.Syntax.Values.ListExpression;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Token;
-import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ArrayAccessExpression extends Expression {
 
@@ -87,7 +81,7 @@ public class ArrayAccessExpression extends Expression {
         var function = (ClosureExpression) Initial._value;
         Environment functionEnv = function._closureEnv;
         SyntaxTree functionBody = function._functionBody;
-        com.Rishabh.Expression.Values.ListExpression actualArgsList = (ListExpression) ((ParensExpression) index)._body;
+        var actualArgsList = (ListExpression) ((ParensExpression) index)._body;
         // elements
         List<Expression> actualArgs = actualArgsList._elements;
         List<Expression> formalArgs = function._formalArgs;

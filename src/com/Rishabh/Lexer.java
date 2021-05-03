@@ -231,6 +231,8 @@ class Lexer {
                 return new Token(TokenType.InKeyword, "in", null);
             case "input":
                 return new Token(TokenType.InputKeyword, "input", null);
+            case "class":
+                return new Token(TokenType.ClassToken, "class", null);
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }

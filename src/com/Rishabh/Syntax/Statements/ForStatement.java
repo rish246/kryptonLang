@@ -1,4 +1,4 @@
-package com.Rishabh.Expression.Statements;
+package com.Rishabh.Syntax.Statements;
 
 import com.Rishabh.EvalResult;
 import com.Rishabh.Syntax.Expression;

@@ -1,17 +1,10 @@
 package com.Rishabh;
 
-import com.Rishabh.Expression.Statements.ForEachStatement;
-import com.Rishabh.Expression.Statements.ForStatement;
-import com.Rishabh.Expression.Values.ObjectExpression;
 import com.Rishabh.Syntax.Expression;
-import com.Rishabh.Syntax.LambdaExpression;
 import com.Rishabh.Syntax.PrimaryExpressions.*;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.Syntax.Statements.*;
-import com.Rishabh.Syntax.Values.BoolExperssion;
-import com.Rishabh.Syntax.Values.NullExpression;
-import com.Rishabh.Syntax.Values.NumberExpression;
-import com.Rishabh.Syntax.Values.StringExpression;
+import com.Rishabh.Syntax.Values.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -259,6 +252,13 @@ class Parser {
                 return parsePrintStatement();
             }
 
+            case ClassToken: {
+                match(TokenType.ClassToken);
+                Token className = NextToken();
+                SyntaxTree classFeatures = parse();
+                return new ClassStatement(className, classFeatures, CurrentLineNumber());
+            }
+
             default:
                 _diagnostics.add("Unexpected token : " + CurrentToken()._lexeme + ", expected a statement initialization at line number " + _lineNumbers[_position]);
                 return null;
@@ -275,7 +275,7 @@ class Parser {
         return new PrintStatement(printExpBody, CurrentLineNumber());
     }
 
-    private com.Rishabh.Expression.Statements.ReturnStatement parseReturnStatement() {
+    private ReturnStatement parseReturnStatement() {
         match(TokenType.ReturnToken);
 
         // Only work if there is an enclosing function statement else throw a parse error
@@ -289,7 +289,7 @@ class Parser {
             _diagnostics.add("Empty return statements are not allowed");
         }
 
-        return new com.Rishabh.Expression.Statements.ReturnStatement(returnBody, CurrentLineNumber());
+        return new ReturnStatement(returnBody, CurrentLineNumber());
     }
 
     private FunctionStatement parseFunctionStatement() {
@@ -514,36 +514,43 @@ class Parser {
     private ObjectExpression parseObjectExpression() {
         match(TokenType.OpenBracketToken);
         Map<Expression, Expression> bindings = new HashMap<>();
+
+
         while(CurrentToken()._type != TokenType.ClosedBracket) {
             Expression key = parseExpression(0);
-            match(TokenType.ColonOperator);
-            Expression value = parseExpression(0);
-            bindings.put(key, value);
+            Expression value;
+            if(CurrentToken()._type == TokenType.ColonOperator) {
+                match(TokenType.ColonOperator);
+                value = parseExpression(0);
+            }
+            else {
+                // Make key's lexeme to key binding
+                String keyValue = Peek(-1)._lexeme;
+                value = key;
+                key = new StringExpression(keyValue, CurrentLineNumber());
+            }
 
+            bindings.put(key, value);
             if(CurrentToken()._type == TokenType.ClosedBracket)
                 continue;
             match(TokenType.CommaSeparatorToken);
         }
+
         match(TokenType.ClosedBracket);
         return new ObjectExpression(bindings, CurrentLineNumber());
     }
 
-    private com.Rishabh.Expression.Values.ListExpression parseListExpression() {
+    private ListExpression parseListExpression() {
         match(TokenType.OpenSquareBracketToken);
 
         List<Expression> listElements = parseCommaSeparatedExpressions(TokenType.ClosedSquareBracketToken);
 
-        if(listElements == null) {
-            return null;
-        }
-
-
         match(TokenType.ClosedSquareBracketToken);
 
-        return new com.Rishabh.Expression.Values.ListExpression(listElements, CurrentLineNumber());
+        return new ListExpression(listElements, CurrentLineNumber());
     }
 
-    private com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression parseArrayAccessExpression(com.Rishabh.Token currentToken) {
+    private ArrayAccessExpression parseArrayAccessExpression(com.Rishabh.Token currentToken) {
         List<Expression> indices = new ArrayList<>();
         while(CurrentToken()._type == TokenType.OpenSquareBracketToken || CurrentToken()._type == TokenType.OpenParensToken) {
             Expression Index = parseChainedExpression();
@@ -556,7 +563,7 @@ class Parser {
         }
 
 
-        return new com.Rishabh.Expression.PrimaryExpressions.ArrayAccessExpression(currentToken, indices, CurrentLineNumber());
+        return new ArrayAccessExpression(currentToken, indices, CurrentLineNumber());
     }
 
     private BoolExperssion parseBoolExpression() {
@@ -614,7 +621,7 @@ class Parser {
             case OpenParensToken: {
                 Token left = match(TokenType.OpenParensToken);
                 List<Expression> actualArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
-                com.Rishabh.Expression.Values.ListExpression actualArgsList = new com.Rishabh.Expression.Values.ListExpression(actualArgs, CurrentLineNumber());
+                var actualArgsList = new ListExpression(actualArgs, CurrentLineNumber());
                 Token right = match(TokenType.ClosedParensToken);
                 return new ParensExpression(left, actualArgsList, right, CurrentLineNumber());
             }

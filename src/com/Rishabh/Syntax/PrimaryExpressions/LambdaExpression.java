@@ -1,9 +1,9 @@
-package com.Rishabh.Syntax;
+package com.Rishabh.Syntax.PrimaryExpressions;
 
 import com.Rishabh.EvalResult;
-import com.Rishabh.Syntax.PrimaryExpressions.IdentifierExpression;
-import com.Rishabh.Syntax.Values.ClosureExpression;
 import com.Rishabh.ExpressionType;
+import com.Rishabh.Syntax.Expression;
+import com.Rishabh.Syntax.Values.ClosureExpression;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Utilities.Environment;
 

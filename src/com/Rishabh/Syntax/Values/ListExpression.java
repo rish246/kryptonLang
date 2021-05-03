@@ -1,10 +1,9 @@
-package com.Rishabh.Expression.Values;
+package com.Rishabh.Syntax.Values;
 
 
 import com.Rishabh.EvalResult;
-import com.Rishabh.Syntax.Expression;
 import com.Rishabh.ExpressionType;
-import com.Rishabh.SyntaxTree;
+import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Utilities.Environment;
 
 import java.util.ArrayList;

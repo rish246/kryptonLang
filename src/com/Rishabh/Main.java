@@ -107,7 +107,6 @@ public class Main {
 
                     parser = new Parser(programCode);
 
-                    result = parser.parse();
                 }
                 else {
                     line = getNextCodeSegment(line);
@@ -116,9 +115,9 @@ public class Main {
                         continue;
 
                     parser = new Parser(line);
-                    result = parser.parse();
 
                 }
+                result = parser.parse();
 
                 if (displayParseTree)
                     result.prettyPrint("");

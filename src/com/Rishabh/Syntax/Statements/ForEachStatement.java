@@ -1,15 +1,12 @@
-package com.Rishabh.Expression.Statements;
+package com.Rishabh.Syntax.Statements;
 
 import com.Rishabh.EvalResult;
-import com.Rishabh.Expression.Values.ListExpression;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.PrimaryExpressions.AssignmentExpression;
-import com.Rishabh.Syntax.PrimaryExpressions.IdentifierExpression;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Utilities.Environment;
-import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
