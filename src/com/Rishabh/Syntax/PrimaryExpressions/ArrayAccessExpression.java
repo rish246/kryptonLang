@@ -19,6 +19,7 @@ public class ArrayAccessExpression extends Expression {
     public Expression[] _indices;
     public List<String> _diagnostics = new ArrayList<>();
 
+
     public ArrayAccessExpression(Token identifierToken, List<Expression> indices, int lineNumber) {
         super(ExpressionType.ArrayAccessExpression, lineNumber);
         _identifier = identifierToken;
@@ -42,11 +43,6 @@ public class ArrayAccessExpression extends Expression {
             return null;
         }
 
-        if(ourIdentifierEntry._type != "list" && ourIdentifierEntry._type != "object" && ourIdentifierEntry._type != "Closure") {
-            _diagnostics.add("Data of type " + ourIdentifierEntry._type + " is not indexable" + " at line number " + getLineNumber());
-            return null;
-        }
-
 
         return Evaluate(env, ourIdentifierEntry);
     }
@@ -57,14 +53,23 @@ public class ArrayAccessExpression extends Expression {
 
      */
     private EvalResult Evaluate(Environment env, Symbol ourEntry) throws Exception {
-        EvalResult Initial = new EvalResult(ourEntry._value, ourEntry._type);
+        EvalResult Initial = new EvalResult(ourEntry);
 
         for(Expression index : _indices) {
             if(index.getType() == ExpressionType.ParensExpression) {
                 Initial = callFunction(Initial, index, env);
             }
+            else if(index.getType() == ExpressionType.MemberAccessExpression) {
+                // Get the member from Initial's environment
+                var memberName = (MemberAccessExpression) index;
+                // Extract object's env from Initial's value
+                Environment objectEnv = (Environment) Initial._value;
+
+                Initial =  memberName.evaluate(objectEnv);
+            }
             else {
                 Initial = AssignmentExpression.getValue(Initial, index, env, _diagnostics, getLineNumber()); // If index._type == parensExpression -> functionCall
+
             }
 
             if(Initial == null)

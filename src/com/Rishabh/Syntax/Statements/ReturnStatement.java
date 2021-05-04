@@ -54,8 +54,5 @@ public class ReturnStatement extends Statement {
 
     }
 
-    public boolean isExpressionPrimary() {
-        return false;
-    }
 
 }

@@ -3,7 +3,6 @@ package com.Rishabh.Syntax.Statements;
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
-import com.Rishabh.Syntax.PrimaryExpressions.IdentifierExpression;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.Syntax.Values.ClosureExpression;
 import com.Rishabh.SyntaxTree;
@@ -59,7 +58,4 @@ public class FunctionStatement extends Statement {
         return _diagnostics;
     }
 
-    public boolean isExpressionPrimary() {
-        return _name == null;
-    }
 }

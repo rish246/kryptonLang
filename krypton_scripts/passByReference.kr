@@ -38,5 +38,3 @@
     printList(a, 3);
 
 }
-// BindingExpression --> (Expression - 5) {
-//

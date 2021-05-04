@@ -9,6 +9,7 @@ import com.Rishabh.Utilities.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class WhileStatement extends Statement {
     public Expression _conditionalBranch;
@@ -42,7 +43,7 @@ public class WhileStatement extends Statement {
                 return null;
             }
 
-            if(bodyResult._value != null && bodyResult._type != "null") {
+            if(bodyResult._value != null && !Objects.equals(bodyResult._type, "null")) {
                 return bodyResult;
             }
         }
@@ -64,10 +65,4 @@ public class WhileStatement extends Statement {
         return _diagnostics;
     }
 
-    public boolean isExpressionPrimary() {
-        return false;
-    }
 }
-
-// Now comma separated expressions.... These needs to be evaluated ... (How an Identifier is Evaluated) //
-// Refactor our project to the ground --> should have only 5 lines left

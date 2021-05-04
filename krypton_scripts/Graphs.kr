@@ -20,8 +20,8 @@ def findDuplicate(nums) {
 
 
 def main() {
-    input = [1, 2, 2, 3, 4, 3];
-    print(findDuplicate(input));
+    inputArr = [1, 2, 2, 3, 4, 3];
+    print(findDuplicate(inputArr));
 }
 
 main();

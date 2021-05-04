@@ -3,12 +3,17 @@ package com.Rishabh.Syntax.PrimaryExpressions;
 import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
+import com.Rishabh.Syntax.Values.ListExpression;
+import com.Rishabh.Syntax.Values.NumberExpression;
+import com.Rishabh.Syntax.Values.StringExpression;
 import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 import com.Rishabh.Utilities.Symbol;
-import com.Rishabh.Syntax.Values.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class AssignmentExpression extends Expression {
@@ -168,33 +173,39 @@ public class AssignmentExpression extends Expression {
     }
 
     public static EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, Symbol ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
-        if(!Objects.equals(ourEntry._type, "list") && !Objects.equals(ourEntry._type, "object")) {
-            _diagnostics.add("Data of Type " + ourEntry._type + " is not indexable" + " at line number " + lineNumber);
-            return null;
-        }
 
-        EvalResult Initial = new EvalResult(ourEntry._value, ourEntry._type);
+
+        EvalResult Initial = new EvalResult(ourEntry); // a->NewEnvironment
+        Environment objEnv = new Environment(null);
+
         for(Expression index : curExp._indices) {
-            Initial = AssignmentExpression.getValue(Initial, index, env, _diagnostics, lineNumber);
+            if(index.getType() == ExpressionType.MemberAccessExpression) {
+                var memberAccessExp = (MemberAccessExpression) index;
+                objEnv = (Environment) Initial._value;
+                String memberName = memberAccessExp._memberName._lexeme;
+                Initial = new EvalResult(objEnv.set(memberName, new Symbol(memberName, null, "null")));
+            }
+            else {
+                Initial = AssignmentExpression.getValue(Initial, index, env, _diagnostics, lineNumber);
+
+            }
+
             if(Initial == null) {
                 return null;
             }
         }
-
         Initial._value = rightRes._value;
         Initial._type = rightRes._type;
+
         return Initial;
     }
 
     public static EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env, List<String> _diagnostics, int lineNumber) throws Exception {
-        if(curIterable._type != "list" && curIterable._type != "object") {
-            _diagnostics.add("Data of type " + curIterable._type + " is not indexable" + " at line number " + lineNumber);
-            return null;
-        }
 
-        EvalResult indexRes = indexI.evaluate(env);
-        if(curIterable._type == "list") {
-            if(indexRes._type != "int") {
+        EvalResult indexRes = indexI.evaluate(env); // a[x] -> evaluated in current env
+                                                    // a(x) -> evaluated in current env
+        if(curIterable._type.equals("list")) {
+            if(!indexRes._type.equals("int")) {
                 _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " +lineNumber);
                 return null;
             }
@@ -230,6 +241,4 @@ public class AssignmentExpression extends Expression {
     }
 
 }
-
-// why did it end in an infinite Loop -> Why?
 

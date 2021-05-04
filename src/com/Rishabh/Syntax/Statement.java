@@ -15,6 +15,11 @@ public class Statement extends SyntaxTree {
     public boolean isStatement() {
         return true;
     }
+
+    @Override
+    public boolean isExpressionPrimary() {
+        return false;
+    }
 }
 
 

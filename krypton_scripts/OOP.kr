@@ -1,0 +1,18 @@
+class A {
+    def x(n) {
+        print(n);
+    }
+
+    def y(n) {
+        return 1 + n;
+    }
+}
+
+n = 5;
+a = new A();
+a.x(n);
+print(a.y(n));
+a.t = 3;
+print(a.t);
+
+# replace every occurence of symbol with evalResult

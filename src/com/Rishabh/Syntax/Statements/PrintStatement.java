@@ -85,8 +85,6 @@ public class PrintStatement extends Statement {
         return _diagnostics;
     }
 
-    public boolean isExpressionPrimary() {
-        return false;
-    }
+
 
 }

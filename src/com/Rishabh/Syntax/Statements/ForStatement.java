@@ -92,7 +92,5 @@ public class ForStatement extends Statement {
         return _diagnostics;
     }
 
-    public boolean isExpressionPrimary() {
-        return false;
-    }
+
 }

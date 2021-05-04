@@ -133,7 +133,4 @@ public class ForEachStatement extends Statement {
         return _diagnostics;
     }
 
-    public boolean isExpressionPrimary() {
-        return false;
-    }
 }

@@ -6,10 +6,7 @@ import com.Rishabh.Syntax.Statement;
 import com.Rishabh.Syntax.Statements.*;
 import com.Rishabh.Syntax.Values.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 class Parser {
@@ -19,7 +16,7 @@ class Parser {
     private int _position;
 
     // Make diagnostics for parser as well
-    List<String> _diagnostics = new ArrayList<String>();
+    List<String> _diagnostics = new ArrayList<>();
 
     Parser(String text) {
         lexer = new Lexer(text);
@@ -95,7 +92,6 @@ class Parser {
         return _lineNumbers[_position];
     }
 
-
     public int getBinaryOperatorPrecedence(TokenType binOperator) {
         switch(binOperator) {
             case MultToken:
@@ -148,7 +144,10 @@ class Parser {
     public SyntaxTree parse() {
         // If next statement is statement declaration... then parseStatement and return the statement
         // else parseBinaryExpression
-        if(isStatementInitialization(CurrentToken()) && Peek(2)._type != TokenType.ColonOperator) {
+        if(isStatementInitialization(CurrentToken())
+                && Peek(2)._type != TokenType.ColonOperator
+                && Peek(2)._type != TokenType.CommaSeparatorToken
+                && Peek(2)._type != TokenType.ClosedBracket) {
             return parseStatement(); 
         } 
     
@@ -156,10 +155,15 @@ class Parser {
     }
 
     private boolean isStatementInitialization(Token tk) {
-        return tk._type == TokenType.IfKeywordToken || tk._type == TokenType.OpenBracketToken || tk._type == TokenType.WhileKeywordToken || tk._type == TokenType.ForKeywordToken
-                    || tk._type == TokenType.PrintExpToken || tk._type == TokenType.FunctionDefineToken || tk._type == TokenType.ReturnToken;
+        return tk._type == TokenType.IfKeywordToken
+                || tk._type == TokenType.OpenBracketToken
+                || tk._type == TokenType.WhileKeywordToken
+                || tk._type == TokenType.ForKeywordToken
+                || tk._type == TokenType.PrintExpToken
+                || tk._type == TokenType.FunctionDefineToken
+                || tk._type == TokenType.ReturnToken
+                || tk._type == TokenType.ClassToken;
     }
-
 
     private boolean isLeftAssociative(Token tk) {
         return tk._type == TokenType.AssignmentToken;
@@ -253,6 +257,7 @@ class Parser {
             }
 
             case ClassToken: {
+                // Lets deviate our focus to classes and OOP now
                 match(TokenType.ClassToken);
                 Token className = NextToken();
                 SyntaxTree classFeatures = parse();
@@ -450,7 +455,9 @@ class Parser {
             case IdentifierToken: {
                 Token currentToken = match(TokenType.IdentifierToken);
 
-                if(CurrentToken()._type == TokenType.OpenSquareBracketToken || CurrentToken()._type == TokenType.OpenParensToken) {
+                if(CurrentToken()._type == TokenType.OpenSquareBracketToken
+                        || CurrentToken()._type == TokenType.OpenParensToken
+                        || CurrentToken()._type == TokenType.DotOperatorToken) {
                     return parseArrayAccessExpression(currentToken);
                 }
 
@@ -474,7 +481,13 @@ class Parser {
             }
             case InputKeyword: {
                 return parseReadInputExpression();
+            }
 
+            case NewKeyword: {
+                match(TokenType.NewKeyword);
+                Token className = CurrentToken();
+                Expression constructorCall = parseExpression(0);
+                return new CreateClassInstance(className, constructorCall, CurrentLineNumber());
             }
             default:
                 _diagnostics.add("Unexpected primary expression, Instead got : " + CurrentToken()._lexeme + ", at line number " + _lineNumbers[_position]);
@@ -485,7 +498,7 @@ class Parser {
         return null;
     }
 
-    private com.Rishabh.Syntax.PrimaryExpressions.ReadInputExpression parseReadInputExpression() {
+    private ReadInputExpression parseReadInputExpression() {
         match(TokenType.InputKeyword);
         match(TokenType.OpenParensToken);
         String dataType = ((IdentifierExpression) parsePrimaryExp())._lexeme;
@@ -550,9 +563,11 @@ class Parser {
         return new ListExpression(listElements, CurrentLineNumber());
     }
 
-    private ArrayAccessExpression parseArrayAccessExpression(com.Rishabh.Token currentToken) {
+    private ArrayAccessExpression parseArrayAccessExpression(Token currentToken) {
         List<Expression> indices = new ArrayList<>();
-        while(CurrentToken()._type == TokenType.OpenSquareBracketToken || CurrentToken()._type == TokenType.OpenParensToken) {
+        while(CurrentToken()._type == TokenType.OpenSquareBracketToken
+                || CurrentToken()._type == TokenType.OpenParensToken
+                || CurrentToken()._type == TokenType.DotOperatorToken) {
             Expression Index = parseChainedExpression();
             indices.add(Index);
         }
@@ -561,7 +576,6 @@ class Parser {
             _diagnostics.add("Subscript operator cannot be empty");
             return null;
         }
-
 
         return new ArrayAccessExpression(currentToken, indices, CurrentLineNumber());
     }
@@ -607,7 +621,7 @@ class Parser {
     }
 
     private Expression parseChainedExpression() {
-        Expression result = null;
+        Expression result;
 
         switch(CurrentToken()._type) {
             case OpenSquareBracketToken: {
@@ -625,10 +639,18 @@ class Parser {
                 Token right = match(TokenType.ClosedParensToken);
                 return new ParensExpression(left, actualArgsList, right, CurrentLineNumber());
             }
+
+            case DotOperatorToken: {
+                match(TokenType.DotOperatorToken);
+                Token memberName = NextToken();
+                return new MemberAccessExpression(memberName, CurrentLineNumber());
+            }
+
+            // DotOperatorToken -> . identifierExpression
         }
 
 
-        return result;
+        return null;
     }
 
 }

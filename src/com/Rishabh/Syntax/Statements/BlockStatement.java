@@ -57,9 +57,7 @@ public class BlockStatement extends Statement {
         return _diagnostics;
     }
 
-    public boolean isExpressionPrimary() {
-        return false;
-    }
+
 
 
 
