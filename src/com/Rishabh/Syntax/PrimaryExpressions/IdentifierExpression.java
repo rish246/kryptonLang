@@ -4,7 +4,6 @@ import com.Rishabh.EvalResult;
 import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Utilities.Environment;
-import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,17 +29,14 @@ public class IdentifierExpression extends Expression {
     @Override
     public EvalResult evaluate(Environment env) {
 //        return new EvalResult(_value, _type);
-        Symbol res = env.get(_lexeme);
+        EvalResult res = env.get(_lexeme);
 
-        if(res == null) {
-            _diagnostics.add("Undefined variable : " + _lexeme+ " at line number " + getLineNumber());
+        if (res == null) {
+            _diagnostics.add("Undefined variable : " + _lexeme + " at line number " + getLineNumber());
             return null;
         }
 
-        return new EvalResult(res._value, res._type);
-
-
+        return res;
     }
-
 }
 

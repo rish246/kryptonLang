@@ -1,9 +1,11 @@
 package com.Rishabh.Utilities;
 
+import com.Rishabh.EvalResult;
+
 import java.util.HashMap;
 
 public class Environment {
-    public HashMap<String, Symbol> _table = new HashMap<>();
+    public HashMap<String, EvalResult> _table = new HashMap<>();
     public Environment _ParentEnv;
 
 
@@ -11,13 +13,13 @@ public class Environment {
         _ParentEnv = env;
     }
 
-    public Environment(HashMap<String, Symbol> table, Environment parentEnv) {
+    public Environment(HashMap<String, EvalResult> table, Environment parentEnv) {
         _table = table;
         _ParentEnv = parentEnv;
     }
 
 
-    public Symbol set(String lexeme, Symbol entry) {
+    public EvalResult set(String lexeme, EvalResult entry) {
         // If entry already exists in the parent scope, update that ... else add a new entry
         for(Environment curEnv = this; curEnv != null; curEnv = curEnv._ParentEnv) {
             if(curEnv._table.containsKey(lexeme)) {
@@ -30,7 +32,7 @@ public class Environment {
         return entry;
     }
 
-    public Symbol get(String lexeme) {
+    public EvalResult get(String lexeme) {
         for(Environment curEnv = this; curEnv != null; curEnv = curEnv._ParentEnv) {
             if(curEnv._table.containsKey(lexeme))
                 return curEnv._table.get(lexeme);

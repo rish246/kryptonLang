@@ -34,8 +34,10 @@ public class BlockStatement extends Statement {
                 return null;
             }
 
-            if(exp.isStatement() && curExpResult != null && curExpResult._value != null) {
-                return curExpResult;
+            if(exp.isStatement() && curExpResult != null){
+                if(curExpResult._value != null) {
+                    return curExpResult;
+                }
             }
 
         }

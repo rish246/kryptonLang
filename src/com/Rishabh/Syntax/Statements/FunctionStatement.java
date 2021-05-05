@@ -7,7 +7,6 @@ import com.Rishabh.Syntax.Statement;
 import com.Rishabh.Syntax.Values.ClosureExpression;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Utilities.Environment;
-import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +31,11 @@ public class FunctionStatement extends Statement {
 
         ClosureExpression funcClosure = new ClosureExpression(_name, _body, closureEnv, _formalArgs, getLineNumber());
 
-        Symbol newClosure = new Symbol("closure", funcClosure, "Closure");
+        EvalResult newClosure = new EvalResult(funcClosure, "Closure"); // take this.. Extract funcClosure from this
 
         env.set(_name, newClosure);
 
         return new EvalResult(null, "functionExpression");
-
     }
 
     public void prettyPrint(String indent) {

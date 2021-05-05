@@ -8,7 +8,6 @@ import com.Rishabh.Syntax.Values.ListExpression;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Token;
 import com.Rishabh.Utilities.Environment;
-import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,15 +35,16 @@ public class ArrayAccessExpression extends Expression {
 
      */
     public EvalResult evaluate(Environment env) throws Exception {
-        Symbol ourIdentifierEntry = env.get(_identifier._lexeme);
+        EvalResult result = null;
+        EvalResult ourIdentifierEntry = env.get(_identifier._lexeme);
         // Check if the lexeme is valid one
-        if(ourIdentifierEntry == null) {
+        if (ourIdentifierEntry == null) {
             _diagnostics.add("Invalid identifier " + _identifier._lexeme + " at line number " + getLineNumber());
-            return null;
+        } else {
+            result = Evaluate(env, ourIdentifierEntry);
         }
 
-
-        return Evaluate(env, ourIdentifierEntry);
+        return result;
     }
 
     /*
@@ -52,9 +52,9 @@ public class ArrayAccessExpression extends Expression {
         a[1][2](3, "hello) -> ((a[1])[2])(3, "hello")
 
      */
-    private EvalResult Evaluate(Environment env, Symbol ourEntry) throws Exception {
-        EvalResult Initial = new EvalResult(ourEntry);
-
+    private EvalResult Evaluate(Environment env, EvalResult ourEntry) throws Exception {
+        EvalResult Initial = ourEntry;
+        // this->Environment
         for(Expression index : _indices) {
             if(index.getType() == ExpressionType.ParensExpression) {
                 Initial = callFunction(Initial, index, env);
@@ -62,10 +62,26 @@ public class ArrayAccessExpression extends Expression {
             else if(index.getType() == ExpressionType.MemberAccessExpression) {
                 // Get the member from Initial's environment
                 var memberName = (MemberAccessExpression) index;
-                // Extract object's env from Initial's value
+                String className = memberName._memberName._lexeme;
                 Environment objectEnv = (Environment) Initial._value;
 
-                Initial =  memberName.evaluate(objectEnv);
+                EvalResult methodClosure =  memberName.evaluate(objectEnv);
+
+                if(methodClosure == null) {
+                    return null;
+                }
+
+                if(!methodClosure.getType().equals("Closure")) {
+                    Initial = methodClosure;
+                    continue;
+                }
+
+                ClosureExpression closure = (ClosureExpression) methodClosure._value;
+                // We have to change closure's closureEnv
+
+                closure._closureEnv = objectEnv;
+//                objectEnv._ParentEnv.printEnv();
+                Initial = methodClosure;
             }
             else {
                 Initial = AssignmentExpression.getValue(Initial, index, env, _diagnostics, getLineNumber()); // If index._type == parensExpression -> functionCall

@@ -5,7 +5,6 @@ import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Token;
 import com.Rishabh.Utilities.Environment;
-import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +19,14 @@ public class MemberAccessExpression extends Expression {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-        Symbol entry = env.get(_memberName._lexeme);
+        EvalResult entry = env.get(_memberName._lexeme);
+        // insert node
         if(entry == null) {
             _diagnostics.add("Unknown member " + _memberName._lexeme + " at line number " + getLineNumber());
             return null;
         }
-        return new EvalResult(entry._value, entry._type);
+
+        return entry;
     }
 
     public void prettyPrint(String indent) {
@@ -36,5 +37,7 @@ public class MemberAccessExpression extends Expression {
         return _diagnostics;
     }
 
-
 }
+// a.m() ->
+//  -> a.m -> It will be evaluated in an environment where this will be bound to a
+//      a.m

@@ -6,7 +6,6 @@ import com.Rishabh.Syntax.Statement;
 import com.Rishabh.SyntaxTree;
 import com.Rishabh.Token;
 import com.Rishabh.Utilities.Environment;
-import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ public class ClassStatement extends Statement {
     public List<String> _diagnostics = new ArrayList<>();
 
     public ClassStatement(Token name, SyntaxTree featureBlock, int lineNumber) {
-        super(ExpressionType.ForLoopExpression, lineNumber);
+        super(ExpressionType.ClassStatement, lineNumber);
         _name = name;
         _features = ((BlockStatement) featureBlock)._expressionList;
         _itsEnv = new Environment(null);
@@ -30,8 +29,10 @@ public class ClassStatement extends Statement {
             newMethod.evaluate(_itsEnv);
         }
 
-        Symbol classEntry = new Symbol(_name._lexeme, _itsEnv, _name._lexeme);
+        _itsEnv._ParentEnv = env;
+        EvalResult classEntry = new EvalResult(_itsEnv, _name._lexeme);
         env.set(_name._lexeme, classEntry);
+
 
         return new EvalResult(null, "null");
     }

@@ -8,7 +8,6 @@ import com.Rishabh.Syntax.Values.NumberExpression;
 import com.Rishabh.Syntax.Values.StringExpression;
 import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
-import com.Rishabh.Utilities.Symbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,7 +77,7 @@ public class AssignmentExpression extends Expression {
 
             var curExp = (ArrayAccessExpression) left;
 
-            Symbol ourEntry = env.get(curExp._identifier._lexeme);
+            EvalResult ourEntry = env.get(curExp._identifier._lexeme);
 
             if (ourEntry == null) {
                 _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme + " at line number " +  lineNumber);
@@ -168,14 +167,13 @@ public class AssignmentExpression extends Expression {
         Object rightValue = right._value;
 
         IdentifierExpression I_left = (IdentifierExpression) left;
-        Symbol res = env.set(I_left._lexeme, new Symbol(I_left._lexeme, rightValue, rightType));
-        return new EvalResult(res._value, res._type);
+        return env.set(I_left._lexeme, new EvalResult(rightValue, rightType));
     }
 
-    public static EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, Symbol ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
+    public static EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, EvalResult ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
 
 
-        EvalResult Initial = new EvalResult(ourEntry); // a->NewEnvironment
+        EvalResult Initial = ourEntry; // a->NewEnvironment
         Environment objEnv = new Environment(null);
 
         for(Expression index : curExp._indices) {
@@ -183,11 +181,10 @@ public class AssignmentExpression extends Expression {
                 var memberAccessExp = (MemberAccessExpression) index;
                 objEnv = (Environment) Initial._value;
                 String memberName = memberAccessExp._memberName._lexeme;
-                Initial = new EvalResult(objEnv.set(memberName, new Symbol(memberName, null, "null")));
+                Initial = objEnv.set(memberName, new EvalResult(null, "null"));
             }
             else {
                 Initial = AssignmentExpression.getValue(Initial, index, env, _diagnostics, lineNumber);
-
             }
 
             if(Initial == null) {

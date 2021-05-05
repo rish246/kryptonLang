@@ -1,0 +1,59 @@
+class Student {
+    def Student(roll, name, marks) {
+        this.roll = roll;
+        this.name = name;
+        this.marks = marks;
+    }
+
+    def printStudent() {
+        print("" + this.roll + ", " + this.name + ", " + this.marks);
+    }
+};
+
+class Teacher {
+    def Teacher(name) {
+        this.name = name;
+        this.students = [];
+    }
+
+    def isAlreadyTeaching(roll) {
+        alreadyTeaching = false;
+        for(student in this.students) {
+            alreadyTeaching = alreadyTeaching || (student.roll == roll);
+        }
+        return alreadyTeaching;
+    }
+
+    def startsTeaching(roll, name, marks) {
+        alreadyTeaching = this.isAlreadyTeaching(roll);
+        if(!alreadyTeaching) {
+            this.students = this.students + new Student(roll, name, marks);
+        }
+        else {
+            print(this.name + " is already teaching " + name);
+        }
+    }
+
+    def printStudents() {
+        for(student in this.students) {
+            student.printStudent();
+        }
+    }
+
+};
+
+
+def main() {
+
+    JC = new Teacher("JC");
+    JC.startsTeaching(1, "rishabh", 74);
+    JC.startsTeaching(2, "negi", 94);
+    JC.startsTeaching(2, "negi", 94);
+
+    JC.printStudents();
+	
+
+
+}
+
+main();

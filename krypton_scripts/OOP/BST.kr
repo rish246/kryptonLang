@@ -1,0 +1,194 @@
+class BSTNode {
+    def BSTNode(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+
+    def toString() {
+        result = "";
+        if(this.left != null) {
+            result = result + this.left.toString() + ", ";
+        }
+
+        result = result + this.value + ", ";
+
+        if(this.right != null) {
+            result = result + this.right.toString();
+        }
+        return result;
+    }
+};
+
+
+
+class BST {
+    def BST() {
+        this.head = null;
+    }
+
+    ########################### Inserting elements ######################
+    def insertValue(head, value) {
+        if(head == null) {
+            return new BSTNode(value);
+        }
+
+        if(value < head.value) {
+            leftTree = insertValue(head.left, value);
+            head.left = leftTree;
+        }
+        else if(value > head.value) {
+            rightTree = insertValue(head.right, value);
+            head.right = rightTree;
+        }
+
+        return head;
+
+    }
+
+    def insert(value) {
+        this.head = this.insertValue(this.head, value);
+    }
+
+
+    ########################### Finding elements elements ######################
+
+    def findValue(head, value) {
+        if(head == null) {
+            return false;
+        }
+
+        if(head.value == value) {
+            return true;
+        }
+
+        if(head.value < value) {
+            return findValue(head.right, value);
+        }
+            
+        return findValue(head.left, value);
+        
+    }
+
+    def find(value) {
+        return this.findValue(this.head, value);
+    }
+
+
+    def findMax(head) {
+        if(head == null) {
+            return head;
+        }
+        while(head.right != null) {
+            head = head.right;
+        }
+        return head;
+    }
+
+    def deleteValue(head, value) {
+        if(head == null) {
+            return head;
+        }
+
+        if(head.value > value) {
+            leftTree = this.deleteValue(head.left, value); # evaluating in what env-> What z fuck () 
+            # this should have returned null
+            head.left = leftTree;
+
+            return head;
+        }
+
+        if(head.value < value) {
+            rightTree = this.deleteValue(head.right, value);
+            head.right = rightTree;
+            return head;
+        }
+
+        ########### delete the value ###############
+        if(head.left == null && head.right == null) {
+            head = null;
+        }
+        else if(head.left == null) {
+            head = head.right;
+        }
+        else if(head.right == null) {
+            head = head.left;
+        }
+        else {
+            replaceNode = findMax(head.left);
+            head.value = replaceNode.value;
+            head.left = deleteValue(head.left, replaceNode.value);
+            return head;
+        }
+
+
+        # this return didn't work baby 
+
+        return head;
+
+    }
+
+    ######################### Deleting elements from BST #########################
+    def delete(value) {
+        this.head = this.deleteValue(this.head, value);
+    }
+
+    def printBST() {
+
+        printableRepresentation = "{" + this.head.toString() + "}";
+        print(printableRepresentation);
+    }
+
+};
+
+
+
+def printOptions() {
+    print("1. Insert element into set");
+    print("2. Find element in set");
+    print("3. Delete element from set");
+    print("4. Print Options again");
+
+}
+def main() {
+    set = new BST();
+    playing = true;
+    printOptions();
+
+    while(playing) {
+        option = input(int, "Enter an option from above : ");
+        if(option == 1) {
+            element = input(int, "Enter the element to insert : ");
+            set.insert(element);
+        }
+        else if(option == 2) {
+            element = input(int, "Enter an element to find in set: ");
+            isPresent = set.find(element);
+            if(isPresent) {
+                print("Element " + element + " is present in the set");
+            }
+            else {
+                print("Element " + element + " is not present in the set");
+            }
+        }
+        else if(option == 3) {
+            element = input(int, "Enter an element to delete in the set: ");
+            set.delete(element);
+        } 
+        else if(option == 4) {
+            printOptions();
+        }
+        else {
+            playing = false;
+        }
+
+        print("");
+        print("Current elements in the set : \n");
+        set.printBST();
+    }
+
+
+
+}
+
+main();

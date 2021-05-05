@@ -1,0 +1,32 @@
+class BinaryTreeNode {
+    def BinaryTreeNode(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+
+    def inorderTraversal() {
+        if(this.left != null) {
+            this.left.inorderTraversal();
+        }
+        print(this.value); 
+        if(this.right != null) {
+            this.right.inorderTraversal();
+        }
+    }
+
+}
+
+
+def main() {
+    head = new BinaryTreeNode(1);
+    left = new BinaryTreeNode(2);
+    right = new BinaryTreeNode(3);
+
+    head.left = left;
+    head.right = right;
+    # inorderTraversal(head);
+    head.inorderTraversal();
+}
+
+main();

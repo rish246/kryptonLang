@@ -1,0 +1,34 @@
+class ListNode {
+    def ListNode(value) {
+        this.value = value;
+        this.next = null;
+    }
+
+    def flatten() {
+        result = "" + this.value;
+        if(this.next != null) {
+            result = result + " -> " + this.next.flatten();
+        }
+        else {
+            result = result + " -> " + "null";
+        }
+        return result;
+    }
+};
+
+def main() {
+
+    head = new ListNode(3);
+
+    first = new ListNode(4);
+
+    second = new ListNode(6);
+
+    head.next = first;
+    first.next = second;
+
+    print("Printing Linked List");
+    print(head.flatten());
+}
+
+main();
