@@ -1,0 +1,27 @@
+class A {
+    class X {
+        def X(name) {
+            this.name = name;
+            printName(this.name);
+        }
+
+    };
+
+    def A(name) {
+        this.name = name;
+        this.x = new X(this.name);
+    }
+
+    def printX() {
+        print(this.x.name);
+    }
+
+    def printName(name) {
+        print(name);
+    }
+
+
+};
+
+
+a = new A(3);

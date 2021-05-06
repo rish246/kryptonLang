@@ -21,7 +21,7 @@ class GraphNode {
         return curGroup;
     }
 
-}
+};
 
 def printGroup(group, groupNumber) {
     print("Group Number " + groupNumber);

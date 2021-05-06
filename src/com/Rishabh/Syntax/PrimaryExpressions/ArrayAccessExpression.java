@@ -80,6 +80,8 @@ public class ArrayAccessExpression extends Expression {
                 // We have to change closure's closureEnv
 
                 closure._closureEnv = objectEnv;
+
+                closure._closureEnv.set("this", new EvalResult(objectEnv, className));
 //                objectEnv._ParentEnv.printEnv();
                 Initial = methodClosure;
             }

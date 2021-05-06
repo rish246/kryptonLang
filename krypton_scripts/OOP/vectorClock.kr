@@ -1,0 +1,59 @@
+class Process {
+    def Process(id, nProcesses) {
+        this.nProcesses = nProcesses;
+        this.id = id;
+        this.vectorClock = [0] * nProcesses;
+    }
+
+    def printClock() {
+        print("Clock of Process P" + this.id);
+        print(vectorClock);
+        print("------------------------------");
+    }
+
+    def updateClock(processId, value) {
+        clock = this.vectorClock;
+        clock[processId] = value;
+    }
+
+    def newEvent() {
+        this.updateClock(this.id, this.vectorClock[this.id] + 1);
+        this.printClock();
+    }
+
+    def sendMessage(recieverProcess) {
+        this.newEvent();
+        for(i = 0; i < nProcesses; i = i + 1) {
+            updatedValue = max(recieverProcess.vectorClock[i], this.vectorClock[i]);
+            recieverProcess.updateClock(i, updatedValue);
+        }
+
+        recieverProcess.newEvent();
+    }
+
+
+};
+
+def max(v1, v2) {
+    res = v1;
+    if(res < v2) {
+        res = v2;
+    }
+    return res;
+}
+
+# (if condBranch then thenBranch else elseBranch)
+
+def main() {
+    nProcesses = 3;
+    p0 = new Process(0, nProcesses);
+    p1 = new Process(1, nProcesses);
+    p2 = new Process(2, nProcesses);
+
+    processes = [p0, p1, p2];
+    for(process in processes) {
+        process.newEvent();
+    }
+}
+
+main();

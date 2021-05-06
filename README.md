@@ -7,31 +7,30 @@
 **Object Oriented BST in krypton**
 
 ```python
-class BSTNode {
-    def BSTNode(value) {
-        this.value = value;
-        this.left = null;
-        this.right = null;
-    }
-
-    def toString() {
-        result = "";
-        if(this.left != null) {
-            result = result + this.left.toString() + ", ";
-        }
-
-        result = result + this.value + ", ";
-
-        if(this.right != null) {
-            result = result + this.right.toString();
-        }
-        return result;
-    }
-};
-
-
-
 class BST {
+    class BSTNode {
+        def BSTNode(value) {
+            this.value = value;
+            this.left = null;
+            this.right = null;
+        }
+
+        def toString() {
+            result = "";
+            if(this.left != null) {
+                result = result + this.left.toString();
+            }
+
+            result = result + this.value + ", ";
+
+            if(this.right != null) {
+                result = result + this.right.toString();
+            }
+            return result;
+        }
+    };
+
+
     def BST() {
         this.head = null;
     }
@@ -80,7 +79,7 @@ class BST {
     }
 
     def find(value) {
-        return this.findValue(this.head, value);
+        return findValue(this.head, value);
     }
 
 
@@ -100,7 +99,7 @@ class BST {
         }
 
         if(head.value > value) {
-            leftTree = this.deleteValue(head.left, value); # evaluating in what env-> What z fuck ()
+            leftTree = deleteValue(head.left, value); # evaluating in what env-> What z fuck ()
             # this should have returned null
             head.left = leftTree;
 
@@ -108,7 +107,7 @@ class BST {
         }
 
         if(head.value < value) {
-            rightTree = this.deleteValue(head.right, value);
+            rightTree = deleteValue(head.right, value);
             head.right = rightTree;
             return head;
         }
@@ -130,22 +129,23 @@ class BST {
             return head;
         }
 
-
-        # this return didn't work baby
-
         return head;
 
     }
 
     ######################### Deleting elements from BST #########################
     def delete(value) {
-        this.head = this.deleteValue(this.head, value);
+        this.head = deleteValue(this.head, value);
     }
 
     def printBST() {
-
-        printableRepresentation = "{" + this.head.toString() + "}";
-        print(printableRepresentation);
+        if(this.head == null) {
+            print("{}");
+        }
+        else {
+            printableRepresentation = "{" + this.head.toString() + "}";
+            print(printableRepresentation);
+        }
     }
 
 };
@@ -159,41 +159,59 @@ def printOptions() {
     print("4. Print Options again");
 
 }
+
+def insertAction(set) {
+    element = input(int, "Enter the element to insert : ");
+    set.insert(element);
+}
+
+def findAction(set) {
+    element = input(int, "Enter an element to find in set: ");
+    isPresent = set.find(element);
+    if(isPresent) {
+        print("Element " + element + " is present in the set");
+    }
+    else {
+        print("Element " + element + " is not present in the set");
+    }
+}
+
+def deleteAction(set) {
+    element = input(int, "Enter an element to delete in the set: ");
+    set.delete(element);
+}
+
+def alterSet(set) {
+    option = input(int, "Enter an option from above : ");
+    if(option == 1) {
+        insertAction(set);
+    }
+    else if(option == 2) {
+        findAction(set);
+    }
+    else if(option == 3) {
+        deleteAction(set);
+    }
+    else if(option == 4) {
+        printOptions();
+    }
+    else {
+        return -1;
+    }
+
+    print("");
+    print("Current elements in the set : \n");
+    set.printBST();
+}
+
 def main() {
     set = new BST();
     playing = true;
     printOptions();
 
     while(playing) {
-        option = input(int, "Enter an option from above : ");
-        if(option == 1) {
-            element = input(int, "Enter the element to insert : ");
-            set.insert(element);
-        }
-        else if(option == 2) {
-            element = input(int, "Enter an element to find in set: ");
-            isPresent = set.find(element);
-            if(isPresent) {
-                print("Element " + element + " is present in the set");
-            }
-            else {
-                print("Element " + element + " is not present in the set");
-            }
-        }
-        else if(option == 3) {
-            element = input(int, "Enter an element to delete in the set: ");
-            set.delete(element);
-        }
-        else if(option == 4) {
-            printOptions();
-        }
-        else {
-            playing = false;
-        }
-
-        print("");
-        print("Current elements in the set : \n");
-        set.printBST();
+        result = alterSet(set);
+        playing = (-1 != result);
     }
 
 
@@ -201,6 +219,7 @@ def main() {
 }
 
 main();
+
 
 
 ```

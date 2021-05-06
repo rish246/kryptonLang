@@ -65,19 +65,17 @@ public class CreateClassInstance extends Expression {
 
 
         _objectState = new Environment(null);
-        _objectState.set("this", new EvalResult(_objectState, className));
         _objectState.set(className, classEntry);
         _objectState._ParentEnv = classMethods;
 
-
-
         // function args env -> bind formal to actual args
         Environment functionArgsBinding = new Environment(_objectState);
-
         for(int i=0; i < actualArgsList.size(); i++) {
             EvalResult argRes = actualArgsList.get(i).evaluate(env);
             AssignmentExpression.Bind(formalArgs.get(i), argRes, functionArgsBinding, _diagnostics, getLineNumber());
         }
+
+        functionArgsBinding.set("this", new EvalResult(_objectState, className));
 
         constructorMethod._closureEnv = functionArgsBinding;
 

@@ -1,0 +1,42 @@
+class Person {
+    def Person(name) {
+            this.name = name;
+            this.carList = [];
+    }
+
+    def buy(vehicle) {
+        print(this.name + " is buying " + vehicle.name);
+        vehicle.sell(this);
+    }
+
+    def printCars() {
+        for(car in this.carList) {
+            print(car.name);
+        }
+    }
+};
+
+
+class Car {
+    def Car(name) {
+        this.name = name;
+        this.nBuyers = 0;
+    }
+
+    def sell(person) {
+        person.carList = person.carList + this;
+    }
+};
+
+
+def main() {
+    ram = new Person("Ram");
+    honda = new Car("honda civic");
+    ram.buy(honda);
+    ram.buy(new Car("i 20"));
+    ram.buy(new Car("swift dzire"));
+    ram.printCars();
+
+}
+
+main();
