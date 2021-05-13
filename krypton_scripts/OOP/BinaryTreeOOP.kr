@@ -22,14 +22,16 @@ class BinaryTreeNode {
 
 };
 
+class superBinaryTreeNode extends BinaryTreeNode {
+
+};
 
 def main() {
     head = new BinaryTreeNode(1);
-    head.addLeft(2);
-    right = new BinaryTreeNode(3);
-    head.right = right;
-
-    head.inorderTraversal();
+    print(head.value);
+    # head.addLeft(3);
+    # head.addRight(4);
+    # print(head.inorderTraversal());
 }
 
 main();

@@ -259,9 +259,16 @@ class Parser {
             case ClassToken: {
                 // Lets deviate our focus to classes and OOP now
                 match(TokenType.ClassToken);
-                Token className = NextToken();
+                Token className = match(TokenType.IdentifierToken);
+                Token parentClass = null;
+                
+                if(CurrentToken()._type == TokenType.ExtendsKeyword) {
+                    match(TokenType.ExtendsKeyword);
+                    parentClass = match(TokenType.IdentifierToken);
+                }
+
                 SyntaxTree classFeatures = parse();
-                return new ClassStatement(className, classFeatures, CurrentLineNumber());
+                return new ClassStatement(className, parentClass,classFeatures, CurrentLineNumber());
             }
 
             default:

@@ -95,7 +95,7 @@ public class CreateClassInstance extends Expression {
 
         constructorMethod.evaluate(_objectState);
 
-        return new EvalResult(_objectState, className);
+        return new EvalResult(_objectState, "class-" + className);
     }
 }
 

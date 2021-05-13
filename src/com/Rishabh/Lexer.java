@@ -238,6 +238,9 @@ class Lexer {
                 return new Token(TokenType.ClassToken, "class", null);
             case "new":
                 return new Token(TokenType.NewKeyword, "new", null);
+            
+            case "extends":
+                return new Token(TokenType.ExtendsKeyword, "extends", null);    
             default:
                 return new Token(TokenType.IdentifierToken, lexeme, lexeme);
         }

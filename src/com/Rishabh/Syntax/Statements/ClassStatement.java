@@ -13,14 +13,16 @@ import java.util.List;
 public class ClassStatement extends Statement {
     public Token _name;
     public Environment _itsEnv;
+    public Token _parentClass;
     public List<SyntaxTree> _features;
 
     public List<String> _diagnostics = new ArrayList<>();
 
-    public ClassStatement(Token name, SyntaxTree featureBlock, int lineNumber) {
+    public ClassStatement(Token name, Token parentClass,SyntaxTree featureBlock, int lineNumber) {
         super(ExpressionType.ClassStatement, lineNumber);
         _name = name;
         _features = ((BlockStatement) featureBlock)._expressionList;
+        _parentClass = parentClass;
         _itsEnv = new Environment(null);
     }
 
