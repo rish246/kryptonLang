@@ -47,11 +47,17 @@ public class CreateClassInstance extends Expression {
         // Extract the constructor method
         Environment classMethods = (Environment) classEntry._value;
         // and callItAMethod
-        EvalResult constructorMethodEntry = classMethods.get(className);
+        EvalResult constructorMethodEntry = classMethods.get("init");
+
+        // check if the constructor exists or not
+        if(constructorMethodEntry == null) {
+            _diagnostics.add("Didn't find a constructor method for class " + className + ", error at line number " + getLineNumber());
+            return null;
+        }
+
 
         var constructorMethod = (ClosureExpression) constructorMethodEntry._value;
 
-        // Call the constructor method in env it was called.. evaluate it in env
         List<Expression> formalArgs = constructorMethod._formalArgs;
 
         var constructorCall = (ArrayAccessExpression) _constructorCall;
@@ -66,7 +72,13 @@ public class CreateClassInstance extends Expression {
 
         _objectState = new Environment(null);
         _objectState.set(className, classEntry);
-        _objectState._ParentEnv = classMethods;
+        _objectState._ParentEnv = classMethods; 
+
+        //////////////////////////////////////////////
+        if(formalArgs.size() != actualArgsList.size()) {
+            _diagnostics.add("Invalid number of arguements passed ... Expected " + formalArgs.size() + ", got " + actualArgsList.size() + " at line number " + getLineNumber());
+            return null;
+        }
 
         // function args env -> bind formal to actual args
         Environment functionArgsBinding = new Environment(_objectState);
@@ -75,7 +87,9 @@ public class CreateClassInstance extends Expression {
             AssignmentExpression.Bind(formalArgs.get(i), argRes, functionArgsBinding, _diagnostics, getLineNumber());
         }
 
-        functionArgsBinding.set("this", new EvalResult(_objectState, className));
+        functionArgsBinding.set("this", new EvalResult(_objectState, className)); // Bind 
+
+        functionArgsBinding.set(className, classEntry);
 
         constructorMethod._closureEnv = functionArgsBinding;
 
@@ -85,8 +99,3 @@ public class CreateClassInstance extends Expression {
     }
 }
 
-// We have to bind member name to inorderTraversal() ->
-// assignment expression
-// a.x = 5;
-// this.x = 5;
-// a.x ->

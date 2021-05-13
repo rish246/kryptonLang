@@ -24,13 +24,14 @@ public class BlockStatement extends Statement {
 
         for(SyntaxTree exp : _expressionList) {
             if(exp == null) {
-                return new EvalResult(null, null);
+                return new EvalResult(null, "null");
             }
 
             EvalResult curExpResult = exp.evaluate(currentBlockEnv);
             _diagnostics.addAll(exp.getDiagnostics());
 
             if(_diagnostics.size() > 0) {
+                _diagnostics.add("Error in the block at line number " + getLineNumber());
                 return null;
             }
 

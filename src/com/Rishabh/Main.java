@@ -1,7 +1,8 @@
 package com.Rishabh;
 
-
 import com.Rishabh.Utilities.Environment;
+
+import org.graalvm.compiler.replacements.amd64.AMD64StringUTF16Substitutions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Scanner;
 
 
-public class Main {
+public class Main { 
 
     public static Scanner scanner = new Scanner(System.in);
     public static final String TEXT_RED = "\u001B[31m";
@@ -28,6 +29,7 @@ public class Main {
 
             Environment programEnv = new Environment(null);
             String filename = args[0];
+
             try {
                 String program = readInputFile(filename);
                 SyntaxTree result = parseProgram(program);
@@ -38,6 +40,7 @@ public class Main {
 
 
                 EvalResult answer = getEvalResult(programEnv, result);
+            
                 if (answer == null || answer._value == null)
                     return;
 
@@ -167,6 +170,7 @@ public class Main {
             programCode += nextLineFile + '\n';
         }
         programCode += "}";
+
         return programCode;
     }
 

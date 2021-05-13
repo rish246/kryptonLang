@@ -1,31 +1,30 @@
+class BSTNode {
+    def init(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+
+    def toString() {
+        result = "";
+        if(this.left != null) {
+            result = result + this.left.toString();
+        }
+
+        result = result + this.value + ", ";
+
+        if(this.right != null) {
+            result = result + this.right.toString();
+        }
+        return result;
+    }   
+};
 
 
 
 class BST {
-    class BSTNode {
-        def BSTNode(value) {
-            this.value = value;
-            this.left = null;
-            this.right = null;
-        }
-
-        def toString() {
-            result = "";
-            if(this.left != null) {
-                result = result + this.left.toString();
-            }
-
-            result = result + this.value + ", ";
-
-            if(this.right != null) {
-                result = result + this.right.toString();
-            }
-            return result;
-        }   
-    };
-
-
-    def BST() {
+    
+    def init() {
         this.head = null;
     }
 

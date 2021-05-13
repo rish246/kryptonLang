@@ -173,28 +173,43 @@ public class AssignmentExpression extends Expression {
     public static EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, EvalResult ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
 
 
-        EvalResult Initial = ourEntry; // a->NewEnvironment
+        EvalResult Result = ourEntry; // a->NewEnvironment
         Environment objEnv = new Environment(null);
 
         for(Expression index : curExp._indices) {
-            if(index.getType() == ExpressionType.MemberAccessExpression) {
-                var memberAccessExp = (MemberAccessExpression) index;
-                objEnv = (Environment) Initial._value;
-                String memberName = memberAccessExp._memberName._lexeme;
-                Initial = objEnv.set(memberName, new EvalResult(null, "null"));
-            }
-            else {
-                Initial = AssignmentExpression.getValue(Initial, index, env, _diagnostics, lineNumber);
+
+            if(Result == null || Result._value == null) {
+                _diagnostics.add("NullPointerException: Cannot access property from null, at line number " + lineNumber);
+                return null;
             }
 
-            if(Initial == null) {
+            if(index.getType() == ExpressionType.MemberAccessExpression) {
+                var memberAccessExp = (MemberAccessExpression) index;
+                objEnv = (Environment) Result._value;
+                String memberName = memberAccessExp._memberName._lexeme;
+
+                EvalResult memberEntry = objEnv.get(memberName);
+                if(memberEntry != null) {
+                    Result = memberEntry;
+                    continue;
+                }
+
+                Result = objEnv.set(memberName, new EvalResult(null, "null"));
+            }
+            // a.name -> // get ref to entry.. if ! found, add an entry
+
+            else {
+                Result = AssignmentExpression.getValue(Result, index, env, _diagnostics, lineNumber);
+            }
+
+            if(Result == null) {
                 return null;
             }
         }
-        Initial._value = rightRes._value;
-        Initial._type = rightRes._type;
+        Result._value = rightRes._value;
+        Result._type = rightRes._type;
 
-        return Initial;
+        return Result;
     }
 
     public static EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env, List<String> _diagnostics, int lineNumber) throws Exception {

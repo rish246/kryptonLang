@@ -1,8 +1,13 @@
 class BinaryTreeNode {
-    def BinaryTreeNode(value) {
+    def init(value) {
         this.value = value;
         this.left = null;
         this.right = null;
+    }
+
+    def addLeft(value) {
+        leftNode = new BinaryTreeNode(value);
+        this.left = leftNode;
     }
 
     def inorderTraversal() {
@@ -15,17 +20,15 @@ class BinaryTreeNode {
         }
     }
 
-}
+};
 
 
 def main() {
     head = new BinaryTreeNode(1);
-    left = new BinaryTreeNode(2);
+    head.addLeft(2);
     right = new BinaryTreeNode(3);
-
-    head.left = left;
     head.right = right;
-    # inorderTraversal(head);
+
     head.inorderTraversal();
 }
 

@@ -1,7 +1,10 @@
 class ListNode {
-    def ListNode(value) {
+    LenList = 0;
+
+    def init(value) {
         this.value = value;
         this.next = null;
+        ListNode.LenList = ListNode.LenList + 1;
     }
 
     def flatten() {
@@ -14,21 +17,18 @@ class ListNode {
         }
         return result;
     }
+
 };
 
 def main() {
-
     head = new ListNode(3);
+    head.next = new ListNode(4);
+    head.next.next = new ListNode(5);
 
-    first = new ListNode(4);
-
-    second = new ListNode(6);
-
-    head.next = first;
-    first.next = second;
-
-    print("Printing Linked List");
     print(head.flatten());
+    print("Length of list " + ListNode.LenList);
+
+
 }
 
 main();

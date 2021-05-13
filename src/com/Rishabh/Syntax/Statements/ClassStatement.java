@@ -25,8 +25,17 @@ public class ClassStatement extends Statement {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-        for(SyntaxTree newMethod : _features) {
-            newMethod.evaluate(_itsEnv);
+
+
+        for(SyntaxTree newFeature : _features) {
+            // features must be of the type... functionStatement or Assignment expression
+            if(newFeature.getType() != ExpressionType.FuncExpression 
+            && newFeature.getType() != ExpressionType.AssignmentExpression) {
+                _diagnostics.add("Invalid Feature type " + newFeature.getType() + " at line number " + getLineNumber());
+                return null;
+            }
+
+            newFeature.evaluate(_itsEnv);
         }
 
         _itsEnv._ParentEnv = env;

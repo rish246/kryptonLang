@@ -53,17 +53,23 @@ public class ArrayAccessExpression extends Expression {
 
      */
     private EvalResult Evaluate(Environment env, EvalResult ourEntry) throws Exception {
-        EvalResult Initial = ourEntry;
+        EvalResult Result = ourEntry;
         // this->Environment
         for(Expression index : _indices) {
+
+            if(Result == null || Result._value == null) {
+                _diagnostics.add("NullPointerException: Cannot access property from null, at line number " + getLineNumber());
+                return null;
+            }
+
             if(index.getType() == ExpressionType.ParensExpression) {
-                Initial = callFunction(Initial, index, env);
+                Result = callFunction(Result, index, env);
             }
             else if(index.getType() == ExpressionType.MemberAccessExpression) {
                 // Get the member from Initial's environment
                 var memberName = (MemberAccessExpression) index;
                 String className = memberName._memberName._lexeme;
-                Environment objectEnv = (Environment) Initial._value;
+                Environment objectEnv = (Environment) Result._value;
 
                 EvalResult methodClosure =  memberName.evaluate(objectEnv);
 
@@ -72,7 +78,7 @@ public class ArrayAccessExpression extends Expression {
                 }
 
                 if(!methodClosure.getType().equals("Closure")) {
-                    Initial = methodClosure;
+                    Result = methodClosure;
                     continue;
                 }
 
@@ -83,17 +89,17 @@ public class ArrayAccessExpression extends Expression {
 
                 closure._closureEnv.set("this", new EvalResult(objectEnv, className));
 //                objectEnv._ParentEnv.printEnv();
-                Initial = methodClosure;
+                Result = methodClosure;
             }
             else {
-                Initial = AssignmentExpression.getValue(Initial, index, env, _diagnostics, getLineNumber()); // If index._type == parensExpression -> functionCall
+                Result = AssignmentExpression.getValue(Result, index, env, _diagnostics, getLineNumber()); // If index._type == parensExpression -> functionCall
 
             }
 
-            if(Initial == null)
+            if(Result == null)
                 return null;
         }
-        return Initial;
+        return Result;
     }
 
     private EvalResult callFunction(EvalResult Initial, Expression index, Environment env) throws Exception {
