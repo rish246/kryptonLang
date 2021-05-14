@@ -8,8 +8,12 @@ import com.Rishabh.Syntax.Values.ListExpression;
 import com.Rishabh.Token;
 import com.Rishabh.Utilities.Environment;
 
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class CreateClassInstance extends Expression {
     public Token _className;
@@ -32,7 +36,6 @@ public class CreateClassInstance extends Expression {
     }
 
     @Override
-    // a.x
     public EvalResult evaluate(Environment env) throws Exception {
 
         String className = _className._lexeme;
@@ -88,6 +91,28 @@ public class CreateClassInstance extends Expression {
         }
 
         functionArgsBinding.set("this", new EvalResult(_objectState, className)); // Bind 
+        boolean isChildClass = (boolean) classMethods.get("isChild")._value;
+        if(isChildClass) {
+            var immParentEnv = (Environment) classMethods.get("ParentClass")._value;
+            System.out.println(immParentEnv.get("__ClassName__").getValue());
+            var immParentEnvCopy = Environment.copy(immParentEnv);
+
+            // HashMap<String, EvalResult> immParentSymbolTable = immParentEnvCopy._table;
+            // for(Map.Entry<String, EvalResult> featureEntry : immParentSymbolTable.entrySet()) {
+            //     EvalResult feature = featureEntry.getValue();
+
+            //     if(feature.getType() == "Closure") {
+            //         var methodBody = (ClosureExpression) feature._value;
+            //         methodBody._closureEnv = _objectState;
+            //     }
+            // }
+
+            immParentEnvCopy.set("isSuper", new EvalResult(true, "boolean"));
+
+            immParentEnvCopy.set("evalEnvironment", new EvalResult(Environment.copy(_objectState), className));
+
+            functionArgsBinding.set("super", new EvalResult(immParentEnvCopy, className));
+        }
 
         functionArgsBinding.set(className, classEntry);
 
@@ -95,7 +120,10 @@ public class CreateClassInstance extends Expression {
 
         constructorMethod.evaluate(_objectState);
 
+        // This is a nice concept
+
         return new EvalResult(_objectState, "class-" + className);
     }
 }
 
+// super ->

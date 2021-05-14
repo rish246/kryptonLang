@@ -18,6 +18,11 @@ public class Environment {
         _ParentEnv = parentEnv;
     }
 
+    public static Environment copy(Environment env) {
+        Environment newEnvironment = new Environment(env._ParentEnv);
+        newEnvironment._table = new HashMap<String, EvalResult>(env._table);
+        return newEnvironment;
+    }
 
     public EvalResult set(String lexeme, EvalResult entry) {
         // If entry already exists in the parent scope, update that ... else add a new entry

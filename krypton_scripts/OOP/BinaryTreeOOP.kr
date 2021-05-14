@@ -1,5 +1,6 @@
 class BinaryTreeNode {
     def init(value) {
+        print("-------");
         this.value = value;
         this.left = null;
         this.right = null;
@@ -23,15 +24,21 @@ class BinaryTreeNode {
 };
 
 class superBinaryTreeNode extends BinaryTreeNode {
-
+    def init(value, parent) {
+        super.init(value);
+        this.parent = parent;
+    }
 };
 
+
 def main() {
-    head = new BinaryTreeNode(1);
+    head = new superBinaryTreeNode(1, null);
     print(head.value);
-    # head.addLeft(3);
-    # head.addRight(4);
-    # print(head.inorderTraversal());
+    print(head.parent);
+
+    
 }
 
 main();
+
+

@@ -196,7 +196,6 @@ public class AssignmentExpression extends Expression {
 
                 Result = objEnv.set(memberName, new EvalResult(null, "null"));
             }
-            // a.name -> // get ref to entry.. if ! found, add an entry
 
             else {
                 Result = AssignmentExpression.getValue(Result, index, env, _diagnostics, lineNumber);

@@ -15,6 +15,7 @@ public class ClassStatement extends Statement {
     public Environment _itsEnv;
     public Token _parentClass;
     public List<SyntaxTree> _features;
+    private boolean isChildClass;
 
     public List<String> _diagnostics = new ArrayList<>();
 
@@ -23,11 +24,27 @@ public class ClassStatement extends Statement {
         _name = name;
         _features = ((BlockStatement) featureBlock)._expressionList;
         _parentClass = parentClass;
+        isChildClass = _parentClass != null;
         _itsEnv = new Environment(null);
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
 
+        Environment parentEnvironment = env;
+        if(_parentClass != null) {
+            String parentClassName = _parentClass._lexeme;
+            EvalResult parentClassEntry = env.get(parentClassName);
+            if(parentClassEntry == null) {
+                _diagnostics.add("Undefined variable " + parentClassName + " at line number " + getLineNumber());
+                return null;
+            }
+
+
+            parentEnvironment = (Environment) parentClassEntry.getValue();
+        }
+        
+
+        _itsEnv._ParentEnv = parentEnvironment;
 
         for(SyntaxTree newFeature : _features) {
             // features must be of the type... functionStatement or Assignment expression
@@ -40,7 +57,14 @@ public class ClassStatement extends Statement {
             newFeature.evaluate(_itsEnv);
         }
 
-        _itsEnv._ParentEnv = env;
+        _itsEnv.set("isChild", new EvalResult(isChildClass, "boolean"));
+
+        _itsEnv.set("__ClassName__", new EvalResult(_name._lexeme, "string"));
+        _itsEnv.set("ParentClass", null);
+        if(_parentClass != null) {
+            _itsEnv.set("ParentClass", new EvalResult(parentEnvironment, _parentClass._lexeme));
+        }
+
         EvalResult classEntry = new EvalResult(_itsEnv, _name._lexeme);
         env.set(_name._lexeme, classEntry);
 
@@ -63,4 +87,5 @@ public class ClassStatement extends Statement {
 
 }
 
-// new Class();
+// bind super here ->.. Then what super -> super -> ( parentEnv ) 
+// super.Inforence() -> 

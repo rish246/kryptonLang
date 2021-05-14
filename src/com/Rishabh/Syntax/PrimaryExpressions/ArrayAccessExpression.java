@@ -9,6 +9,8 @@ import com.Rishabh.SyntaxTree;
 import com.Rishabh.Token;
 import com.Rishabh.Utilities.Environment;
 
+import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +75,8 @@ public class ArrayAccessExpression extends Expression {
 
                 EvalResult methodClosure =  memberName.evaluate(objectEnv);
 
+
+                // ForwardDeclaration -> () -> { print (" x "); }                
                 if(methodClosure == null) {
                     return null;
                 }
@@ -82,13 +86,39 @@ public class ArrayAccessExpression extends Expression {
                     continue;
                 }
 
+                
+
                 ClosureExpression closure = (ClosureExpression) methodClosure._value;
-                // We have to change closure's closureEnv
 
-                closure._closureEnv = objectEnv;
+                /*
+                    @TODO: 
+                        Change this... this is going to make this work
 
-                closure._closureEnv.set("this", new EvalResult(objectEnv, className));
-//                objectEnv._ParentEnv.printEnv();
+                        // Make something to recognize " super -> and thus will be "
+                        // If the binding is super... dont change the closure's closureEnv 
+                */
+                boolean isSuperAccess = (boolean) objectEnv.get("isSuper")._value;
+
+                // If super.init() -> getClosureValue() 
+                if(!isSuperAccess) 
+                    closure._closureEnv = objectEnv;
+                else
+                    closure._closureEnv = (Environment) objectEnv.get("evalEnvironment").getValue();
+
+                // Lets see in which environment it is getting evaluated 
+
+                closure._closureEnv.set("this", new EvalResult(closure._closureEnv, className));
+                System.out.println("-----------------------------------------------");
+                System.out.println(Result._type + " --> " + className);
+                System.out.println("-----------------------------------------------");
+                closure._closureEnv.printEnv();
+                System.out.println("-----------------------------------------------");
+
+
+                Environment closureEnv = (Environment) closure._closureEnv.get("this").getValue();
+                closureEnv.printEnv();
+                System.out.println("-----------------------------------------------");
+                
                 Result = methodClosure;
             }
             else {
