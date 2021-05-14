@@ -75,7 +75,7 @@ public class CreateClassInstance extends Expression {
 
         _objectState = new Environment(null);
         _objectState.set(className, classEntry);
-        _objectState._ParentEnv = classMethods; 
+        _objectState._ParentEnv = classMethods; // Evaluate -> In this Env ()
 
         //////////////////////////////////////////////
         if(formalArgs.size() != actualArgsList.size()) {
@@ -84,13 +84,18 @@ public class CreateClassInstance extends Expression {
         }
 
         // function args env -> bind formal to actual args
-        Environment functionArgsBinding = new Environment(_objectState);
+        Environment functionArgsBinding = new Environment(null);
+        functionArgsBinding.set("this", new EvalResult(_objectState, className));
+        // fix this bug first.. then think about using super and dynamic dispatch
         for(int i=0; i < actualArgsList.size(); i++) {
             EvalResult argRes = actualArgsList.get(i).evaluate(env);
             AssignmentExpression.Bind(formalArgs.get(i), argRes, functionArgsBinding, _diagnostics, getLineNumber());
         }
+        functionArgsBinding._ParentEnv = _objectState;
 
-        functionArgsBinding.set("this", new EvalResult(_objectState, className)); // Bind 
+        
+        
+        
         boolean isChildClass = (boolean) classMethods.get("isChild")._value;
         if(isChildClass) {
             var immParentEnv = (Environment) classMethods.get("ParentClass")._value;
@@ -120,10 +125,8 @@ public class CreateClassInstance extends Expression {
 
         constructorMethod.evaluate(_objectState);
 
-        // This is a nice concept
-
         return new EvalResult(_objectState, "class-" + className);
     }
 }
 
-// super ->
+// 

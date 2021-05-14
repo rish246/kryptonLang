@@ -1,0 +1,19 @@
+marks = [78, 80, 90];
+
+class A {
+	def init(marks) {
+		this.marks = marks;
+	}
+};
+
+### nice... this was my mistake ###
+a = new A(3);
+
+print(marks);
+
+
+def function(marks) {
+	print(marks);
+}
+
+function(50);

@@ -188,13 +188,20 @@ public class AssignmentExpression extends Expression {
                 objEnv = (Environment) Result._value;
                 String memberName = memberAccessExp._memberName._lexeme;
 
-                EvalResult memberEntry = objEnv.get(memberName);
+                // only get from the currentEnv
+                
+                HashMap<String, EvalResult> table = objEnv._table;
+                EvalResult memberEntry = table.get(memberName);
+
+
                 if(memberEntry != null) {
                     Result = memberEntry;
                     continue;
                 }
 
-                Result = objEnv.set(memberName, new EvalResult(null, "null"));
+                EvalResult newEntry = new EvalResult(null, "null");
+                table.put(memberName, newEntry);
+                Result = newEntry;
             }
 
             else {
