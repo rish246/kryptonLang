@@ -1,0 +1,77 @@
+class Complex {
+	def init(real, imag) {
+		this.real = real;
+		this.imag = imag;
+	}
+
+	def mod() {
+		return sqrt(this.real * this.real + this.imag * this.imag);
+	}
+
+	def add(other) {
+		result_real = this.real + other.real;
+		result_imag = this.imag + other.imag;
+		return new Complex(result_real, result_imag);
+	}
+	
+
+
+	def substract(other) {
+		neg_other = Complex.negate(other);
+		return this.add(neg_other);
+
+	}
+
+	def prod(other) {
+		result_real = this.real * other.real - this.imag * other.imag;
+		result_imag = this.real * other.imag + this.imag * other.real;
+		return new Complex(result_real, result_imag);
+	}
+
+	def toString() {
+		return "(" + this.real + " + i" + this.imag + ")";
+	}	
+
+	################# Static methods #######################
+
+	def negate(complex) {
+		result = new Complex(-complex.real, -complex.imag);
+		return result;
+	}	
+
+};
+
+### It's wrong ... but it will work for now ###
+def sqrt(num) {
+	result = 1;
+	for(i = 1; i * i <= num; i = i + 1) {
+		result = i;
+	}
+	return result;
+}
+
+
+def main() {
+	complex1 = new Complex(3, 4);
+	
+	complex2 = new Complex(-1, 3);
+
+	print("Sum");
+	sumTwo = complex1.add(complex2);
+	print(complex1.toString() + " + " + complex2.toString() + " = " + sumTwo.toString());
+
+
+	print("Product");
+	prodTwo = complex1.prod(complex2);
+	print(complex2.toString() + " * " + complex2.toString() + " = " + prodTwo.toString());
+
+
+	print("Substraction");
+	diffTwo = complex1.substract(complex2);
+	print(complex1.toString() + " - " + complex2.toString() + " = " + diffTwo.toString());
+
+
+}
+	
+
+main();

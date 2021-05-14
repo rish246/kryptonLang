@@ -4,34 +4,127 @@
 
 ### This is under construction for now.
 
+
+
+**Complex Number OOP in krypton**
+
+```python
+class Complex {
+	def init(real, imag) {
+		this.real = real;
+		this.imag = imag;
+	}
+
+	def mod() {
+		return sqrt(this.real * this.real + this.imag * this.imag);
+	}
+
+	def add(other) {
+		result_real = this.real + other.real;
+		result_imag = this.imag + other.imag;
+		return new Complex(result_real, result_imag);
+	}
+	
+
+
+	def substract(other) {
+		neg_other = Complex.negate(other);
+		return this.add(neg_other);
+
+	}
+
+	def prod(other) {
+		result_real = this.real * other.real - this.imag * other.imag;
+		result_imag = this.real * other.imag + this.imag * other.real;
+		return new Complex(result_real, result_imag);
+	}
+
+	def toString() {
+		return "(" + this.real + " + i" + this.imag + ")";
+	}	
+
+	################# Static methods #######################
+
+	def negate(complex) {
+		result = new Complex(complex.real, complex.imag);
+		result.real = -(result.real);
+		result.imag = -(result.imag);
+		return result;
+	}	
+
+};
+
+### It's wrong ... but it will work for now ###
+def sqrt(num) {
+	result = 1;
+	for(i = 1; i * i <= num; i = i + 1) {
+		result = i;
+	}
+	return result;
+}
+
+
+def main() {
+	complex1 = new Complex(3, 4);
+	
+	complex2 = new Complex(-1, 3);
+
+	print("Sum");
+	sumTwo = complex1.add(complex2);
+	print(complex1.toString() + " + " + complex2.toString() + " = " + sumTwo.toString());
+
+
+	print("Product");
+	prodTwo = complex1.prod(complex2);
+	print(complex2.toString() + " * " + complex2.toString() + " = " + prodTwo.toString());
+
+
+	print("Substraction");
+	diffTwo = complex1.substract(complex2);
+	print(complex1.toString() + " - " + complex2.toString() + " = " + diffTwo.toString());
+
+
+}
+	
+
+main();
+
+
+
+```
+
+![plot](./Program%20outputs/OOP/Complex.jpg)
+
 **Object Oriented BST in krypton**
 
 ```python
+class BSTNode {
+    def init(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+
+    def toString() {
+        result = "";
+        if(this.left != null) {
+            result = result + this.left.toString();
+        }
+
+        result = result + this.value + ", ";
+
+        if(this.right != null) {
+            result = result + this.right.toString();
+        }
+        return result;
+    }   
+};
+
+
+
 class BST {
-    class BSTNode {
-        def BSTNode(value) {
-            this.value = value;
-            this.left = null;
-            this.right = null;
-        }
-
-        def toString() {
-            result = "";
-            if(this.left != null) {
-                result = result + this.left.toString();
-            }
-
-            result = result + this.value + ", ";
-
-            if(this.right != null) {
-                result = result + this.right.toString();
-            }
-            return result;
-        }
-    };
-
-
-    def BST() {
+    
+    def init() {
         this.head = null;
     }
 
@@ -73,9 +166,9 @@ class BST {
         if(head.value < value) {
             return findValue(head.right, value);
         }
-
+            
         return findValue(head.left, value);
-
+        
     }
 
     def find(value) {
@@ -99,7 +192,7 @@ class BST {
         }
 
         if(head.value > value) {
-            leftTree = deleteValue(head.left, value); # evaluating in what env-> What z fuck ()
+            leftTree = deleteValue(head.left, value); # evaluating in what env-> What z fuck () 
             # this should have returned null
             head.left = leftTree;
 
@@ -184,14 +277,14 @@ def deleteAction(set) {
 def alterSet(set) {
     option = input(int, "Enter an option from above : ");
     if(option == 1) {
-        insertAction(set);
+        insertAction(set);        
     }
     else if(option == 2) {
         findAction(set);
     }
     else if(option == 3) {
         deleteAction(set);
-    }
+    } 
     else if(option == 4) {
         printOptions();
     }
@@ -219,7 +312,6 @@ def main() {
 }
 
 main();
-
 
 
 ```
