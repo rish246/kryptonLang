@@ -443,6 +443,10 @@ class Parser {
 
             }
 
+            case FloatToken: {
+                return parseFloatExpression();
+            }
+
             case LengthToken: {
                 return parseLengthExpression();
             }
@@ -503,6 +507,16 @@ class Parser {
 
 
         return null;
+    }
+
+    private FloatExpression parseFloatExpression() {
+        Token currentToken = match(TokenType.FloatToken);
+        float value = Float.MIN_VALUE;
+        if(currentToken._value != null) {
+            value = Float.parseFloat(currentToken._lexeme);
+        }
+
+        return new FloatExpression(value, CurrentLineNumber());
     }
 
     private ReadInputExpression parseReadInputExpression() {

@@ -92,9 +92,6 @@ public class CreateClassInstance extends Expression {
             AssignmentExpression.Bind(formalArgs.get(i), argRes, functionArgsBinding, _diagnostics, getLineNumber());
         }
         functionArgsBinding._ParentEnv = _objectState;
-
-        
-        
         
         boolean isChildClass = (boolean) classMethods.get("isChild")._value;
         if(isChildClass) {

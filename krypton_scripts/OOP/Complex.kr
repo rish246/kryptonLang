@@ -21,7 +21,7 @@ class Complex {
 		return this.add(neg_other);
 
 	}
-
+	
 	def prod(other) {
 		result_real = this.real * other.real - this.imag * other.imag;
 		result_imag = this.real * other.imag + this.imag * other.real;

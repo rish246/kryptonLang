@@ -1,6 +1,7 @@
 package com.Rishabh;
 
 import com.Rishabh.Utilities.Environment;
+import com.Rishabh.Utilities.Printer;
 
 import org.graalvm.compiler.replacements.amd64.AMD64StringUTF16Substitutions;
 
@@ -135,7 +136,8 @@ public class Main {
                 if (answer == null || answer._value == null)
                     continue;
 
-                System.out.println(TEXT_GREEN + answer._value + ", " + answer._type + TEXT_RESET);
+                // System.out.println(TEXT_GREEN + answer._value + ", " + answer._type + TEXT_RESET);
+                Printer.print(answer);
 
             } catch (Exception e1) {
                 System.out.println(e1.toString());

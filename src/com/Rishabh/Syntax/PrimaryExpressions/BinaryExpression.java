@@ -113,6 +113,60 @@ public class BinaryExpression extends Expression {
                     return new EvalResult(leftRes._value != rightRes._value, "boolean");
             }
         }
+        else if(leftType.equals("float") && rightType.equals("float")) {
+
+            Float leftValue = (float) leftRes._value;
+            Float rightValue = (float) rightRes._value;
+
+            switch(_operatorToken) {
+                    case AddToken:
+                        return new EvalResult(leftValue + rightValue, "float");
+                    case SubToken:
+                        return new EvalResult(leftValue - rightValue, "float");
+                    case MultToken:
+                        return new EvalResult(leftValue  * rightValue, "float");
+                    case DivToken:
+                        return new EvalResult(leftValue /  rightValue, "float");
+                    case LessThanToken:
+                        return new EvalResult(leftValue < rightValue, "boolean");
+                    case LessThanEqualToken:
+                        return new EvalResult(leftValue <= rightValue, "boolean");
+                    case GreaterThanToken:
+                        return new EvalResult(leftValue > rightValue, "boolean");
+                    case GreaterThanEqualToken:
+                        return new EvalResult(leftValue >= rightValue, "boolean");
+                    case EqualityToken:
+                        return new EvalResult(leftRes._value == rightRes._value, "boolean");
+                    case NotEqualsToken:
+                        return new EvalResult(leftRes._value != rightRes._value, "boolean");
+                }
+        }
+        else if(leftType.equals("float") && rightType.equals("int") 
+        || rightType.equals("float") && leftType.equals("int")) {
+
+            Float[] leftAndRightValues = caseLeftAndRightValuesToFloat(leftRes, rightRes);
+            float leftValue = leftAndRightValues[0];
+            float rightValue = leftAndRightValues[1];
+        switch(_operatorToken) {
+            case MultToken: {
+                float product = leftValue * rightValue;
+                return new EvalResult(product, "float");
+            }
+
+            case DivToken: {
+                return new EvalResult(leftValue / rightValue, "float");
+            }
+
+            case AddToken: {
+                return new EvalResult(leftValue + rightValue, "float");
+            }
+
+            case SubToken: {
+                return new EvalResult(leftValue - rightValue, "float");
+            }
+        }
+    }
+
         else if(leftType.equals("list") && rightType.equals("list")) {
             // return new EvalResult of type list
             List<EvalResult> leftList = (List) leftRes._value;
@@ -217,6 +271,24 @@ public class BinaryExpression extends Expression {
         _diagnostics.add("Undefined operator " + _operatorToken + " for types " + leftType + " and " + rightType+ " at line number " + getLineNumber());
         return null;
 
+    }
+
+    private Float[] caseLeftAndRightValuesToFloat(EvalResult leftRes, EvalResult rightRes) {
+        String leftType = leftRes._type;
+        String rightType = rightRes._type;
+        float leftValue = 0.0f;
+        float rightValue = 0.0f;
+        if(leftType.equals("int") && rightType.equals("float")) {
+            leftValue = (int) leftRes._value * 1.0f;
+            rightValue = (float) rightRes._value;
+        }
+        else if(rightType.equals("int") && leftType.equals("float")) {
+            leftValue = (float) leftRes._value;
+            rightValue = (int) rightRes._value * 1.0f;
+        }
+
+        Float[] result = {leftValue, rightValue};
+        return result;
     }
 
     private EvalResult evalLogicalExpression(Environment env) throws Exception {

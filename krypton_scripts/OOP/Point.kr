@@ -1,0 +1,29 @@
+class Point {
+	def init(x, y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	def dist(other) {
+		x_diff = this.x - other.x;
+		y_diff = this.y - other.y;
+		return Math.sqrt(x_diff * x_diff + y_diff * y_diff);
+	}
+
+};
+
+class PolarPoint extends Point {
+	def init(r, theta) {
+		this.x = r * Math.cos(theta);
+		this.y = r * Math.sin(theta);
+	}
+};
+
+# Implement.. Floating point numbers in krypton... That'll be fine
+	
+
+def main() {
+
+}
+
+main();

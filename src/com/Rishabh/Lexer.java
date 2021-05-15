@@ -69,7 +69,7 @@ class Lexer {
 
         // if isDigit .. go with IntToken
         if (Character.isDigit(currentChar()))
-            return getIntToken(start);
+            return getNumericToken(start);
             
         // if isLetter.. go for word
         if(Character.isLetter(currentChar()))
@@ -246,10 +246,16 @@ class Lexer {
         }
     }
 
-    private Token getIntToken (int start) {
-        Condition isDigitCondition = (Character::isDigit);
+    private Token getNumericToken (int start) {
+        Condition isDigitCondition = (letter -> Character.isDigit(letter) || letter == '.');
         String lexeme = getToken(start, isDigitCondition);
-        return new Token(TokenType.IntToken, lexeme, Integer.parseInt(lexeme));
+        // if lexeme contains '.' then float else int
+        if(lexeme.indexOf('.', 0) == -1)
+            return new Token(TokenType.IntToken, lexeme, Integer.parseInt(lexeme));
+
+
+        // return a float
+        return new Token(TokenType.FloatToken, lexeme, Float.parseFloat(lexeme));
     }
 
     private String getToken(int start, Condition cond) {

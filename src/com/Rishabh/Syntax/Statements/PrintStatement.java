@@ -5,6 +5,7 @@ import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.Statement;
 import com.Rishabh.Utilities.Environment;
+import com.Rishabh.Utilities.Printer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,41 +39,10 @@ public class PrintStatement extends Statement {
             return null;
         }
 
-        Object printableValue = getPrintableValue(bodyOp);
-
-        System.out.println(TEXT_GREEN + printableValue + TEXT_RESET);
-
+        Printer.print(bodyOp);
         return new EvalResult(null, null);
     }
 
-    private Object getPrintableValue(EvalResult bodyOp) {
-        if(bodyOp._type == "list") {
-            List<Object> printableList = new ArrayList<>();
-            List<EvalResult> list = (List) bodyOp._value;
-            for(EvalResult nextElement : list) {
-                printableList.add(getPrintableValue(nextElement));
-            }
-            return printableList;
-        }
-
-        else if(bodyOp._type == "object") {
-            Map<String, Object> printableObject = new HashMap<>();
-            Map<Object, EvalResult> object = (HashMap) bodyOp._value;
-
-            for(Map.Entry<Object, EvalResult> binding : object.entrySet()) {
-                Object printableValue = getPrintableValue(binding.getValue());
-                printableObject.put(binding.getKey().toString(), printableValue);
-            }
-            return printableObject;
-
-        }
-        else if(bodyOp._type == "null") {
-            return "null";
-        }
-        else {
-            return bodyOp._value;
-        }
-    }
 
 
     public void prettyPrint(String indent) {
