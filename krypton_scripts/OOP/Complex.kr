@@ -11,6 +11,8 @@ class Complex {
 	def add(other) {
 		result_real = this.real + other.real;
 		result_imag = this.imag + other.imag;
+		print(result_real);
+		print(result_imag);
 		return new Complex(result_real, result_imag);
 	}
 	
@@ -23,9 +25,8 @@ class Complex {
 	}
 	
 	def prod(other) {
-		result_real = this.real * other.real - this.imag * other.imag;
-		result_imag = this.real * other.imag + this.imag * other.real;
-		return new Complex(result_real, result_imag);
+		# print("prod"); # problem is with creating instances in our method
+		return new Complex(1, 1); # Found problem - > Creating
 	}
 
 	def toString() {
@@ -58,17 +59,7 @@ def main() {
 
 	print("Sum");
 	sumTwo = complex1.add(complex2);
-	print(complex1.toString() + " + " + complex2.toString() + " = " + sumTwo.toString());
-
-
-	print("Product");
-	prodTwo = complex1.prod(complex2);
-	print(complex2.toString() + " * " + complex2.toString() + " = " + prodTwo.toString());
-
-
-	print("Substraction");
-	diffTwo = complex1.substract(complex2);
-	print(complex1.toString() + " - " + complex2.toString() + " = " + diffTwo.toString());
+	print(sumTwo.toString());
 
 
 }

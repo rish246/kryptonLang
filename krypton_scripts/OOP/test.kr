@@ -1,41 +1,32 @@
-class Person {
-    def Person(name) {
-            this.name = name;
-            this.carList = [];
-    }
-
-    def buy(vehicle) {
-        print(this.name + " is buying " + vehicle.name);
-        vehicle.sell(this);
-    }
-
-    def printCars() {
-        for(car in this.carList) {
-            print(car.name);
-        }
-    }
-};
-
-
-class Car {
-    def Car(name) {
+class Vehicle {
+    def init(name, nWheels) {
         this.name = name;
-        this.nBuyers = 0;
+        this.nWheels = nWheels;
     }
 
-    def sell(person) {
-        person.carList = person.carList + this;
+    def run(val) {
+        print("Vehicle " + this.name + " is running on " + this.nWheels + " wheels.");
+    }
+
+    def race(otherVehicle) {
+        print("" + this.name + " is racing " + otherVehicle.name);
     }
 };
 
+
+class Car extends Vehicle {
+    # def init(name) {
+    #     this.name = name;
+    #     this.nWheels = 4;
+    # }
+};
 
 def main() {
-    ram = new Person("Ram");
-    honda = new Car("honda civic");
-    ram.buy(honda);
-    ram.buy(new Car("i 20"));
-    ram.buy(new Car("swift dzire"));
-    ram.printCars();
+    myCar = new Car("honda", 4);
+    # myCar.run();
+
+    arunCar = new Car("ferrari", 4);
+    arunCar.race(myCar);
 
 }
 
