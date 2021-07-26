@@ -258,6 +258,13 @@ public class AssignmentExpression extends Expression {
 
     }
 
+    public static void BindArgs(List<Expression> formalArgs, List<Expression> actualArgs, Environment env, List<String> diagnostics, int lineNumber) throws Exception {
+        for(int i = 0; i < actualArgs.size(); i++) {
+            EvalResult argRes = actualArgs.get(i).evaluate(env);
+            AssignmentExpression.Bind(formalArgs.get(i), argRes, env, diagnostics, lineNumber);
+        }
+    }
+
 }
 
 // Binding super 

@@ -8,11 +8,8 @@ import com.Rishabh.Syntax.Values.ListExpression;
 import com.Rishabh.Token;
 import com.Rishabh.Utilities.Environment;
 
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class CreateClassInstance extends Expression {
@@ -37,93 +34,79 @@ public class CreateClassInstance extends Expression {
 
     @Override
     public EvalResult evaluate(Environment env) throws Exception {
-
         String className = _className._lexeme;
         EvalResult classEntry = env.get(className);
+        return createNewClassInstance(env, className, classEntry);
+    }
 
-
+    private EvalResult createNewClassInstance(Environment env, String className, EvalResult classEntry) throws Exception {
         if(classEntry == null) {
             _diagnostics.add("Undefined Symbol " + className + " at line number " + getLineNumber());
             return null;
         }
 
-        // Extract the constructor method
-        Environment classMethods = (Environment) classEntry._value;
-        // and callItAMethod
-        EvalResult constructorMethodEntry = classMethods.get("init");
+        Environment classEnvironment = (Environment) classEntry.getValue();
+        EvalResult constructorMethodEntry = classEnvironment.get("init");
+        return callConstructorMethod(env, className, classEntry, classEnvironment, constructorMethodEntry);
+    }
 
-        // check if the constructor exists or not
+    private EvalResult callConstructorMethod(Environment env, String className, EvalResult classEntry, Environment classEnvironment, EvalResult constructorMethodEntry) throws Exception {
         if(constructorMethodEntry == null) {
             _diagnostics.add("Didn't find a constructor method for class " + className + ", error at line number " + getLineNumber());
             return null;
         }
 
-
         var constructorMethod = (ClosureExpression) constructorMethodEntry._value;
-
         List<Expression> formalArgs = constructorMethod._formalArgs;
-
-        var constructorCall = (ArrayAccessExpression) _constructorCall;
-
-        Expression argsList = constructorCall._indices[0];
-
-        // I'll need to extract the actual args
-        var actualArgsExp = (ListExpression) ((ParensExpression) argsList)._body;
-
-        List<Expression> actualArgsList = actualArgsExp._elements;
-
-
-        _objectState = new Environment(null);
-        _objectState.set(className, classEntry);
-        _objectState._ParentEnv = classMethods; // Evaluate -> In this Env ()
-
-        //////////////////////////////////////////////
+        List<Expression> actualArgsList = getActualArgs();
         if(formalArgs.size() != actualArgsList.size()) {
             _diagnostics.add("Invalid number of arguements passed ... Expected " + formalArgs.size() + ", got " + actualArgsList.size() + " at line number " + getLineNumber());
             return null;
         }
 
-        // function args env -> bind formal to actual args
+        initializeObjectState(className, classEntry, classEnvironment);
+        Environment functionArgsBinding = createConstructorEnvironment(env, className, formalArgs, actualArgsList);
+
+        setupInheritanceLogic(className, classEnvironment, functionArgsBinding);
+        functionArgsBinding.set(className, classEntry);
+        constructorMethod._closureEnv = functionArgsBinding;
+        constructorMethod.evaluate(_objectState);
+        return new EvalResult(_objectState, className);
+    }
+
+    // @TODO: Rename and Refactor this function later... This is to make the super keyword to work
+    private void setupInheritanceLogic(String className, Environment classEnvironment, Environment functionArgsBinding) {
+        boolean isChildClass = (boolean) classEnvironment.get("isChild")._value;
+        if(isChildClass) {
+            var immParentEnv = (Environment) classEnvironment.get("ParentClass")._value;
+            var immParentEnvCopy = Environment.copy(immParentEnv);
+            immParentEnvCopy.set("isSuper", new EvalResult(true, "boolean"));
+            immParentEnvCopy.set("evalEnvironment", new EvalResult(Environment.copy(_objectState), className));
+            functionArgsBinding.set("super", new EvalResult(immParentEnvCopy, className));
+        }
+    }
+
+    private void initializeObjectState(String className, EvalResult classEntry, Environment classEnvironment) {
+        _objectState = new Environment(null);
+        _objectState.set(className, classEntry);
+        _objectState._ParentEnv = classEnvironment;
+    }
+
+    private Environment createConstructorEnvironment(Environment env, String className, List<Expression> formalArgs, List<Expression> actualArgsList) throws Exception {
         Environment functionArgsBinding = new Environment(null);
         functionArgsBinding.set("this", new EvalResult(_objectState, className));
-        // fix this bug first.. then think about using super and dynamic dispatch
-        for(int i=0; i < actualArgsList.size(); i++) {
+        for(int i = 0; i < actualArgsList.size(); i++) {
             EvalResult argRes = actualArgsList.get(i).evaluate(env);
             AssignmentExpression.Bind(formalArgs.get(i), argRes, functionArgsBinding, _diagnostics, getLineNumber());
         }
         functionArgsBinding._ParentEnv = _objectState;
-        
-        boolean isChildClass = (boolean) classMethods.get("isChild")._value;
-        if(isChildClass) {
-            var immParentEnv = (Environment) classMethods.get("ParentClass")._value;
-            System.out.println(immParentEnv.get("__ClassName__").getValue());
-            var immParentEnvCopy = Environment.copy(immParentEnv);
+        return functionArgsBinding;
+    }
 
-            // HashMap<String, EvalResult> immParentSymbolTable = immParentEnvCopy._table;
-            // for(Map.Entry<String, EvalResult> featureEntry : immParentSymbolTable.entrySet()) {
-            //     EvalResult feature = featureEntry.getValue();
-
-            //     if(feature.getType() == "Closure") {
-            //         var methodBody = (ClosureExpression) feature._value;
-            //         methodBody._closureEnv = _objectState;
-            //     }
-            // }
-
-            immParentEnvCopy.set("isSuper", new EvalResult(true, "boolean"));
-
-            immParentEnvCopy.set("evalEnvironment", new EvalResult(Environment.copy(_objectState), className));
-
-            functionArgsBinding.set("super", new EvalResult(immParentEnvCopy, className));
-        }
-
-        functionArgsBinding.set(className, classEntry);
-
-        constructorMethod._closureEnv = functionArgsBinding;
-
-        constructorMethod.evaluate(_objectState);
-
-        return new EvalResult(_objectState, "class-" + className);
+    private List<Expression> getActualArgs() {
+        var constructorCall = (ArrayAccessExpression) _constructorCall;
+        Expression argsList = constructorCall._indices[0];
+        var actualArgsExp = (ListExpression) ((ParensExpression) argsList)._body;
+        return actualArgsExp._elements;
     }
 }
-
-// 

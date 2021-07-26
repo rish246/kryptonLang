@@ -1,0 +1,56 @@
+# lets implement pageRank in krypt
+class Page {
+    nPages = 0; # static member... just like in python
+
+    def init(name) {
+        this.name = name;
+        this.rank = 1;
+        this.outgoing_links = [];
+        this.incoming_links = [];
+        Page.nPages = Page.nPages + 1;
+    }
+
+    def add_OG_Link(page) {
+        this.outgoing_links = this.outgoing_links + page;
+        page.incoming_links = page.incoming_links + this;
+    }
+
+    def compute_rank(d) {
+        this.rank = (1 - d);
+        for(page in this.incoming_links) {
+            additionValue = d * ((page.rank) / len(page.outgoing_links));
+            this.rank = this.rank + additionValue;
+        }
+        return this.rank;
+    }
+
+};
+
+def main() {
+    d = 0;
+    A = new Page("A");
+    B = new Page("B");
+    C = new Page("C");
+
+    pages = [A, B, C];
+
+    A.add_OG_Link(C);
+    A.add_OG_Link(B);
+    C.add_OG_Link(A);
+    B.add_OG_Link(C);
+
+
+
+    for(i = 0; i < 100; i = i + 1) {
+        for (page in pages) {
+            page.compute_rank(d);
+        }
+    }
+
+    for(page in pages) {
+        print(page.rank);
+    }
+
+}
+
+main();
