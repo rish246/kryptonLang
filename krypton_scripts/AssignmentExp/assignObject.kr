@@ -1,0 +1,11 @@
+{"name" : name, "age" : age} = {"name" : "rishabh", "age" : 19};
+print(name == "rishabh");
+print(age == 19);
+
+{name, age} = {age, name};
+print(name == "rishabh");
+print(age == 19);
+
+# check for invalid keys in lhs and rhs
+{name, car} = {age, name};
+

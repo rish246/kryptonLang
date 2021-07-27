@@ -1,5 +1,5 @@
 class GraphNode {
-    def GraphNode(name) {
+    def init(name) {
         this.name = name;
         this.neighbours = [];
         this.isVisited = false;
@@ -11,14 +11,13 @@ class GraphNode {
     }
 
     def visitNeighbours() {
-        curGroup = [this];
         this.isVisited = true;
+        print(this.name);
         for(neighbour in this.neighbours) {
             if(!neighbour.isVisited) {
-                curGroup = curGroup + neighbour.visitNeighbours();
+                neighbour.visitNeighbours();
             }
         }
-        return curGroup;
     }
 
 };
@@ -33,8 +32,6 @@ def printGroup(group, groupNumber) {
 }
 
 
-
-
 def main() {
     g1 = new GraphNode(1);
     g2 = new GraphNode(2);
@@ -43,24 +40,16 @@ def main() {
 
     g1.addNeighbour(g2);
     g1.addNeighbour(g3);
-
-    nComponents = 0;
+    g2.addNeighbour(g3);
+    g1.addNeighbour(g4);
 
     network = [g1, g2, g3, g4];
 
-    groups = [];
     for(node in network) {
         if(!node.isVisited) {
-            nComponents = nComponents + 1;
-            newGroup = node.visitNeighbours();
-            printGroup(newGroup, nComponents);
+            node.visitNeighbours();
         }
     }
-
-    print("Total connected components in our graph -> " + nComponents);
-        
-    
-
 }
 
 main();

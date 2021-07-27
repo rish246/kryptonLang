@@ -30,7 +30,7 @@ public class ArrayAccessExpression extends Expression {
         EvalResult result = null;
         EvalResult ourIdentifierEntry = env.get(_identifier._lexeme);
 
-        if (ourIdentifierEntry == null) {
+        if (isNull(ourIdentifierEntry)) {
             _diagnostics.add("Invalid identifier " + _identifier._lexeme + " at line number " + getLineNumber());
         } else {
             result = Evaluate(env, ourIdentifierEntry);
@@ -41,17 +41,15 @@ public class ArrayAccessExpression extends Expression {
     private EvalResult Evaluate(Environment env, EvalResult ourEntry) throws Exception {
         EvalResult Result = ourEntry;
         for(Expression index : _indices) {
-            if(Result == null || Result._value == null) {
-                _diagnostics.add("NullPointerException: Cannot access property from null, at line number " + getLineNumber());
-                return null;
-            }
             Result = EvaluateIndexInEnv(env, Result, index);
-            if(Result == null) return null;
+            if(isNull(Result)) return null;
         }
         return Result;
     }
 
     private EvalResult EvaluateIndexInEnv(Environment env, EvalResult Result, Expression index) throws Exception {
+        if (isRaisingNullPointerException(Result)) return null;
+
         if(index.getType() == ExpressionType.ParensExpression)
             Result = callFunction(Result, index, env);
         else if(index.getType() == ExpressionType.MemberAccessExpression)
@@ -59,6 +57,14 @@ public class ArrayAccessExpression extends Expression {
         else
             Result = AssignmentExpression.getValue(Result, index, env, _diagnostics, getLineNumber());
         return Result;
+    }
+
+    private boolean isRaisingNullPointerException(EvalResult Result) {
+        if(isNull(Result) || isNull(Result.getValue())) {
+            _diagnostics.add("NullPointerException: Cannot access property from null, at line number " + getLineNumber());
+            return true;
+        }
+        return false;
     }
 
     private EvalResult getMemberFromClassEnv(EvalResult Result, MemberAccessExpression memberName) throws Exception {
@@ -69,7 +75,7 @@ public class ArrayAccessExpression extends Expression {
     }
 
     private EvalResult evaluateMember(EvalResult Result, String className, Environment objectEnv, EvalResult memberEntry) {
-        if(memberEntry != null) {
+        if (!isNull(memberEntry)) {
             Result = memberEntry;
             boolean isMemberAMethod = memberEntry.getType().equals("Closure");
             if (isMemberAMethod)
@@ -142,6 +148,10 @@ public class ArrayAccessExpression extends Expression {
         for(SyntaxTree index : _indices) {
             index.prettyPrint(indent + "    ");
         }
+    }
+
+    private boolean isNull(Object object) {
+        return object == null;
     }
 
     public List<String> getDiagnostics() {

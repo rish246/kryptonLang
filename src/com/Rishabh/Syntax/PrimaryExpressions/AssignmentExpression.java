@@ -5,6 +5,7 @@ import com.Rishabh.ExpressionType;
 import com.Rishabh.Syntax.Expression;
 import com.Rishabh.Syntax.Values.ListExpression;
 import com.Rishabh.Syntax.Values.NumberExpression;
+import com.Rishabh.Syntax.Values.ObjectExpression;
 import com.Rishabh.Syntax.Values.StringExpression;
 import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
@@ -93,86 +94,108 @@ public class AssignmentExpression extends Expression {
     }
 
     private static EvalResult assignObject(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {
-        // Get the left object
-        var leftObject = (com.Rishabh.Syntax.Values.ObjectExpression) left;
-        Map<Expression, Expression> leftObjectContents = leftObject._contents;
+        Map<Expression, Expression> leftObject = getLeftObject((ObjectExpression) left);
+        Map<String, EvalResult> rightObject = getRightObject(right, _diagnostics, lineNumber);
+        if (rightObject == null) return null;
+        boolean foundInvalidKey = BindObjectsInEnv(env, _diagnostics, lineNumber, leftObject, rightObject);
+        if (foundInvalidKey) right = null;
+        return right;
+    }
 
-        // Typecast the right obj
-        if(right._type != "object") {
-            _diagnostics.add("Expected an object, found " + right._type + " at line number " + lineNumber);
-            return null;
-        }
-        Map<String, EvalResult> rightObject = (HashMap) right._value;
-
-        for(Map.Entry<Expression, Expression> leftEntry : leftObjectContents.entrySet()) {
-            Expression keyExp = leftEntry.getKey();
-            String key;
-            if(keyExp.getType() == ExpressionType.IntExpression) {
-                var intKey = (NumberExpression) keyExp;
-                key = Integer.toString(intKey._value);
-            }
-            else if(keyExp.getType() == ExpressionType.StringExpression) {
-                var strKey = (StringExpression) keyExp;
-                key = strKey._value;
-            }
-            else {
-                _diagnostics.add("Invalid key type in object, at line number " + lineNumber);
-                return null;
-            }
-
-            Expression leftExp = leftObjectContents.get(keyExp);
+    // Fix this and we are done for now
+    // Chill for some time after this
+    private static boolean BindObjectsInEnv(Environment env, List<String> _diagnostics, int lineNumber, Map<Expression, Expression> leftObject, Map<String, EvalResult> rightObject) throws Exception {
+        boolean foundInvalidKey = false;
+        for(Expression leftObjectKey : leftObject.keySet()) {
+            foundInvalidKey = !isKeyValid(_diagnostics, lineNumber, leftObjectKey);
+            if(foundInvalidKey) break;
+            String key = getKeyFromExpression(leftObjectKey);
+            Expression leftExp = leftObject.get(leftObjectKey);
             EvalResult rightRes = rightObject.get(key);
 
             if(rightRes == null) {
                 _diagnostics.add("Key " + key + " is not present in the RHS of the assignement at line number " + lineNumber);
-                return null;
+                foundInvalidKey = true;
+                break;
             }
             AssignmentExpression.Bind(leftExp, rightRes, env, _diagnostics, lineNumber);
         }
+        return foundInvalidKey;
+    }
 
-        return right;
+    private static boolean isKeyValid(List<String> _diagnostics, int lineNumber, Expression leftObjectKey) {
+        boolean isKeyOfValidType = isIntegerKey(leftObjectKey) || isStringKey(leftObjectKey);
+        if (!isKeyOfValidType)
+            _diagnostics.add("Invalid key type in object, at line number " + lineNumber);
+        return isKeyOfValidType;
+    }
+
+    private static String getKeyFromExpression(Expression keyExp) {
+        String key;
+        if (isIntegerKey(keyExp)) {
+            var intKey = (NumberExpression) keyExp;
+            key = Integer.toString(intKey._value);
+        }
+        else {
+            var strKey = (StringExpression) keyExp;
+            key = strKey._value;
+        }
+        return key;
+    }
+
+    private static boolean isStringKey(Expression keyExp) {
+        return keyExp.getType() == ExpressionType.StringExpression;
+    }
+
+    private static boolean isIntegerKey(Expression keyExp) {
+        return keyExp.getType() == ExpressionType.IntExpression;
+    }
+
+    private static Map<String, EvalResult> getRightObject(EvalResult right, List<String> _diagnostics, int lineNumber) {
+        if(right._type != "object") {
+            _diagnostics.add("Expected an object, found " + right._type + " at line number " + lineNumber);
+            return null;
+        }
+        return (HashMap<String, EvalResult>) right.getValue();
+    }
+
+    private static Map<Expression, Expression> getLeftObject(ObjectExpression left) {
+        var leftObject = left;
+        Map<Expression, Expression> leftObjectContents = leftObject._contents;
+        return leftObjectContents;
     }
 
     public static EvalResult assignList(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {
-
         String rightType = right._type;
-        Object rightValue = right._value;
-        // Get the elements fro
-        var LeftList = (ListExpression) left;
-        // For Each element check it is of type identifierExpression
-        List<Expression> listElements = LeftList._elements;
-
-        // if everyThing is alright
         if(!rightType.equals("list")) {
             _diagnostics.add("Cannot de-structure " + rightType + " into a list. Error at line number " + lineNumber);
             return null;
         }
+        return BindListsInEnv((ListExpression) left, env, right, _diagnostics, lineNumber);
+    }
 
-        List<EvalResult> rightList = (List) rightValue; // We got the right res
-        if(rightList.size() != listElements.size()) {
+    private static EvalResult BindListsInEnv(ListExpression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {
+        var rightList = (List<EvalResult>) right._value;
+        List<Expression> leftList = left._elements;
+        if(rightList.size() != leftList.size()) {
             _diagnostics.add("Dimension mismatch in expression.. the elements in lvalue and rvalue must be same, Error at line number " + lineNumber);
             return null;
         }
+        return BindLists(env, _diagnostics, lineNumber, rightList, leftList);
+    }
 
-        for(int i = 0; i < listElements.size(); i++) {
-            AssignmentExpression.Bind(listElements.get(i), rightList.get(i), env, _diagnostics, lineNumber);
-        }
-
+    private static EvalResult BindLists(Environment env, List<String> _diagnostics, int lineNumber, List<EvalResult> rightList, List<Expression> leftList) throws Exception {
+        for(int i = 0; i < leftList.size(); i++)
+            AssignmentExpression.Bind(leftList.get(i), rightList.get(i), env, _diagnostics, lineNumber);
         return new EvalResult(rightList, "list");
-
     }
 
     public static EvalResult assignIdentifier(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) {
-        String rightType = right._type;
-        Object rightValue = right._value;
-
-        IdentifierExpression I_left = (IdentifierExpression) left;
-        return env.set(I_left._lexeme, new EvalResult(rightValue, rightType));
+        IdentifierExpression leftIdentifierExpression = (IdentifierExpression) left;
+        return env.set(leftIdentifierExpression._lexeme, right);
     }
 
     public static EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, EvalResult ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
-
-
         EvalResult Result = ourEntry; // a->NewEnvironment
         Environment objEnv = new Environment(null);
 
@@ -228,7 +251,7 @@ public class AssignmentExpression extends Expression {
                 return null;
             }
 
-            List<EvalResult> ourList = (List) curIterable._value;
+            List<EvalResult> ourList = (List<EvalResult>) curIterable._value;
 
             int curIdx = (int) indexRes._value;
             if(curIdx >= ourList.size()) {
@@ -245,7 +268,7 @@ public class AssignmentExpression extends Expression {
                 return null;
             }
 
-            Map<String, EvalResult> ourMap = (HashMap) curIterable._value;
+            Map<String, EvalResult> ourMap = (HashMap<String, EvalResult>) curIterable._value;
             String curIdx = (indexRes._value).toString();
 
             if(ourMap.get(curIdx) == null) {
@@ -258,13 +281,5 @@ public class AssignmentExpression extends Expression {
 
     }
 
-    public static void BindArgs(List<Expression> formalArgs, List<Expression> actualArgs, Environment env, List<String> diagnostics, int lineNumber) throws Exception {
-        for(int i = 0; i < actualArgs.size(); i++) {
-            EvalResult argRes = actualArgs.get(i).evaluate(env);
-            AssignmentExpression.Bind(formalArgs.get(i), argRes, env, diagnostics, lineNumber);
-        }
-    }
-
 }
 
-// Binding super 

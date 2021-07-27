@@ -59,8 +59,8 @@ public class CreateClassInstance extends Expression {
         var constructorMethod = (ClosureExpression) constructorMethodEntry._value;
         List<Expression> formalArgs = constructorMethod._formalArgs;
         List<Expression> actualArgsList = getActualArgs();
-        if(formalArgs.size() != actualArgsList.size()) {
-            _diagnostics.add("Invalid number of arguements passed ... Expected " + formalArgs.size() + ", got " + actualArgsList.size() + " at line number " + getLineNumber());
+        if(!areSameSize(formalArgs, actualArgsList)) {
+            _diagnostics.add("Invalid number of arguments passed ... Expected " + formalArgs.size() + ", got " + actualArgsList.size() + " at line number " + getLineNumber());
             return null;
         }
 
@@ -72,6 +72,10 @@ public class CreateClassInstance extends Expression {
         constructorMethod._closureEnv = functionArgsBinding;
         constructorMethod.evaluate(_objectState);
         return new EvalResult(_objectState, className);
+    }
+
+    private boolean areSameSize(List<Expression> formalArgs, List<Expression> actualArgsList) {
+        return formalArgs.size() == actualArgsList.size();
     }
 
     // @TODO: Rename and Refactor this function later... This is to make the super keyword to work
