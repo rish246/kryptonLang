@@ -88,31 +88,19 @@ class Math {
 
 def main() {
 	print("Math Library for krypton");
-#	print("----Square root----");
-#	value = input(int, "Enter a number :");
-#	sqrtValue = Math.sqrt(value);
-#	print("Square root of " + value + " is " + sqrtValue);
-	
-	
-#	print("-------Factorial of a number---------");
-#	number = input(int, "Enter a number :");
-#	factorialN = Math.factorial(number);
-#	print("Factorial of " + number + " is " + factorialN);	
 
-	#print("Cosine theta");
 	theta1 = Math.pi / 2;
 	theta2 = Math.pi / 4;
 	theta3 = Math.pi / 6;
 	theta4 = 0;
 		
 	thetas = [theta1, theta2, theta3, theta4];
-	#for(theta in thetas) {
-	#	print("Cosine of " + theta + " is " + Math.cos(theta));
-	#} 	
 
 	print("Sine theta");
 	for(theta in thetas) {
-		print("Sine of " + theta + " is " + Math.sin(theta));
+		sin_theta = Math.sin(theta);
+		cos_theta = Math.cos(theta);
+		print(sin_theta * sin_theta + cos_theta * cos_theta);
 	}
 	
 
