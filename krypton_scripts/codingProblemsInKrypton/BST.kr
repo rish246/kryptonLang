@@ -1,0 +1,105 @@
+class BinaryTreeNode {
+    def init(val) {
+        this.val = val;
+        this.left = null;
+        this.right = null;
+        this.isBST = false;
+        this.size = 0;
+    }
+
+    def printTree(indent) {
+        print(indent + "[" + this.val + ", " + this.isBST + ", " + this.size + " ]");
+        print(indent + "|");
+        if (this.left != null) {
+            print(indent + "|_");
+            this.left.printTree(indent + "    ");
+        } 
+        print(indent + "|");
+        if (this.right != null) {
+            print(indent + "|_");
+            this.right.printTree(indent + "    ");
+        }
+    }
+
+};
+
+def isABST(root) {
+    if (root == null) {
+        return true;
+    }
+
+    if (root.left == null && root.right == null) {
+        root.isBST = true;
+        return true;
+    }
+
+    is_bst_left = isABST(root.left);
+    is_bst_right = isABST(root.right);
+    if(is_bst_left && is_bst_right) {
+        satisfies_left = (root.left == null) || (root.left.val < root.val);
+        satisfies_right = (root.right == null) || (root.right.val > root.val);
+        root.isBST = satisfies_left && satisfies_right;
+    }
+
+    return root.isBST;
+
+
+}
+
+def computeSubtreeSize(root) {
+    if (root == null) { return 0; }
+
+    if(root.left == null && root.right == null) {
+        root.size = 1;
+        return 1;
+    }
+
+    leftSize = computeSubtreeSize(root.left);
+    rightSize = computeSubtreeSize(root.right);
+    root.size = leftSize + rightSize + 1;
+    return root.size;
+}
+
+def getLargestBST(root) {
+    if(root == null) { return 0; }
+    if(root.left == null && root.right == null) { return 1; }
+    if(root.isBST == true) { return root.size; }
+
+    max_bst_left = getLargestBST(root.left);
+    max_bst_right = getLargestBST(root.right);
+    return max(max_bst_left, max_bst_right);
+
+}
+
+def max(v1, v2) {
+    result = v1;
+    if(v2 > v1) { result = v2; }
+    return result;
+}
+
+
+
+def createBinaryTree() {
+    root = new BinaryTreeNode(1);
+    leftNode = new BinaryTreeNode(4);
+    rightNode = new BinaryTreeNode(7);
+    leftLeftNode = new BinaryTreeNode(2);
+    rightLeftNode = new BinaryTreeNode(6);
+    rightRightNode = new BinaryTreeNode(9);
+    # For next test cases
+    rightRightLeftNode = new BinaryTreeNode(11);
+    root.left = leftNode;
+    root.right = rightNode;
+    leftNode.left = leftLeftNode;
+    rightNode.left = rightLeftNode;
+    rightNode.right = rightRightNode;
+    rightRightNode.left = rightRightLeftNode;
+    return root;
+}
+
+test_bin_tree = createBinaryTree();
+isABST(test_bin_tree);
+# print(val);
+computeSubtreeSize(test_bin_tree);
+# test_bin_tree.printTree("");
+print(getLargestBST(test_bin_tree) == 2);

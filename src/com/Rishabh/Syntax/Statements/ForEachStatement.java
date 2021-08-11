@@ -64,7 +64,6 @@ public class ForEachStatement extends Statement {
         List<EvalResult> ourList = (List) ourIterable._value;
 
         for (EvalResult element : ourList) {
-//            BindIterator(_iterator, env, element);
             AssignmentExpression.Bind(_iterator, element, env, _diagnostics, getLineNumber());
             EvalResult bodyResult = _body.evaluate(env);
 
@@ -84,8 +83,6 @@ public class ForEachStatement extends Statement {
     private EvalResult iterateObject(Expression left, Environment env, EvalResult ourIterable) throws Exception {
         Map<String, EvalResult> ourObject = (HashMap) ourIterable._value;
 
-        // Bind iterator to each [key, value] pair one by one //
-        // evaluate body with the new env //
         for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
             EvalResult keyValuePair = getKeyValuePair(binding);
             AssignmentExpression.Bind(_iterator, keyValuePair, env, _diagnostics, getLineNumber());

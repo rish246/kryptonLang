@@ -158,4 +158,3 @@ public class ArrayAccessExpression extends Expression {
         return _diagnostics;
     }
 }
-

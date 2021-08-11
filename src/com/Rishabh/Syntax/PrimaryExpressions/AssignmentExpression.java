@@ -35,15 +35,10 @@ public class AssignmentExpression extends Expression {
         System.out.println(_operatorToken);
         System.out.println(indent + "|");
         System.out.print(indent + "├──");
-//        _left.prettyPrint(indent + "    ");
-        // System.out.println(_left. + indent);
         _left.prettyPrint(indent + "    ");
-        // Add some long lines here
         System.out.println(indent + "|");
-
         System.out.print(indent + "└──");
         _right.prettyPrint(indent + "    ");
-
     }
 
     @Override
@@ -52,14 +47,10 @@ public class AssignmentExpression extends Expression {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-
         EvalResult rightRes = _right.evaluate(env);
-
         _diagnostics.addAll(_right.getDiagnostics());
-
         if(rightRes == null)
             return null;
-
         return AssignmentExpression.Bind(_left, rightRes, env, _diagnostics, getLineNumber());
     }
 
@@ -195,10 +186,113 @@ public class AssignmentExpression extends Expression {
         return env.set(leftIdentifierExpression._lexeme, right);
     }
 
+    /*
+        Iterables are like array access expression
+        a.x = 3, a[3] = 2 etc
+
+     */
+
+//    private static EvalResult evaluateIterableExpression(Environment env, ArrayAccessExpression curExp, List<String> _diagnostics, int lineNumber, EvalResult Result) throws Exception {
+//        for(Expression index : curExp._indices) {
+//
+//            if(isRaisingNullPointerException(Result)) {
+//                _diagnostics.add("NullPointerException: Cannot access property from null, at line number " + lineNumber);
+//                return null;
+//            }
+//
+//            if(index.getType() == ExpressionType.MemberAccessExpression) {
+//                EvalResult memberEntry = getMemberEntry(index, );
+//                if(memberEntry != null) { Result = memberEntry; }
+//                else{
+////                    EvalResult newEntry = new EvalResult(null, "null");
+////                    /*@TODO: Check this for fixing the bug */
+////                    objEnv.set(memberName, newEntry);
+////                    Result = newEntry;
+////                    continue;
+//                    Result = new EvalResult(null, "null")
+//                }
+//
+//
+//            }
+//
+//            else {
+//                Result = AssignmentExpression.getValue(Result, index, env, _diagnostics, lineNumber);
+//            }
+//
+//            if(Result == null) {
+//                return null;
+//            }
+//        }
+//        return Result;
+//    }
+//
+//    private static EvalResult getMemberEntry(MemberAccessExpression index, EvalResult Result) {
+//        Environment objectEnv = (Environment) Result._value;
+//        String memberName = index._memberName._lexeme;
+//
+//        /*@TODO: Check this for fixing the bug */
+////                HashMap<String, EvalResult> table = objEnv._table;
+//        return objectEnv.get(memberName);
+//    }
+//
+//    private static boolean isRaisingNullPointerException(EvalResult Result) {
+//        return Result == null || Result._value == null;
+//    }
+//
+//    public static EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env, List<String> _diagnostics, int lineNumber) throws Exception {
+//
+//        EvalResult indexRes = indexI.evaluate(env); // a[x] -> evaluated in current env
+//        // a(x) -> evaluated in current env
+//        if(curIterable._type.equals("list")) {
+//            if(!indexRes._type.equals("int")) {
+//                _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " +lineNumber);
+//                return null;
+//            }
+//
+//            List<EvalResult> ourList = (List<EvalResult>) curIterable._value;
+//
+//            int curIdx = (int) indexRes._value;
+//            if(curIdx >= ourList.size()) {
+//                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + lineNumber);
+//                return null;
+//            }
+//
+//            return ourList.get((int) indexRes._value);
+//
+//        }
+//        else {
+//            if(indexRes._type != "int" && indexRes._type != "string") {
+//                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type + " at line number " + lineNumber);
+//                return null;
+//            }
+//
+//            Map<String, EvalResult> ourMap = (HashMap<String, EvalResult>) curIterable._value;
+//            String curIdx = (indexRes._value).toString();
+//
+//            if(ourMap.get(curIdx) == null) {
+//                ourMap.put(curIdx, new EvalResult(0, "int"));
+//            }
+//
+//            return ourMap.get(curIdx);
+//
+//        }
+//
+//    }
     public static EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, EvalResult ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
         EvalResult Result = ourEntry; // a->NewEnvironment
         Environment objEnv = new Environment(null);
+        Result = evlauteIterable(env, curExp, _diagnostics, lineNumber, Result);
+        if (Result == null) return null;
+        Result._value = rightRes._value;
+        Result._type = rightRes._type;
 
+        return Result;
+    }
+
+    private static EvalResult evlauteIterable(Environment env, ArrayAccessExpression curExp, List<String> _diagnostics, int lineNumber, EvalResult Result) throws Exception {
+        Environment objEnv;
+
+        /* Refactor this method */
         for(Expression index : curExp._indices) {
 
             if(Result == null || Result._value == null) {
@@ -212,7 +306,7 @@ public class AssignmentExpression extends Expression {
                 String memberName = memberAccessExp._memberName._lexeme;
 
                 // only get from the currentEnv
-                
+
                 HashMap<String, EvalResult> table = objEnv._table;
                 EvalResult memberEntry = table.get(memberName);
 
@@ -235,16 +329,13 @@ public class AssignmentExpression extends Expression {
                 return null;
             }
         }
-        Result._value = rightRes._value;
-        Result._type = rightRes._type;
-
         return Result;
     }
 
     public static EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env, List<String> _diagnostics, int lineNumber) throws Exception {
 
         EvalResult indexRes = indexI.evaluate(env); // a[x] -> evaluated in current env
-                                                    // a(x) -> evaluated in current env
+        // a(x) -> evaluated in current env
         if(curIterable._type.equals("list")) {
             if(!indexRes._type.equals("int")) {
                 _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " +lineNumber);
@@ -282,4 +373,3 @@ public class AssignmentExpression extends Expression {
     }
 
 }
-
