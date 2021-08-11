@@ -279,9 +279,8 @@ public class AssignmentExpression extends Expression {
 //
 //    }
     public static EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, EvalResult ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
-        EvalResult Result = ourEntry; // a->NewEnvironment
         Environment objEnv = new Environment(null);
-        Result = evlauteIterable(env, curExp, _diagnostics, lineNumber, Result);
+        EvalResult Result = evaluateCurrentIndex(env, curExp, _diagnostics, lineNumber, ourEntry);
         if (Result == null) return null;
         Result._value = rightRes._value;
         Result._type = rightRes._type;
@@ -289,49 +288,45 @@ public class AssignmentExpression extends Expression {
         return Result;
     }
 
-    private static EvalResult evlauteIterable(Environment env, ArrayAccessExpression curExp, List<String> _diagnostics, int lineNumber, EvalResult Result) throws Exception {
-        Environment objEnv;
-
-        /* Refactor this method */
+    private static EvalResult evaluateCurrentIndex(Environment env, ArrayAccessExpression curExp, List<String> _diagnostics, int lineNumber, EvalResult Result) throws Exception {
         for(Expression index : curExp._indices) {
-
-            if(Result == null || Result._value == null) {
+            if(isNull(Result)) {
                 _diagnostics.add("NullPointerException: Cannot access property from null, at line number " + lineNumber);
                 return null;
             }
-
-            if(index.getType() == ExpressionType.MemberAccessExpression) {
-                var memberAccessExp = (MemberAccessExpression) index;
-                objEnv = (Environment) Result._value;
-                String memberName = memberAccessExp._memberName._lexeme;
-
-                // only get from the currentEnv
-
-                HashMap<String, EvalResult> table = objEnv._table;
-                EvalResult memberEntry = table.get(memberName);
-
-
-                if(memberEntry != null) {
-                    Result = memberEntry;
-                    continue;
-                }
-
-                EvalResult newEntry = new EvalResult(null, "null");
-                table.put(memberName, newEntry);
-                Result = newEntry;
-            }
-
-            else {
-                Result = AssignmentExpression.getValue(Result, index, env, _diagnostics, lineNumber);
-            }
-
-            if(Result == null) {
-                return null;
-            }
+            Result = evaluateCurrentIndex(env, _diagnostics, lineNumber, Result, index);
         }
         return Result;
     }
 
+    private static EvalResult evaluateCurrentIndex(Environment env, List<String> _diagnostics, int lineNumber, EvalResult Result, Expression index) throws Exception {
+        /* Refactor this First... Then we'll have to think about Refactoring these two */
+        if(index.getType() == ExpressionType.MemberAccessExpression)
+            Result = evaluateMemberAccessExpression(Result, (MemberAccessExpression) index);
+        else
+            Result = AssignmentExpression.getValue(Result, index, env, _diagnostics, lineNumber);
+        return Result;
+    }
+
+    private static EvalResult evaluateMemberAccessExpression(EvalResult Result, MemberAccessExpression index) {
+        Environment objEnv = (Environment) Result._value;
+        String memberName = index._memberName._lexeme;
+        HashMap<String, EvalResult> table = objEnv._table;
+        EvalResult memberEntry = table.get(memberName);
+
+        if (memberEntry == null) {
+            memberEntry = new EvalResult(null, "null");
+            table.put(memberName, memberEntry);
+        }
+        return memberEntry;
+    }
+
+    private static boolean isNull(EvalResult Result) {
+        return Result == null || Result._value == null;
+    }
+
+
+    /* Only This one left for refactoring */
     public static EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env, List<String> _diagnostics, int lineNumber) throws Exception {
 
         EvalResult indexRes = indexI.evaluate(env); // a[x] -> evaluated in current env
@@ -373,3 +368,5 @@ public class AssignmentExpression extends Expression {
     }
 
 }
+
+// I need to create a better hierarchy for these classes... A lot of code redundancy here
