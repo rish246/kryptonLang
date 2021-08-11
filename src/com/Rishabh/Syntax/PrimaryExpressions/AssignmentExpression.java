@@ -10,10 +10,7 @@ import com.Rishabh.Syntax.Values.StringExpression;
 import com.Rishabh.TokenType;
 import com.Rishabh.Utilities.Environment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class AssignmentExpression extends Expression {
@@ -143,7 +140,7 @@ public class AssignmentExpression extends Expression {
     }
 
     private static Map<String, EvalResult> getRightObject(EvalResult right, List<String> _diagnostics, int lineNumber) {
-        if(right._type != "object") {
+        if(!Objects.equals(right._type, "object")) {
             _diagnostics.add("Expected an object, found " + right._type + " at line number " + lineNumber);
             return null;
         }
@@ -151,9 +148,7 @@ public class AssignmentExpression extends Expression {
     }
 
     private static Map<Expression, Expression> getLeftObject(ObjectExpression left) {
-        var leftObject = left;
-        Map<Expression, Expression> leftObjectContents = leftObject._contents;
-        return leftObjectContents;
+        return left._contents;
     }
 
     public static EvalResult assignList(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {
@@ -192,99 +187,11 @@ public class AssignmentExpression extends Expression {
 
      */
 
-//    private static EvalResult evaluateIterableExpression(Environment env, ArrayAccessExpression curExp, List<String> _diagnostics, int lineNumber, EvalResult Result) throws Exception {
-//        for(Expression index : curExp._indices) {
-//
-//            if(isRaisingNullPointerException(Result)) {
-//                _diagnostics.add("NullPointerException: Cannot access property from null, at line number " + lineNumber);
-//                return null;
-//            }
-//
-//            if(index.getType() == ExpressionType.MemberAccessExpression) {
-//                EvalResult memberEntry = getMemberEntry(index, );
-//                if(memberEntry != null) { Result = memberEntry; }
-//                else{
-////                    EvalResult newEntry = new EvalResult(null, "null");
-////                    /*@TODO: Check this for fixing the bug */
-////                    objEnv.set(memberName, newEntry);
-////                    Result = newEntry;
-////                    continue;
-//                    Result = new EvalResult(null, "null")
-//                }
-//
-//
-//            }
-//
-//            else {
-//                Result = AssignmentExpression.getValue(Result, index, env, _diagnostics, lineNumber);
-//            }
-//
-//            if(Result == null) {
-//                return null;
-//            }
-//        }
-//        return Result;
-//    }
-//
-//    private static EvalResult getMemberEntry(MemberAccessExpression index, EvalResult Result) {
-//        Environment objectEnv = (Environment) Result._value;
-//        String memberName = index._memberName._lexeme;
-//
-//        /*@TODO: Check this for fixing the bug */
-////                HashMap<String, EvalResult> table = objEnv._table;
-//        return objectEnv.get(memberName);
-//    }
-//
-//    private static boolean isRaisingNullPointerException(EvalResult Result) {
-//        return Result == null || Result._value == null;
-//    }
-//
-//    public static EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env, List<String> _diagnostics, int lineNumber) throws Exception {
-//
-//        EvalResult indexRes = indexI.evaluate(env); // a[x] -> evaluated in current env
-//        // a(x) -> evaluated in current env
-//        if(curIterable._type.equals("list")) {
-//            if(!indexRes._type.equals("int")) {
-//                _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " +lineNumber);
-//                return null;
-//            }
-//
-//            List<EvalResult> ourList = (List<EvalResult>) curIterable._value;
-//
-//            int curIdx = (int) indexRes._value;
-//            if(curIdx >= ourList.size()) {
-//                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + lineNumber);
-//                return null;
-//            }
-//
-//            return ourList.get((int) indexRes._value);
-//
-//        }
-//        else {
-//            if(indexRes._type != "int" && indexRes._type != "string") {
-//                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type + " at line number " + lineNumber);
-//                return null;
-//            }
-//
-//            Map<String, EvalResult> ourMap = (HashMap<String, EvalResult>) curIterable._value;
-//            String curIdx = (indexRes._value).toString();
-//
-//            if(ourMap.get(curIdx) == null) {
-//                ourMap.put(curIdx, new EvalResult(0, "int"));
-//            }
-//
-//            return ourMap.get(curIdx);
-//
-//        }
-//
-//    }
     public static EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, EvalResult ourEntry, List<String> _diagnostics, int lineNumber) throws Exception {
-        Environment objEnv = new Environment(null);
         EvalResult Result = evaluateCurrentIndex(env, curExp, _diagnostics, lineNumber, ourEntry);
         if (Result == null) return null;
         Result._value = rightRes._value;
         Result._type = rightRes._type;
-
         return Result;
     }
 
@@ -331,42 +238,53 @@ public class AssignmentExpression extends Expression {
 
         EvalResult indexRes = indexI.evaluate(env); // a[x] -> evaluated in current env
         // a(x) -> evaluated in current env
+        if(indexRes == null) {
+            _diagnostics.addAll(indexI.getDiagnostics());
+            return null;
+        }
+
+        return getCurIndexValue(curIterable, _diagnostics, lineNumber, indexRes);
+    }
+
+    private static EvalResult getCurIndexValue(EvalResult curIterable, List<String> _diagnostics, int lineNumber, EvalResult indexRes) {
         if(curIterable._type.equals("list")) {
-            if(!indexRes._type.equals("int")) {
-                _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " +lineNumber);
-                return null;
-            }
-
-            List<EvalResult> ourList = (List<EvalResult>) curIterable._value;
-
-            int curIdx = (int) indexRes._value;
-            if(curIdx >= ourList.size()) {
-                _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + lineNumber);
-                return null;
-            }
-
-            return ourList.get((int) indexRes._value);
-
+            return getValueFromList(curIterable, _diagnostics, lineNumber, indexRes);
         }
-        else {
-            if(indexRes._type != "int" && indexRes._type != "string") {
-                _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type + " at line number " + lineNumber);
-                return null;
-            }
+        return getValueFromObject(curIterable, _diagnostics, lineNumber, indexRes);
+    }
 
-            Map<String, EvalResult> ourMap = (HashMap<String, EvalResult>) curIterable._value;
-            String curIdx = (indexRes._value).toString();
-
-            if(ourMap.get(curIdx) == null) {
-                ourMap.put(curIdx, new EvalResult(0, "int"));
-            }
-
-            return ourMap.get(curIdx);
-
+    private static EvalResult getValueFromObject(EvalResult curIterable, List<String> _diagnostics, int lineNumber, EvalResult indexRes) {
+        if(indexRes._type != "int" && indexRes._type != "string") {
+            _diagnostics.add("Object indices should be of type int or string, found " + indexRes._type + " at line number " + lineNumber);
+            return null;
         }
+        return getValueFromObject(curIterable, indexRes);
+    }
 
+    private static EvalResult getValueFromList(EvalResult curIterable, List<String> _diagnostics, int lineNumber, EvalResult indexRes) {
+        if(!indexRes._type.equals("int")) {
+            _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " + lineNumber);
+            return null;
+        }
+        return getIthElementFromList(curIterable, _diagnostics, lineNumber, indexRes);
+    }
+
+    private static EvalResult getValueFromObject(EvalResult curIterable, EvalResult indexRes) {
+        Map<String, EvalResult> ourMap = (HashMap<String, EvalResult>) curIterable._value;
+        String curIdx = (indexRes._value).toString();
+        if(ourMap.get(curIdx) == null)
+            ourMap.put(curIdx, new EvalResult(null, "null"));
+        return ourMap.get(curIdx);
+    }
+
+    private static EvalResult getIthElementFromList(EvalResult curIterable, List<String> _diagnostics, int lineNumber, EvalResult indexRes) {
+        List<EvalResult> ourList = (List<EvalResult>) curIterable._value;
+        int curIdx = (int) indexRes._value;
+        if(curIdx >= ourList.size()) {
+            _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + lineNumber);
+            return null;
+        }
+        return ourList.get((int) indexRes._value);
     }
 
 }
-
-// I need to create a better hierarchy for these classes... A lot of code redundancy here
