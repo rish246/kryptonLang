@@ -3,10 +3,10 @@ package com.Krypton.Syntax.Statements;
 import com.Krypton.EvalResult;
 import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
-import com.Krypton.Syntax.PrimaryExpressions.AssignmentExpression;
 import com.Krypton.Syntax.Statement;
 import com.Krypton.SyntaxTree;
 import com.Krypton.Utilities.Environment;
+import com.Krypton.Utilities.Evaluator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ public class ForEachStatement extends Statement {
     public Expression _iterator;
     public Expression _iterable;
     public SyntaxTree _body;
-
+    private Evaluator evaluator;
     public List<String> _diagnostics = new ArrayList<>();
 
     public ForEachStatement(Expression iterator, Expression iterable, SyntaxTree body, int lineNumber){
@@ -25,16 +25,15 @@ public class ForEachStatement extends Statement {
         _iterator = iterator;
         _iterable = iterable;
         _body = body;
+        evaluator = new Evaluator(lineNumber);
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-
         EvalResult ourIterable = _iterable.evaluate(env);
         _diagnostics.addAll(_iterable.getDiagnostics());
         if(_diagnostics.size() > 0) {
             return null;
         }
-
         if(ourIterable._type == "list" || ourIterable._type == "object") {
             return Bind(_iterator, env, ourIterable);
         }
@@ -64,7 +63,8 @@ public class ForEachStatement extends Statement {
         List<EvalResult> ourList = (List) ourIterable._value;
 
         for (EvalResult element : ourList) {
-            AssignmentExpression.Bind(_iterator, element, env, _diagnostics, getLineNumber());
+//            AssignmentExpression.Bind(_iterator, element, env, _diagnostics, getLineNumber());
+            evaluator.Bind(_iterator, element, env);
             EvalResult bodyResult = _body.evaluate(env);
 
             _diagnostics.addAll(_body.getDiagnostics());
@@ -85,7 +85,7 @@ public class ForEachStatement extends Statement {
 
         for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
             EvalResult keyValuePair = getKeyValuePair(binding);
-            AssignmentExpression.Bind(_iterator, keyValuePair, env, _diagnostics, getLineNumber());
+            evaluator.Bind(_iterator, keyValuePair, env);
 
             if(_diagnostics.size() > 0)
                 return null;

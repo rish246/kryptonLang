@@ -3,17 +3,12 @@ package com.Krypton.Utilities;
 import com.Krypton.EvalResult;
 import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
-import com.Krypton.Syntax.PrimaryExpressions.ArrayAccessExpression;
-import com.Krypton.Syntax.PrimaryExpressions.AssignmentExpression;
-import com.Krypton.Syntax.PrimaryExpressions.MemberAccessExpression;
-import com.Krypton.Syntax.PrimaryExpressions.ParensExpression;
-import com.Krypton.Syntax.Values.ClosureExpression;
-import com.Krypton.Syntax.Values.ListExpression;
+import com.Krypton.Syntax.PrimaryExpressions.*;
+import com.Krypton.Syntax.Values.*;
 import com.Krypton.SyntaxTree;
 import com.Krypton.Token;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Evaluator {
     private int lineNumber;
@@ -50,8 +45,49 @@ public class Evaluator {
         else if(index.getType() == ExpressionType.MemberAccessExpression)
             Result = getMemberFromClassEnv(Result, (MemberAccessExpression) index);
         else
-            Result = AssignmentExpression.getValue(Result, index, env, _diagnostics, getLineNumber());
+            Result = getValue(Result, index, env);
         return Result;
+    }
+
+    public EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env) throws Exception {
+        EvalResult indexRes = indexI.evaluate(env); // a[x] -> evaluated in current env
+        // a(x) -> evaluated in current env
+        if(indexRes == null) {
+            _diagnostics.addAll(indexI.getDiagnostics());
+            return null;
+        }
+
+        return getCurIndexValue(curIterable, indexRes);
+    }
+
+    private EvalResult getCurIndexValue(EvalResult curIterable, EvalResult indexRes) {
+        if (curIterable._type.equals("list")) {
+            return getValueFromList(curIterable, indexRes);
+        }
+        Map<String, EvalResult> ourMap = (HashMap<String, EvalResult>) curIterable._value;
+        String curIdx = (indexRes._value).toString();
+        if(ourMap.get(curIdx) == null)
+            ourMap.put(curIdx, new EvalResult(null, "null"));
+        return ourMap.get(curIdx);
+    }
+
+
+    private EvalResult getValueFromList(EvalResult curIterable, EvalResult indexRes) {
+        if(!indexRes._type.equals("int")) {
+            _diagnostics.add("Array indices should be of type int, found " + indexRes._type + " at line number " + lineNumber);
+            return null;
+        }
+        return getIthElementFromList(curIterable, indexRes);
+    }
+
+    private EvalResult getIthElementFromList(EvalResult curIterable, EvalResult indexRes) {
+        List<EvalResult> ourList = (List<EvalResult>) curIterable._value;
+        int curIdx = (int) indexRes._value;
+        if(curIdx >= ourList.size()) {
+            _diagnostics.add("Index " + curIdx + " too large for array of size " + ourList.size() + " at line number " + lineNumber);
+            return null;
+        }
+        return ourList.get((int) indexRes._value);
     }
 
     private boolean isRaisingNullPointerException(EvalResult Result) {
@@ -133,28 +169,181 @@ public class Evaluator {
         return newEnv;
     }
 
-    public EvalResult Bind(Expression left, EvalResult right, Environment env) throws Exception{
-        if(left.getType() == ExpressionType.IdentifierExpression) {
-            return AssignmentExpression.assignIdentifier(left, env, right, _diagnostics, lineNumber);
+    public void Bind(Expression left, EvalResult right, Environment env) throws Exception {
+        // Another great idea... Each Expression Knows how to assign an item to it.. Add the whole logic to each separate Expression
+        switch (left.getType()) {
+            case IdentifierExpression:
+                assignIdentifier(left, env, right);
+                break;
+            case ListExpression:
+                assignList(left, env, right);
+                break;
+            case ObjectExpression:
+                assignObject(left, env, right);
+                break;
+            case ArrayAccessExpression:
+                var curExp = (ArrayAccessExpression) left;
+                EvalResult ourEntry = env.get(curExp._identifier._lexeme);
+                if ( ourEntry == null ) {
+                    _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme + " at line number " + lineNumber);
+                    return;
+                }
+                assignIterable(env, right, curExp, ourEntry);
+                break;
+            default:
+                _diagnostics.add("Expression of type " + left.getType() + " is not a valid lvalue" + " at line number " + lineNumber);
+                break;
         }
-        if(left.getType() == ExpressionType.ListExpression) {
-            return AssignmentExpression.assignList(left, env, right, _diagnostics, lineNumber);
-        }
-        if(left.getType() == ExpressionType.ObjectExpression) {
-            return AssignmentExpression.assignObject(left, env, right, _diagnostics, lineNumber);
-        }
-        if(left.getType() == ExpressionType.ArrayAccessExpression) {
-            var curExp = (ArrayAccessExpression) left;
-            EvalResult ourEntry = env.get(curExp._identifier._lexeme);
-            if (ourEntry == null) {
-                _diagnostics.add("Invalid identifier " + curExp._identifier._lexeme + " at line number " +  lineNumber);
+    }
+
+    /*
+        Test It Later ----------> @TODO
+
+     */
+    public EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, EvalResult ourEntry) throws Exception {
+        EvalResult Result = evaluateCurrentIndex(env, curExp, ourEntry);
+        if (Result == null) return null;
+        Result._value = rightRes._value;
+        Result._type = rightRes._type;
+        return Result;
+    }
+
+    private EvalResult evaluateCurrentIndex(Environment env, ArrayAccessExpression curExp, EvalResult Result) throws Exception {
+        for(Expression index : curExp._indices) {
+            if(isNull(Result)) {
+                _diagnostics.add("NullPointerException: Cannot access property from null, at line number " + lineNumber);
                 return null;
             }
-            return AssignmentExpression.assignIterable(env, right, curExp, ourEntry, _diagnostics, lineNumber);
+            Result = evaluateCurrentIndex(env, Result, index);
         }
-        _diagnostics.add("Expression of type " + left.getType() + " is not a valid lvalue" + " at line number " + lineNumber);
-        return null;
+        return Result;
     }
+
+    private EvalResult evaluateCurrentIndex(Environment env, EvalResult Result, Expression index) throws Exception {
+        /* Refactor this First... Then we'll have to think about Refactoring these two */
+        if(index.getType() == ExpressionType.MemberAccessExpression)
+            Result = evaluateMemberAccessExpression(Result, (MemberAccessExpression) index);
+        else
+            Result = getValue(Result, index, env);
+        return Result;
+    }
+
+    private static EvalResult evaluateMemberAccessExpression(EvalResult Result, MemberAccessExpression index) {
+        Environment objEnv = (Environment) Result._value;
+        String memberName = index._memberName._lexeme;
+        HashMap<String, EvalResult> table = objEnv._table;
+        EvalResult memberEntry = table.get(memberName);
+
+        if (memberEntry == null) {
+            memberEntry = new EvalResult(null, "null");
+            table.put(memberName, memberEntry);
+        }
+        return memberEntry;
+    }
+
+
+    public EvalResult assignIdentifier(Expression left, Environment env, EvalResult right) {
+        IdentifierExpression leftIdentifierExpression = (IdentifierExpression) left;
+        return env.set(leftIdentifierExpression._lexeme, right);
+    }
+
+    /* List Bindings */
+    /* Exception Handling at later stages */
+    public EvalResult assignList(Expression left, Environment env, EvalResult right) throws Exception {
+        String rightType = right._type;
+        if(!rightType.equals("list")) {
+            _diagnostics.add("Cannot de-structure " + rightType + " into a list. Error at line number " + lineNumber);
+            return null;
+        }
+        return BindListsInEnv((ListExpression) left, env, right);
+    }
+
+    private EvalResult BindListsInEnv(ListExpression left, Environment env, EvalResult right) throws Exception {
+        var rightList = (List<EvalResult>) right._value;
+        List<Expression> leftList = left._elements;
+        if(rightList.size() != leftList.size()) {
+            _diagnostics.add("Dimension mismatch in expression.. the elements in lvalue and rvalue must be same, Error at line number " + lineNumber);
+            return null;
+        }
+        return BindLists(env, rightList, leftList);
+    }
+
+    private EvalResult BindLists(Environment env, List<EvalResult> rightList, List<Expression> leftList) throws Exception {
+        for(int i = 0; i < leftList.size(); i++)
+            Bind(leftList.get(i), rightList.get(i), env);
+        return new EvalResult(rightList, "list");
+    }
+
+    /*******************************    Function object Bindings    ********************************/
+    public EvalResult assignObject(Expression left, Environment env, EvalResult right) throws Exception {
+        Map<Expression, Expression> leftObject = getLeftObject((ObjectExpression) left);
+        Map<String, EvalResult> rightObject = getRightObject(right);
+        if (rightObject == null) return null;
+        boolean foundInvalidKey = BindObjectsInEnv(env, leftObject, rightObject);
+        if (foundInvalidKey) right = null;
+        return right;
+    }
+
+    private boolean BindObjectsInEnv(Environment env, Map<Expression, Expression> leftObject, Map<String, EvalResult> rightObject) throws Exception {
+        boolean foundInvalidKey = false;
+        for(Expression leftObjectKey : leftObject.keySet()) {
+            foundInvalidKey = !isKeyValid(leftObjectKey);
+            if(foundInvalidKey) break;
+            String key = getKeyFromExpression(leftObjectKey);
+            Expression leftExp = leftObject.get(leftObjectKey);
+            EvalResult rightRes = rightObject.get(key);
+
+            if(rightRes == null) {
+                _diagnostics.add("Key " + key + " is not present in the RHS of the assignement at line number " + lineNumber);
+                foundInvalidKey = true;
+                break;
+            }
+            Bind(leftExp, rightRes, env);
+        }
+        return foundInvalidKey;
+    }
+
+    private boolean isKeyValid(Expression key) {
+        boolean isKeyOfValidType = isIntegerKey(key) || isStringKey(key);
+        if (!isKeyOfValidType)
+            _diagnostics.add("Invalid key type in object, at line number " + lineNumber);
+        return isKeyOfValidType;
+    }
+
+    private String getKeyFromExpression(Expression keyExp) {
+        String key;
+        if (isIntegerKey(keyExp)) {
+            var intKey = (NumberExpression) keyExp;
+            key = Integer.toString(intKey._value);
+        }
+        else {
+            var strKey = (StringExpression) keyExp;
+            key = strKey._value;
+        }
+        return key;
+    }
+
+    private boolean isStringKey(Expression keyExp) {
+        return keyExp.getType() == ExpressionType.StringExpression;
+    }
+
+    private boolean isIntegerKey(Expression keyExp) {
+        return keyExp.getType() == ExpressionType.IntExpression;
+    }
+
+    private Map<String, EvalResult> getRightObject(EvalResult right) {
+        if(!Objects.equals(right._type, "object")) {
+            _diagnostics.add("Expected an object, found " + right._type + " at line number " + lineNumber);
+            return null;
+        }
+        return (HashMap<String, EvalResult>) right.getValue();
+    }
+
+    private Map<Expression, Expression> getLeftObject(ObjectExpression left) {
+        return left._contents;
+    }
+
+
 
     private boolean isNull(Object object) {
         return object == null;
@@ -170,4 +359,4 @@ public class Evaluator {
 }
 
 
-// Take all the static methods and copy here... Make sure we have no dependency on AssignmentExpression
+// Take all the static methods and copy here... Make sure we have no dependency on AssignmentExpressio

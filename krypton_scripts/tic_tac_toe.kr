@@ -143,37 +143,28 @@ def startGame(board, playerChar) {
             print("Player Won");
             return 1;
         }
-
         [computer_x, computer_y] = computerMove(board, computerChar);
-
         isGameOver = checkGameOver(board, computer_x, computer_y);
-        
         if(isGameOver) {
             print("Player Lost");
             return 1;
         }
-    
     }
-
 }
 
 
 def getPlayerChar() {
-
     isCharValid = false;
     playerChar = "";
     while(!isCharValid) {
         playerChar = input(str, "Enter a symbol : X or O : ");
-
         if(playerChar == "X" || playerChar == "O") {
             isCharValid = true;
         }
         else {
             print("Invalid Character entered.. Enter either X or O");
         }
-        
     }
-
     return playerChar;
 }
 
@@ -186,13 +177,9 @@ def main() {
         board = [[".", ".", "."], [".", ".", "."], [".", ".", "."]];
         printBoard(board);
         playerChar = getPlayerChar();
-
         startGame(board, playerChar);
-        
         printBoard(board);
-
         playAgain = input(str, "Do you want to play again.. Y or N : ");
-        
         continueGame = (playAgain == "Y");
     }
 

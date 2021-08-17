@@ -7,6 +7,7 @@ import com.Krypton.Syntax.Values.ClosureExpression;
 import com.Krypton.Syntax.Values.ListExpression;
 import com.Krypton.Token;
 import com.Krypton.Utilities.Environment;
+import com.Krypton.Utilities.Evaluator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,12 @@ public class CreateClassInstance extends Expression {
     public Expression _constructorCall;
     public List<String> _diagnostics = new ArrayList<>();
     public Environment _objectState;
+    private Evaluator evaluator;
     public CreateClassInstance(Token className, Expression initConstructorCall, int lineNumber) {
         super(ExpressionType.ClassInstanceExpression, lineNumber);
         _className = className;
         _constructorCall = initConstructorCall;
+        evaluator = new Evaluator(lineNumber);
     }
 
     @Override
@@ -101,7 +104,7 @@ public class CreateClassInstance extends Expression {
         functionArgsBinding.set("this", new EvalResult(_objectState, className));
         for(int i = 0; i < actualArgsList.size(); i++) {
             EvalResult argRes = actualArgsList.get(i).evaluate(env);
-            AssignmentExpression.Bind(formalArgs.get(i), argRes, functionArgsBinding, _diagnostics, getLineNumber());
+            evaluator.Bind(formalArgs.get(i), argRes, functionArgsBinding);
         }
         functionArgsBinding._ParentEnv = _objectState;
         return functionArgsBinding;

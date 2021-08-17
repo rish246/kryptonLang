@@ -1,0 +1,64 @@
+# Bind Tests
+# Function Binding Tests
+def BindIdentifierTest() {
+	print("-------------- IdentifierBindingTest --------");
+	
+	def f(arg) {
+		return arg;
+	}
+
+	print(f != null);
+	for(i=0; i<10; i=i+1) {
+		print(f(i) == i);
+	}
+
+
+	our_list = [1, 2, 3, 4];
+	def f_idx(idx) {
+		return our_list[idx];
+	}
+	for(i=0; i<len(our_list); i=i+1) {
+		print(f_idx(i) == our_list[i]);
+	}
+	
+	print("---------------------------------------------");
+}
+
+BindIdentifierTest();
+
+# Bind Lists in Function Arguements 
+def BindListsTest() {
+	print("-----------  Bind Lists Test ----------------");
+	def f([x, y]) {
+		return x + y;	
+	}
+
+	for(i=0; i<10; i=i+1) {
+		[x, y] = [i, i + 1];
+		print(f([x, y]) == (2 * i + 1));
+	}
+
+	print("---------------------------------------------");
+}
+
+BindListsTest();
+
+
+def BindObjectsTest() {
+	print("-----------  Bind Objects Test ----------------");
+	def f({x, y}) {
+		return x + y;	
+	}
+
+	for(i=0; i<10; i=i+1) {
+		{x, y} = {"x" : i, "y" : i + 1};
+		print(f({x, y}) == (2 * i + 1));
+	}
+
+	print("---------------------------------------------");
+}
+
+BindObjectsTest();
+
+
+
