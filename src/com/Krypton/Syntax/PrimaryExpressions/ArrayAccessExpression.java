@@ -33,9 +33,6 @@ public class ArrayAccessExpression extends Expression {
         return result;
     }
 
-    // Make sure this works fine for now... Move the Elements specific to ArrayAccessExpression here again
-
-
     public void prettyPrint(String indent) {
         System.out.println("Array Access");
         System.out.print(indent + "|-");
@@ -48,11 +45,9 @@ public class ArrayAccessExpression extends Expression {
         }
     }
 
-    private boolean isNull(Object object) {
-        return object == null;
-    }
-
     public List<String> getDiagnostics() {
         return _diagnostics;
     }
 }
+
+// Nice.. Time to start working on the ErrorHandlingAspectOFKrypton()
