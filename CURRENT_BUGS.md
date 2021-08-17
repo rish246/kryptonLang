@@ -19,7 +19,7 @@ print(x);
 
 **expected output**
 ```python
-something like: com.Rishabh.Expression.ClosureExpression
+something like: com.Krypton.Expression.ClosureExpression
 ```
 
 **actual output**
