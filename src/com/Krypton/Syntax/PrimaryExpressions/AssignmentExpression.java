@@ -76,12 +76,11 @@ public class AssignmentExpression extends Expression {
             return AssignmentExpression.assignIterable(env, right, curExp, ourEntry, _diagnostics, lineNumber);
         }
 
-
         _diagnostics.add("Expression of type " + left.getType() + " is not a valid lvalue" + " at line number " + lineNumber);
         return null;
     }
 
-    private static EvalResult assignObject(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {
+    public static EvalResult assignObject(Expression left, Environment env, EvalResult right, List<String> _diagnostics, int lineNumber) throws Exception {
         Map<Expression, Expression> leftObject = getLeftObject((ObjectExpression) left);
         Map<String, EvalResult> rightObject = getRightObject(right, _diagnostics, lineNumber);
         if (rightObject == null) return null;

@@ -1,11 +1,11 @@
 package com.Krypton.Utilities;
 
+import com.Krypton.EvalResult;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.Krypton.EvalResult;
 
 public class Printer {
 
@@ -15,9 +15,7 @@ public class Printer {
 
     public static void print(EvalResult resultToPrint) {
         Object printableValue = Printer.getPrintableValue(resultToPrint);
-
         System.out.println(TEXT_GREEN + printableValue + TEXT_RESET);
-
     }
 
     private static Object getPrintableValue(EvalResult bodyOp) {
