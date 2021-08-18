@@ -1,10 +1,8 @@
 class ListNode {
-    LenList = 0;
-
     def init(value) {
         this.value = value;
         this.next = null;
-        ListNode.LenList = ListNode.LenList + 1;
+        this.lenList = 1;
     }
 
     def flatten() {
@@ -18,6 +16,12 @@ class ListNode {
         return result;
     }
 
+    def length() {
+		if ( this.next == null ) {
+			return 1;
+		}
+		return 1 + this.next.length();
+    }
 };
 
 def main() {
@@ -26,9 +30,7 @@ def main() {
     head.next.next = new ListNode(5);
 
     print(head.flatten());
-    print("Length of list " + ListNode.LenList);
-
-
+    print("Length of list " + head.length());
 }
 
 main();

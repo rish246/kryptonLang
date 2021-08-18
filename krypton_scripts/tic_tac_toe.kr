@@ -108,9 +108,7 @@ def playerMove(board) {
 
     while(!isChosen) {
         player_x = input(int, "Enter row : ");
-        
         player_y = input(int, "Enter col : ");
-        
         if(board[player_x][player_y] == ".") {
             isChosen = true;
         }
