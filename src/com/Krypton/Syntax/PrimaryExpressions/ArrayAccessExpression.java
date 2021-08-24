@@ -28,9 +28,12 @@ public class ArrayAccessExpression extends Expression {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-        EvalResult result = evaluator.EvaluateArrayAccessExpression(env, this);
-        _diagnostics.addAll(evaluator.get_diagnostics());
-        return result;
+        try {
+            return evaluator.EvaluateArrayAccessExpression(env, this);
+        } catch (Exception e) {
+            _diagnostics.addAll(evaluator.get_diagnostics());
+            throw e;
+        }
     }
 
     public void prettyPrint(String indent) {

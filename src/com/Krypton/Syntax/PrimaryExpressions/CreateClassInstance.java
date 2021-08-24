@@ -82,7 +82,7 @@ public class CreateClassInstance extends Expression {
     }
 
     // @TODO: Rename and Refactor this function later... This is to make the super keyword to work
-    private void setupInheritanceLogic(String className, Environment classEnvironment, Environment functionArgsBinding) {
+    private void setupInheritanceLogic(String className, Environment classEnvironment, Environment functionArgsBinding) throws Exception {
         boolean isChildClass = (boolean) classEnvironment.get("isChild")._value;
         if(isChildClass) {
             var immParentEnv = (Environment) classEnvironment.get("ParentClass")._value;

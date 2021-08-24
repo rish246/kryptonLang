@@ -26,15 +26,10 @@ public class FunctionStatement extends Statement {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-
         Environment closureEnv = new Environment(env._table, env._ParentEnv);
-
         ClosureExpression funcClosure = new ClosureExpression(_name, _body, closureEnv, _formalArgs, getLineNumber());
-
         EvalResult newClosure = new EvalResult(funcClosure, "Closure"); // take this.. Extract funcClosure from this
-
         env.set(_name, newClosure);
-
         return new EvalResult(null, "functionExpression");
     }
 

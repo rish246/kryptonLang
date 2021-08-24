@@ -30,7 +30,7 @@ public class Evaluator {
         }
         Expression[] _indices = expression._indices;
         EvalResult Result = ourIdentifierEntry;
-        for (Expression index : _indices) {
+        for (Expression index : _indices) { // We'll Have to catch that at a higher level I guess
             Result = EvaluateIndexInEnv(env, Result, index);
             if(Result == null) break;
         }
@@ -51,7 +51,6 @@ public class Evaluator {
 
     public EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env) throws Exception {
         EvalResult indexRes = indexI.evaluate(env); // a[x] -> evaluated in current env
-        // a(x) -> evaluated in current env
         if(indexRes == null) {
             _diagnostics.addAll(indexI.getDiagnostics());
             return null;
@@ -127,30 +126,37 @@ public class Evaluator {
             _diagnostics.add("Expression of type " + Initial._type + " can not be called, at line number " + getLineNumber());
             return null;
         }
-        var function = (ClosureExpression) Initial._value;
-        Environment functionEnv = function._closureEnv;
-        SyntaxTree functionBody = function._functionBody;
-        return evaluateFunctionInEnv((ParensExpression) index, env, function, functionEnv, functionBody);
+
+        var function = (ClosureExpression) Initial._value; // FormalArgsHaven't been bound yet
+        try {
+            return evaluateFunctionInEnv((ParensExpression) index, env, function);
+        } catch (Exception e) {
+            _diagnostics.addAll(function.getDiagnostics());
+            _diagnostics.add(e.getMessage());
+            throw e;
+        }
     }
 
-    private EvalResult evaluateFunctionInEnv(ParensExpression index, Environment env, ClosureExpression function, Environment functionEnv, SyntaxTree functionBody) throws Exception {
+    private EvalResult evaluateFunctionInEnv(ParensExpression index, Environment env, ClosureExpression function) throws Exception {
         List<Expression> actualArgs = getActualArgs(index);
         List<Expression> formalArgs = function._formalArgs;
 
-        if(formalArgs.size() != actualArgs.size()) {
-            _diagnostics.add("Expected " + formalArgs.size() + " arguements, got " + actualArgs.size() + " at line number " + getLineNumber());
-            return null;
-        }
+        if(formalArgs.size() != actualArgs.size())
+            throw new Exception("Expected " + formalArgs.size() + " arguements, got " + actualArgs.size() + " at line number " + getLineNumber());
 
         Environment functionArgsEnv = bindFormalArgsWithActualArgs(env, formalArgs, actualArgs);
-        functionArgsEnv._ParentEnv = functionEnv;
+        SyntaxTree functionBody = function._functionBody;
+        functionArgsEnv._ParentEnv = function._closureEnv;
         return evaluateFunctionBody(functionBody, functionArgsEnv);
     }
 
     private EvalResult evaluateFunctionBody(SyntaxTree functionBody, Environment env) throws Exception {
-        EvalResult finalRes = functionBody.evaluate(env);
-        _diagnostics.addAll(functionBody.getDiagnostics());
-        return finalRes;
+        try {
+            return functionBody.evaluate(env);
+        } catch (Exception e) {
+            _diagnostics.addAll(functionBody.getDiagnostics());
+            throw e;
+        }
     }
 
     private List<Expression> getActualArgs(ParensExpression index) {
@@ -163,10 +169,19 @@ public class Evaluator {
         for(int i=0; i<_actualArgs.size(); i++) {
             Expression curFormalArg = formalArgs.get(i);
             Expression curActualArg = _actualArgs.get(i);
-            EvalResult actualArgRes = curActualArg.evaluate(env);
-            Bind(curFormalArg, actualArgRes, newEnv);
+            bindArgs(env, newEnv, curFormalArg, curActualArg);
         }
         return newEnv;
+    }
+
+    private void bindArgs(Environment env, Environment newEnv, Expression curFormalArg, Expression curActualArg) throws Exception {
+        try {
+            EvalResult actualArgRes = curActualArg.evaluate(env);
+            Bind(curFormalArg, actualArgRes, newEnv);
+        } catch (Exception e) {
+            _diagnostics.addAll(curActualArg.getDiagnostics());
+            throw e;
+        }
     }
 
     public void Bind(Expression left, EvalResult right, Environment env) throws Exception {
@@ -191,14 +206,14 @@ public class Evaluator {
                 assignIterable(env, right, curExp, ourEntry);
                 break;
             default:
+//                System.out.println("Got Here");
                 _diagnostics.add("Expression of type " + left.getType() + " is not a valid lvalue" + " at line number " + lineNumber);
-                break;
+                throw new Exception("Expression of type " + left.getType() + " is not a valid lvalue" + " at line number " + lineNumber);
         }
     }
 
     /*
         Test It Later ----------> @TODO
-
      */
     public EvalResult assignIterable(Environment env, EvalResult rightRes, ArrayAccessExpression curExp, EvalResult ourEntry) throws Exception {
         EvalResult Result = evaluateCurrentIndex(env, curExp, ourEntry);

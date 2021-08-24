@@ -15,10 +15,10 @@ public class Printer {
 
     public static void print(EvalResult resultToPrint) {
         Object printableValue = Printer.getPrintableValue(resultToPrint);
-        System.out.println(TEXT_GREEN + printableValue + TEXT_RESET);
+        System.out.println(TEXT_GREEN + printableValue.toString() + TEXT_RESET);
     }
 
-    private static Object getPrintableValue(EvalResult bodyOp) {
+    public static Object getPrintableValue(EvalResult bodyOp) {
         if(bodyOp._type == "list") {
             List<Object> printableList = new ArrayList<>();
             List<EvalResult> list = (List) bodyOp._value;

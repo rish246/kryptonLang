@@ -44,13 +44,15 @@ public class AssignmentExpression extends Expression {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-        EvalResult rightRes = _right.evaluate(env);
-        _diagnostics.addAll(_right.getDiagnostics());
-        if(rightRes == null)
-            return null;
-        evaluator.Bind(_left, rightRes, env); // evaluator.Bind is causing error.. Generate some tests to check where is the fucking error
-        _diagnostics.addAll(evaluator.get_diagnostics());
-        return null;
+        try {
+            EvalResult rightRes = _right.evaluate(env);
+            evaluator.Bind(_left, rightRes, env);
+            return rightRes;
+        } catch (Exception e) {
+            _diagnostics.addAll(_right.getDiagnostics());
+            _diagnostics.addAll(evaluator.get_diagnostics());
+            throw e;
+        }
     }
 }
 

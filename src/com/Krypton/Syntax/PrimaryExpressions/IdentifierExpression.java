@@ -27,16 +27,13 @@ public class IdentifierExpression extends Expression {
     }
 
     @Override
-    public EvalResult evaluate(Environment env) {
-//        return new EvalResult(_value, _type);
-        EvalResult res = env.get(_lexeme);
-
-        if (res == null) {
-            _diagnostics.add("Undefined variable : " + _lexeme + " at line number " + getLineNumber());
-            return null;
+    public EvalResult evaluate(Environment env) throws Exception {
+        try {
+            return env.get(_lexeme);
+        } catch (Exception e) {
+            _diagnostics.add(e.getMessage() + " at line number " + getLineNumber());
+            throw e;
         }
-
-        return res;
     }
 }
 

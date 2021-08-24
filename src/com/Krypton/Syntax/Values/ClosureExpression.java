@@ -26,8 +26,12 @@ public class ClosureExpression extends Expression {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-        _functionBody.evaluate(_closureEnv);
-        _diagnostics.addAll(_functionBody.getDiagnostics());
+        try {
+            System.out.println("I am here");
+            _functionBody.evaluate(_closureEnv);
+        } catch (Exception e) {
+            _diagnostics.addAll(_functionBody.getDiagnostics());
+        }
         return new EvalResult(null, "functionExpression");
     }
 

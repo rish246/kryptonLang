@@ -3,9 +3,9 @@ package com.Krypton;
 import com.Krypton.Utilities.Environment;
 import com.Krypton.Utilities.Printer;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -17,7 +17,7 @@ public class Main {
     public static final String TEXT_RED = "\u001B[31m";
     public static final String TEXT_RESET = "\u001B[0m";
     public static final String TEXT_GREEN = "\u001B[32m";
-
+    public static List<String> runTimeDiagnostics = new ArrayList<>();
 
     
     public static void main(String[] args) {
@@ -37,13 +37,9 @@ public class Main {
                 // Line numbers are not being maintined for some reason
                 if(result == null)
                     return;
-
-
                 EvalResult answer = getEvalResult(programEnv, result);
-            
                 if (answer == null || answer._value == null)
                     return;
-
                 System.out.println(TEXT_GREEN + answer._value + TEXT_RESET);
                 // evaluate the result
 
@@ -56,15 +52,15 @@ public class Main {
         }
     }
 
+    // Add trycatch to this...
     private static EvalResult getEvalResult(Environment programEnv, SyntaxTree result) throws Exception {
-        EvalResult answer = result.evaluate(programEnv);
-        List<String> runtimeDiagnostics = result.getDiagnostics();
-
-        if (runtimeDiagnostics.size() > 0) {
-            printDiagnostics(runtimeDiagnostics);
-            return null;
+        try {
+            return result.evaluate(programEnv);
         }
-        return answer;
+        catch (Exception e) {
+            runTimeDiagnostics = result.getDiagnostics();
+            throw e;
+        }
     }
 
     private static SyntaxTree parseProgram(String program) {
@@ -101,47 +97,45 @@ public class Main {
 
             SyntaxTree result;
             Parser parser;
+            List<String> diagnostics = new ArrayList<>();
 
             try {
 
                 if (line.startsWith("load")) {
                     String filename = line.substring(5);
                     String programCode = readInputFile(filename);
-
                     parser = new Parser(programCode);
-
                 }
                 else {
                     line = getNextCodeSegment(line);
-
                     if (line.equals(""))
                         continue;
-
                     parser = new Parser(line);
-
                 }
                 result = parser.parse();
-
-                if (displayParseTree)
+                if ( displayParseTree )
                     result.prettyPrint("");
-
                 if (parser._diagnostics.size() > 0) {
                     printDiagnostics(parser._diagnostics);
                     continue;
                 }
 
-
-                EvalResult answer = getEvalResult(parentEnv, result);
-                if (answer == null || answer._value == null)
-                    continue;
-
-                // System.out.println(TEXT_GREEN + answer._value + ", " + answer._type + TEXT_RESET);
-                Printer.print(answer);
+                // We are trying to capture runtime exceptions
+                evaluateParseTree(parentEnv, result);
 
             } catch (Exception e1) {
-                System.out.println(e1.toString());
+                System.out.println(e1.getMessage());
             }
 
+        }
+    }
+
+    private static void evaluateParseTree(Environment parentEnv, SyntaxTree result) {
+        try {
+            EvalResult answer = getEvalResult(parentEnv, result);
+            Printer.print(answer);
+        } catch (Exception e) {
+            printDiagnostics(runTimeDiagnostics);
         }
     }
 

@@ -6,10 +6,7 @@ import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Utilities.Environment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ObjectExpression extends Expression {
     public Map<Expression, Expression> _contents;
@@ -43,33 +40,26 @@ public class ObjectExpression extends Expression {
     @Override
     public EvalResult evaluate(Environment env) throws Exception{
         Map<String, EvalResult> finalResult = new HashMap<>();
+
         for(Map.Entry<Expression, Expression> binding : _contents.entrySet()) {
             Expression key = binding.getKey();
             Expression value = binding.getValue();
-
-
-            EvalResult keyRes = key.evaluate(env);
-            _diagnostics.addAll(key.getDiagnostics());
-
-            EvalResult valueRes = value.evaluate(env);
-            _diagnostics.addAll(key.getDiagnostics());
-
-            if(_diagnostics.size() > 0) {
-                return null;
+            try {
+                EvalResult keyRes = key.evaluate(env);
+                EvalResult valueRes = value.evaluate(env);
+                if( !Objects.equals(keyRes._type, "int") && !Objects.equals(keyRes._type, "string") )
+                    throw new IllegalArgumentException(keyRes._type);
+                finalResult.put(keyRes._value.toString(), valueRes);
             }
-
-
-            if(keyRes._type != "int" && keyRes._type != "string") {
-                _diagnostics.add("Key should be of type int or string, found " + keyRes._type+ " at line number " + getLineNumber());
-                return null;
+            catch (IllegalArgumentException e) {
+                _diagnostics.add("Key should be of type int or string, found " + e.getMessage() + " at line number " + getLineNumber());
+                throw e;
             }
-
-            if(valueRes == null || (valueRes._value == null && valueRes._type != "null")) {
-                _diagnostics.add("Invalid expression in the object body"+ " at line number " + getLineNumber());
-                return null;
+            catch (Exception e) {
+                _diagnostics.addAll(key.getDiagnostics());
+                _diagnostics.addAll(value.getDiagnostics());
+                throw e;
             }
-
-            finalResult.put((String) ((keyRes._value).toString()), valueRes);
         }
         return new EvalResult(finalResult, "object");
     }

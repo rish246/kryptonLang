@@ -17,4 +17,16 @@ public class EvalResult {
         _type = type;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+
+        if (o instanceof EvalResult) {
+            EvalResult oE = (EvalResult) o;
+            return oE.getValue().equals(this.getValue()) && oE.getType().equals(this.getType());
+        }
+
+        return false;
+    }
+
 }

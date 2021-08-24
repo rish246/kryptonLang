@@ -37,12 +37,12 @@ public class Environment {
         return entry;
     }
 
-    public EvalResult get(String lexeme) {
+    public EvalResult get(String lexeme) throws  Exception {
         for(Environment curEnv = this; curEnv != null; curEnv = curEnv._ParentEnv) {
             if(curEnv._table.containsKey(lexeme))
                 return curEnv._table.get(lexeme);
         }
-        return null;
+        throw new Exception("Undefined Symbol : " + lexeme);
     }
 
     public void printEnv() {

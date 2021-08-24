@@ -31,13 +31,15 @@ public class ListExpression extends Expression {
         List<EvalResult> _results = new ArrayList<>();
 
         for(Expression exp : _elements) {
-            _results.add(exp.evaluate(env));
-            _diagnostics.addAll(exp.getDiagnostics());
-            if(_diagnostics.size() > 0) {
-                return null;
+            try {
+                _results.add(exp.evaluate(env));
+            } catch (Exception e) {
+                _diagnostics.addAll(exp.getDiagnostics());
+                String errorMessage = "Error in the list body, at line number " + getLineNumber();
+                _diagnostics.add(errorMessage);
+                throw new Exception(errorMessage);
             }
         }
-
         return new EvalResult(_results, "list");
     }
 
