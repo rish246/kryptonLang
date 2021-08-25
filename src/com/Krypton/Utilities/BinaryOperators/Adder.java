@@ -18,7 +18,8 @@ public class Adder extends Operator {
         _right = right;
     }
 
-    public EvalResult add(Environment env) throws Exception {
+    @Override
+    public EvalResult operate(Environment env) throws Exception {
         try {
             EvalResult leftRes = _left.evaluate(env);
             EvalResult rightRes = _right.evaluate(env);
@@ -70,7 +71,7 @@ public class Adder extends Operator {
     }
 
     private EvalResult addFloats(EvalResult leftRes, EvalResult rightRes) {
-        return new EvalResult(Float.parseFloat(leftRes.getValue().toString()) + Float.parseFloat(rightRes.getValue().toString()), "float");
+        return new EvalResult(parseFloat(leftRes) + parseFloat(rightRes), "float");
     }
 
     private EvalResult concatLists(EvalResult leftRes, EvalResult rightRes) {

@@ -5,7 +5,6 @@ import com.Krypton.Syntax.Expression;
 import com.Krypton.Syntax.PrimaryExpressions.BinaryExpression;
 import com.Krypton.Syntax.Values.*;
 import com.Krypton.TokenType;
-import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.Environment;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,13 +27,6 @@ public class AddTest {
         env = new Environment(null);
     }
 
-    @Test(expected = InvalidOperationException.class)
-    public void testThrowsInvalidOperationException() throws Exception {
-        var sumExpression = new BinaryExpression(left, TokenType.SubToken, right, dummyLineNumber);
-        sumExpression.evaluate(env);
-    }
-
-    // Write some tests for add
     @Test
     public void testAddInts() throws Exception {
         var sumExpression = new BinaryExpression(left, TokenType.AddToken, right, dummyLineNumber);
@@ -43,7 +35,6 @@ public class AddTest {
     }
 
 
-    //////////////// Floats ///////////////////////
 
     @Test
     public void testAddFloats() throws Exception {
@@ -55,7 +46,6 @@ public class AddTest {
     }
 
 
-    //////////////// Floats and ints together ////////////////
     @Test
     public void testAFloatAndInt() throws Exception {
         left = new NumberExpression(4, dummyLineNumber);
@@ -104,21 +94,6 @@ public class AddTest {
         EvalResult sumTwo = sumExpression.evaluate(env);
         List<EvalResult> finalRes = (List) sumTwo.getValue();
         assertEquals(finalRes, result);
-    }
-
-    private List<Expression> generateListExpression() {
-        return Arrays.asList(
-                new  NumberExpression(3, dummyLineNumber),
-                new  StringExpression("value", dummyLineNumber));
-    }
-
-
-    private List<EvalResult> generateListEvalResult() {
-        return Arrays.asList(
-                new EvalResult(3, "int"),
-                new EvalResult("value", "string"),
-                new EvalResult(6, "int"),
-                new EvalResult(true, "boolean"));
     }
 
     @Test
