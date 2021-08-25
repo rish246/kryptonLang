@@ -4,6 +4,10 @@ import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Syntax.PrimaryExpressions.BinaryExpression;
 import com.Krypton.TokenType;
+import com.Krypton.Utilities.BinaryOperators.LogicalOperators.GreaterThanEqualOperator;
+import com.Krypton.Utilities.BinaryOperators.LogicalOperators.LessThanEqualOperator;
+import com.Krypton.Utilities.BinaryOperators.LogicalOperators.LessThanOperator;
+import com.Krypton.Utilities.BinaryOperators.LogicalOperators.MoreThanOperator;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.Environment;
 
@@ -26,6 +30,7 @@ public abstract class Operator {
         Expression left = binExpression.getLeft();
         Expression right = binExpression.getRight();
         TokenType operatorToken = binExpression.getOperatorToken();
+
         switch (operatorToken) {
             case AddToken:
                 return new Adder(left, right);
@@ -37,6 +42,14 @@ public abstract class Operator {
                 return new Divider(left, right);
             case ModuloToken:
                 return new ModuloOperator(left, right);
+            case LessThanToken:
+                return new LessThanOperator(left, right);
+            case GreaterThanToken:
+                return new MoreThanOperator(left, right);
+            case LessThanEqualToken:
+                return new LessThanEqualOperator(left, right);
+            case GreaterThanEqualToken:
+                return new GreaterThanEqualOperator(left, right);
             default:
                 throw new InvalidOperationException("Invalid token " + operatorToken + " at line number " + binExpression.getLineNumber());
         }

@@ -67,5 +67,4 @@ public class Adder extends Operator {
         concatenatedList.addAll(rightListCopy);
         return new EvalResult(concatenatedList, "list");
     }
-
 }
