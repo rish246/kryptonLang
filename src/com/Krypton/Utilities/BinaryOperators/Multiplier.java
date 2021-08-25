@@ -3,34 +3,18 @@ package com.Krypton.Utilities.BinaryOperators;
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
-import com.Krypton.Utilities.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Multiplier extends Operator {
-    private final Expression _left;
-    private final Expression _right;
 
     public Multiplier(Expression left, Expression right) {
-        _left = left;
-        _right = right;
+        super(left, right);
     }
 
     @Override
-    public EvalResult operate(Environment env) throws Exception {
-        try {
-            EvalResult leftRes = _left.evaluate(env);
-            EvalResult rightRes = _right.evaluate(env);
-            return multiplyValues(leftRes, rightRes);
-        } catch (Exception e) {
-            addDiagnostics(_left.getDiagnostics());
-            addDiagnostics(_right.getDiagnostics());
-            throw e;
-        }
-    }
-
-    private EvalResult multiplyValues(EvalResult left, EvalResult right) throws InvalidOperationException {
+    public EvalResult operateOnValues(EvalResult left, EvalResult right) throws InvalidOperationException {
         if ( isAnInt(left) && isAnInt(right) )
             return multiplyInts(left, right);
 

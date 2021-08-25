@@ -3,35 +3,19 @@ package com.Krypton.Utilities.BinaryOperators;
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
-import com.Krypton.Utilities.Environment;
 import com.Krypton.Utilities.Printer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Adder extends Operator {
-    private final Expression _left;
-    private final Expression _right;
 
     public Adder(Expression left, Expression right) {
-        _left = left;
-        _right = right;
+        super(left, right);
     }
 
     @Override
-    public EvalResult operate(Environment env) throws Exception {
-        try {
-            EvalResult leftRes = _left.evaluate(env);
-            EvalResult rightRes = _right.evaluate(env);
-            return addValues(leftRes, rightRes);
-        } catch (Exception e) {
-            addDiagnostics(_left.getDiagnostics());
-            addDiagnostics(_right.getDiagnostics());
-            throw e;
-        }
-    }
-
-    private EvalResult addValues(EvalResult leftRes, EvalResult rightRes) throws InvalidOperationException {
+    public EvalResult operateOnValues(EvalResult leftRes, EvalResult rightRes) throws InvalidOperationException {
         if ( isAnInt(leftRes) && isAnInt(rightRes) )
             return addInts(leftRes, rightRes);
 

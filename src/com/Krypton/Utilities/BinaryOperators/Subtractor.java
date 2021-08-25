@@ -3,31 +3,15 @@ package com.Krypton.Utilities.BinaryOperators;
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
-import com.Krypton.Utilities.Environment;
 
 public class Subtractor extends Operator {
-    private final Expression _left;
-    private final Expression _right;
 
     public Subtractor(Expression left, Expression right) {
-        _left = left;
-        _right = right;
+        super(left, right);
     }
 
     @Override
-    public EvalResult operate(Environment env) throws Exception {
-        try {
-            EvalResult leftRes = _left.evaluate(env);
-            EvalResult rightRes = _right.evaluate(env);
-            return subtractValues(leftRes, rightRes);
-        } catch (Exception e) {
-            addDiagnostics(_left.getDiagnostics());
-            addDiagnostics(_right.getDiagnostics());
-            throw e;
-        }
-    }
-
-    private EvalResult subtractValues(EvalResult leftRes, EvalResult rightRes) throws InvalidOperationException {
+    public EvalResult operateOnValues(EvalResult leftRes, EvalResult rightRes) throws InvalidOperationException {
         if ( isAnInt(leftRes) && isAnInt(rightRes) )
             return subtractInts(leftRes, rightRes);
 
@@ -45,7 +29,4 @@ public class Subtractor extends Operator {
     private EvalResult subtractInts(EvalResult left, EvalResult right) {
         return new EvalResult((int) left.getValue() - (int) right.getValue(), "int");
     }
-
-
-
 }

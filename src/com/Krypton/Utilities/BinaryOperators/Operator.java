@@ -13,7 +13,12 @@ import java.util.List;
 public abstract class Operator {
     private final List<String> _diagnostics;
 
-    public Operator() {
+    protected Expression _left;
+    protected Expression _right;
+
+    public Operator(Expression left, Expression right) {
+        _left = left;
+        _right = right;
         _diagnostics = new ArrayList<>();
     }
 
@@ -38,7 +43,20 @@ public abstract class Operator {
 
     }
 
-    public abstract EvalResult operate(Environment env) throws Exception;
+    public abstract EvalResult operateOnValues(EvalResult left, EvalResult right) throws Exception;
+
+
+    public EvalResult operate(Environment env) throws Exception {
+        try {
+            EvalResult leftRes = _left.evaluate(env);
+            EvalResult rightRes = _right.evaluate(env);
+            return operateOnValues(leftRes, rightRes);
+        } catch (Exception e) {
+            addDiagnostics(_left.getDiagnostics());
+            addDiagnostics(_right.getDiagnostics());
+            throw e;
+        }
+    }
 
     public Float parseFloat(EvalResult o) {
         return Float.parseFloat(o.getValue().toString());
