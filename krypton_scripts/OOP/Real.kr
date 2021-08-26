@@ -10,7 +10,7 @@ class Real {
 		this.num = num;
 		this.den = den;	
 
-		if(this.den < 0) {	
+		if (this.den < 0) {	
 			this.num = this.num * -1;
 			this.den = this.den * -1;
 		}
@@ -19,7 +19,7 @@ class Real {
 	}
 
 	def get_gcd(x, y) {
-		if(y == 0) {
+		if (y == 0) {
 			return x;
 		}
 
@@ -46,6 +46,7 @@ class Real {
 
 	def toString() {
 		result = "" + this.num;
+		print(this.den);
 		if(this.den != 1) {
 			result = result + "\\" + this.den;
 		}

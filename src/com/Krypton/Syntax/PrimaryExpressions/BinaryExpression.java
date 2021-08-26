@@ -15,6 +15,7 @@ public class BinaryExpression extends Expression {
     Expression _left, _right;
     TokenType _operatorToken;
     List<String> _diagnostics = new ArrayList<>();
+    private Operator operator;
 
     public BinaryExpression(Expression left, TokenType operatorToken, Expression right, int lineNumber) {
         super(ExpressionType.BinaryExpression, lineNumber);
@@ -44,12 +45,11 @@ public class BinaryExpression extends Expression {
 
     @Override
     public EvalResult evaluate(Environment env) throws Exception {
-        // Try running this code now
-        Operator operator = Operator.getRightOperator(this);
-
         try {
+            operator = Operator.getRightOperator(this);
+            operator.setLineNumber(getLineNumber());
             return operator.operateUnder(env);
-        } catch (InvalidOperationException e) {
+        } catch (Exception e) {
             _diagnostics.addAll(operator.getDiagnostics());
             throw e;
         }

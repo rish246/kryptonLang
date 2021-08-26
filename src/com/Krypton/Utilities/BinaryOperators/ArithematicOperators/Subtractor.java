@@ -1,7 +1,8 @@
-package com.Krypton.Utilities.BinaryOperators;
+package com.Krypton.Utilities.BinaryOperators.ArithematicOperators;
 
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
+import com.Krypton.Utilities.BinaryOperators.Operator;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 
 public class Subtractor extends Operator {
@@ -18,8 +19,7 @@ public class Subtractor extends Operator {
         if (isFloatOrInt(leftRes) && isFloatOrInt(rightRes))
             return subtractFloats(leftRes, rightRes);
 
-        throw new InvalidOperationException("Invalid Binary operator '+'  For types " + _left.getType() + " and " + _right.getType());
-
+        return raiseInvalidOperatorTypeException("+");
     }
 
     private EvalResult subtractFloats(EvalResult left, EvalResult right) {
@@ -30,3 +30,5 @@ public class Subtractor extends Operator {
         return new EvalResult((int) left.getValue() - (int) right.getValue(), "int");
     }
 }
+
+

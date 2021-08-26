@@ -174,6 +174,16 @@ public class EqualityTest {
     }
 
     @Test
+    public void testCompareNullAndOtherTypeReturnFalse() throws Exception {
+        right = new NullExpression(dummyLineNumber);
+        var equalityExpression = new BinaryExpression(left, TokenType.EqualityToken, right, dummyLineNumber);
+        EvalResult result = equalityExpression.evaluate(env);
+        assertEquals(result.getValue(), false);
+    }
+
+
+
+    @Test
     public void testCompareAnythingToNullReturnTrue() throws Exception {
         left = new NullExpression(dummyLineNumber);
         right = new NullExpression(dummyLineNumber);

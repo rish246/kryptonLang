@@ -164,12 +164,21 @@ public class NonEqualityTest {
     }
 //
     @Test
-    public void testCompareAnythingToNullReturnTrue() throws Exception {
+    public void testCompareNullAndOtherTypeReturnTrue() throws Exception {
         left = new NullExpression(dummyLineNumber);
         var nonEqualityExpression = new BinaryExpression(left, TokenType.NotEqualsToken, right, dummyLineNumber);
         EvalResult result = nonEqualityExpression.evaluate(env);
         assertEquals(result.getValue(), true);
     }
+
+    @Test
+    public void testCompareOtherTypeToNullReturnTrue() throws Exception {
+        right = new NullExpression(dummyLineNumber);
+        var nonEqualityExpression = new BinaryExpression(left, TokenType.NotEqualsToken, right, dummyLineNumber);
+        EvalResult result = nonEqualityExpression.evaluate(env);
+        assertEquals(result.getValue(), true);
+    }
+
 
     @Test
     public void testCompareNullToNullReturnFalse() throws Exception {

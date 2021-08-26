@@ -1,4 +1,4 @@
-package test.Syntax.PrimaryExpression.BinaryExpression;
+package test.Syntax.PrimaryExpression.BinaryExpression.ArithematicExpression;
 
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;

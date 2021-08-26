@@ -1,6 +1,7 @@
 package com.Krypton;
 
 public class EvalResult {
+
     public Object getValue() {
         return _value;
     }

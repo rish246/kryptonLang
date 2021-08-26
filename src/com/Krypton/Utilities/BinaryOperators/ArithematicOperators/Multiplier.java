@@ -1,7 +1,8 @@
-package com.Krypton.Utilities.BinaryOperators;
+package com.Krypton.Utilities.BinaryOperators.ArithematicOperators;
 
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
+import com.Krypton.Utilities.BinaryOperators.Operator;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 
 import java.util.ArrayList;
@@ -24,12 +25,9 @@ public class Multiplier extends Operator {
         if (isList(left) && isAnInt(right))
             return duplicateList(left, right);
 
-        throw new InvalidOperationException("Invalid Binary operator '+'  For types " + _left.getType() + " and " + _right.getType());
+        return raiseInvalidOperatorTypeException("+");
     }
 
-    /*
-        [1] * 3 --> [1, 1, 1]
-     */
     private EvalResult duplicateList(EvalResult left, EvalResult right) throws InvalidOperationException {
         int nTimes = (int) right.getValue();
         if(nTimes < 0) throw new InvalidOperationException("Expected a positive integer, got " + nTimes);

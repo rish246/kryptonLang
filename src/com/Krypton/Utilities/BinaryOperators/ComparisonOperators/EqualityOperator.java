@@ -3,7 +3,6 @@ package com.Krypton.Utilities.BinaryOperators.ComparisonOperators;
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Utilities.BinaryOperators.Operator;
-import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 
 public class EqualityOperator extends Operator {
 
@@ -16,9 +15,11 @@ public class EqualityOperator extends Operator {
         if (left.getValue() == null)
             return new EvalResult(right.getValue() == null, "boolean");
 
-        // If not of same type, raise an InvalidOperationExcetion
+        if (right.getValue() == null)
+            return new EvalResult(left.getValue() == null, "boolean");
+
         if(!left.getType().equals(right.getType()))
-            throw new InvalidOperationException("Invalid operator '==' for type " + _left.getType() + " and " + _right.getType());
+            return raiseInvalidOperatorTypeException("==");
 
         return new EvalResult(left.equals(right), "boolean");
     }
