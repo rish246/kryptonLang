@@ -5,10 +5,10 @@ import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Utilities.Environment;
 
-public class BoolExperssion extends Expression {
+public class BoolExpression extends Expression {
     boolean  _value;
 
-    public BoolExperssion(boolean value, int lineNumber) {
+    public BoolExpression(boolean value, int lineNumber) {
         super(ExpressionType.BoolExpression, lineNumber);
         _value = value;
     }

@@ -601,12 +601,12 @@ class Parser {
         return new ArrayAccessExpression(currentToken, indices, CurrentLineNumber());
     }
 
-    private BoolExperssion parseBoolExpression() {
+    private BoolExpression parseBoolExpression() {
         Token currentToken = match(TokenType.BoolTokenKeyword); // it does
 
         boolean value = (boolean) currentToken._value;
 
-        return new BoolExperssion(value, CurrentLineNumber());
+        return new BoolExpression(value, CurrentLineNumber());
     }
 
     private NullExpression parseNullExpression() {

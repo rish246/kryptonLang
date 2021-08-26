@@ -4,10 +4,7 @@ import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Syntax.PrimaryExpressions.BinaryExpression;
 import com.Krypton.TokenType;
-import com.Krypton.Utilities.BinaryOperators.LogicalOperators.GreaterThanEqualOperator;
-import com.Krypton.Utilities.BinaryOperators.LogicalOperators.LessThanEqualOperator;
-import com.Krypton.Utilities.BinaryOperators.LogicalOperators.LessThanOperator;
-import com.Krypton.Utilities.BinaryOperators.LogicalOperators.MoreThanOperator;
+import com.Krypton.Utilities.BinaryOperators.ComparisonOperators.*;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.Environment;
 
@@ -50,6 +47,10 @@ public abstract class Operator {
                 return new LessThanEqualOperator(left, right);
             case GreaterThanEqualToken:
                 return new GreaterThanEqualOperator(left, right);
+            case EqualityToken:
+                return new EqualityOperator(left, right);
+            case NotEqualsToken:
+                return new NonEqualityOperator(left, right);
             default:
                 throw new InvalidOperationException("Invalid token " + operatorToken + " at line number " + binExpression.getLineNumber());
         }
@@ -59,7 +60,7 @@ public abstract class Operator {
     public abstract EvalResult operateOnValues(EvalResult left, EvalResult right) throws Exception;
 
 
-    public EvalResult operate(Environment env) throws Exception {
+    public EvalResult operateUnder(Environment env) throws Exception {
         try {
             EvalResult leftRes = _left.evaluate(env);
             EvalResult rightRes = _right.evaluate(env);

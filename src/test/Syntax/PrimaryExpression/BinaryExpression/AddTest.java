@@ -63,7 +63,7 @@ public class AddTest {
                 new StringExpression("value", dummyLineNumber));
         List<Expression> rightList = Arrays.asList(
                 new NumberExpression(6, dummyLineNumber),
-                new BoolExperssion(true, dummyLineNumber));
+                new BoolExpression(true, dummyLineNumber));
 
         List<EvalResult> result = Arrays.asList(
                 new EvalResult(3, "int"),

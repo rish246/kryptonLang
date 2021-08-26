@@ -1,9 +1,9 @@
-package test.Syntax.PrimaryExpression.BinaryExpression.LogicalExpression;
+package test.Syntax.PrimaryExpression.BinaryExpression.ComparisonExpression;
 
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Syntax.PrimaryExpressions.BinaryExpression;
-import com.Krypton.Syntax.Values.BoolExperssion;
+import com.Krypton.Syntax.Values.BoolExpression;
 import com.Krypton.Syntax.Values.FloatExpression;
 import com.Krypton.Syntax.Values.NumberExpression;
 import com.Krypton.TokenType;
@@ -51,7 +51,7 @@ public class LessThanTest {
 
     @Test(expected = InvalidOperationException.class)
     public void testCompareInvalidTypesThrowsInvalidOperationException() throws Exception {
-        right = new BoolExperssion(true, dummyLineNumber);
+        right = new BoolExpression(true, dummyLineNumber);
         var lessThanExpression = new BinaryExpression(left, TokenType.LessThanToken, right, dummyLineNumber);
         lessThanExpression.evaluate(env);
     }

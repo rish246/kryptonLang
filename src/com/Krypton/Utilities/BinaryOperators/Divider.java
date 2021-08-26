@@ -10,7 +10,6 @@ public class Divider extends Operator {
         super(left, right);
     }
 
-
     @Override
     public EvalResult operateOnValues(EvalResult left, EvalResult right) throws InvalidOperationException {
         if ( isFloatOrInt(left) && isFloatOrInt(right) )

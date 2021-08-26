@@ -48,7 +48,7 @@ public class BinaryExpression extends Expression {
         Operator operator = Operator.getRightOperator(this);
 
         try {
-            return operator.operate(env);
+            return operator.operateUnder(env);
         } catch (InvalidOperationException e) {
             _diagnostics.addAll(operator.getDiagnostics());
             throw e;

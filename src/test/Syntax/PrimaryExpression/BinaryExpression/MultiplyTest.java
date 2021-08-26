@@ -31,7 +31,7 @@ public class MultiplyTest {
 
     @Test(expected = InvalidOperationException.class)
     public void testMultiplyThrowsInvalidOperationException() throws Exception {
-        left = new BoolExperssion(true, dummyLineNumber);
+        left = new BoolExpression(true, dummyLineNumber);
         var sumExpression = new BinaryExpression(left, TokenType.MultToken, right, dummyLineNumber);
         sumExpression.evaluate(env);
     }
