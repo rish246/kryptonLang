@@ -2,24 +2,61 @@ package com.Krypton.Utilities.BinaryOperators.LogicalOperators;
 
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
+import com.Krypton.Syntax.PrimaryExpressions.BinaryExpression;
+import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.Environment;
+import com.Krypton.Utilities.Typing;
 
-public class LogicalAndOperator extends LogicalOperator {
-    public LogicalAndOperator(Expression left, Expression right) {
-        super(left, right);
+import java.util.ArrayList;
+import java.util.List;
+
+public class LogicalAndOperator implements LogicalBinaryOperator {
+    private List<String> _diagnostics = new ArrayList<>();
+    private Expression _left;
+    private Expression _right;
+    int _lineNumber;
+    public LogicalAndOperator(int lineNumber) {
+        _lineNumber = lineNumber;
     }
 
     @Override
-    public EvalResult evaluateLogicalOperatorUnder(Environment env) throws Exception {
-        EvalResult leftRes = _left.evaluate(env);
-        assertBoolean(leftRes, "&&");
+    public EvalResult operateOn(BinaryExpression binExp, Environment env) throws Exception {
+        _left = binExp.getLeft();
+        _right = binExp.getRight();
+        try {
+            return evaluateLogicalOperatorUnder(env);
+        } catch (InvalidOperationException e) {
+            _diagnostics.addAll(_left.getDiagnostics());
+            _diagnostics.addAll(_right.getDiagnostics());
+            throw e;
+        }
+    }
 
-        if (isBoolAndFalse(leftRes))
+    public EvalResult evaluateLogicalOperatorUnder(Environment env) throws Exception {
+        EvalResult leftRes = evaluateExpression(_left, env);
+        if (Typing.isBoolAndFalse(leftRes))
             return new EvalResult(leftRes.getValue(), leftRes.getType());
 
-        EvalResult rightRes = _right.evaluate(env);
-        assertBoolean(rightRes, "&&");
-        return new EvalResult(rightRes.getValue(), rightRes.getType());
+        return evaluateExpression(_right, env);
+    }
+
+    private EvalResult evaluateExpression(Expression expression, Environment env) throws Exception {
+        try {
+            EvalResult result = expression.evaluate(env);
+            if (!Typing.isBool(result))
+                throw new InvalidOperationException("Invalid operator '||' for type " + result.getType() + " at line number " + _lineNumber);
+            return result;
+        }
+        catch (InvalidOperationException e) {
+            _diagnostics.add(e.getMessage());
+            throw e;
+        }
+    }
+
+
+    @Override
+    public List<String> getDiagnostics() {
+        return _diagnostics;
     }
 }
 

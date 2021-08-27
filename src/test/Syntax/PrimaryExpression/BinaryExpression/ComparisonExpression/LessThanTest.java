@@ -56,4 +56,15 @@ public class LessThanTest {
         lessThanExpression.evaluate(env);
     }
 
+    @Test
+    public void testCompareInvalidTypesGivesRightErrorMessage() throws Exception {
+        right = new BoolExpression(true, dummyLineNumber);
+        var lessThanExpression = new BinaryExpression(left, TokenType.LessThanToken, right, dummyLineNumber);
+        String expectedMessage = "Invalid operator 'LessThanToken' for type int and boolean at line number " + dummyLineNumber;
+        try {
+            lessThanExpression.evaluate(env);
+        } catch (InvalidOperationException e) {
+            assertEquals(e.getMessage(), expectedMessage);
+        }
+    }
 }

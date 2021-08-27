@@ -4,8 +4,7 @@ import com.Krypton.EvalResult;
 import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.TokenType;
-import com.Krypton.Utilities.BinaryOperators.Operator;
-import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
+import com.Krypton.Utilities.BinaryOperators.BinaryOperatorImpl;
 import com.Krypton.Utilities.Environment;
 
 import java.util.ArrayList;
@@ -15,13 +14,14 @@ public class BinaryExpression extends Expression {
     Expression _left, _right;
     TokenType _operatorToken;
     List<String> _diagnostics = new ArrayList<>();
-    private Operator operator;
+    private BinaryOperatorImpl binaryOperator;
 
     public BinaryExpression(Expression left, TokenType operatorToken, Expression right, int lineNumber) {
         super(ExpressionType.BinaryExpression, lineNumber);
         _left = left;
         _operatorToken = operatorToken;
         _right = right;
+        binaryOperator = new BinaryOperatorImpl(lineNumber);
     }
 
 
@@ -46,11 +46,9 @@ public class BinaryExpression extends Expression {
     @Override
     public EvalResult evaluate(Environment env) throws Exception {
         try {
-            operator = Operator.getRightOperator(this);
-            operator.setLineNumber(getLineNumber());
-            return operator.operateUnder(env);
+            return binaryOperator.operateOn(this, env);
         } catch (Exception e) {
-            _diagnostics.addAll(operator.getDiagnostics());
+            _diagnostics.addAll(binaryOperator.getDiagnostics());
             throw e;
         }
     }

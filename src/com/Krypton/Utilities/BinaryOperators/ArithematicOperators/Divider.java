@@ -1,30 +1,35 @@
 package com.Krypton.Utilities.BinaryOperators.ArithematicOperators;
 
-import com.Krypton.EvalResult;
-import com.Krypton.Syntax.Expression;
-import com.Krypton.Utilities.BinaryOperators.Operator;
-import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
+public class Divider {
 
-public class Divider extends Operator {
-
-    public Divider(Expression left, Expression right) {
-        super(left, right);
-    }
-
-    @Override
-    public EvalResult operateOnValues(EvalResult left, EvalResult right) throws InvalidOperationException {
-        if ( isFloatOrInt(left) && isFloatOrInt(right) )
-            return divideInts(left, right);
-
-        return raiseInvalidOperatorTypeException("/");
-    }
-
-    private EvalResult divideInts(EvalResult left, EvalResult right) throws InvalidOperationException {
-        if (right.getValue().equals(0)) {
-            addNewDiagnostic("ZeroDivisionError at line number " + getLineNumber());
-            throw new InvalidOperationException("ZeroDivisionError at line number " + getLineNumber());
-        }
-
-        return new EvalResult(parseFloat(left) / parseFloat(right), "float");
-    }
+//    public Divider(Expression left, Expression right) {
+//        super(left, right);
+//    }
+//
+//    @Override
+//    public EvalResult operateOnValues(EvalResult left, EvalResult right) throws InvalidOperationException {
+//        if ( Typing.isFloatOrInt(left) && Typing.isFloatOrInt(right) )
+//            return divideInts(left, right);
+//
+//        return raiseInvalidOperatorTypeException("/");
+//    }
+//
+//    private EvalResult divideInts(EvalResult left, EvalResult right) throws InvalidOperationException {
+//        if (right.getValue().equals(0)) {
+//            addNewDiagnostic("ZeroDivisionError at line number " + getLineNumber());
+//            throw new InvalidOperationException("ZeroDivisionError at line number " + getLineNumber());
+//        }
+//
+//        return new EvalResult(Typing.parseFloat(left) / Typing.parseFloat(right), "float");
+//    }
+//
+//    @Override
+//    public EvalResult operateOn(Expression left, Expression right, Environment env) throws Exception {
+//        return null;
+//    }
+//
+//    @Override
+//    public List<String> getDiagnostics() {
+//        return null;
+//    }
 }

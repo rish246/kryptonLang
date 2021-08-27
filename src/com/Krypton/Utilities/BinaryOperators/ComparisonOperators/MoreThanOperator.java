@@ -1,18 +1,32 @@
 package com.Krypton.Utilities.BinaryOperators.ComparisonOperators;
 
 import com.Krypton.EvalResult;
-import com.Krypton.Syntax.Expression;
+import com.Krypton.Syntax.PrimaryExpressions.BinaryExpression;
+import com.Krypton.Utilities.Environment;
 
-public class MoreThanOperator extends ComparisonOperator {
-    public MoreThanOperator(Expression left, Expression right) {
-        super(left, right, ">");
+import java.util.ArrayList;
+import java.util.List;
+
+public class MoreThanOperator implements ComparisonOperator {
+    List<String> _diagnostics = new ArrayList<>();
+    ComparisonFunctionEvaluator _evaluator;
+
+    @Override
+    public EvalResult operateOn(BinaryExpression binExp, Environment env) throws Exception {
+        _evaluator = new ComparisonFunctionEvaluator(binExp,  (left, right) -> left > right);
+
+        try {
+            return _evaluator.evaluate(env);
+        } catch (Exception e) {
+            _diagnostics.addAll(_evaluator.getDiagnostics());
+            throw e;
+        }
     }
 
-    public EvalResult compareInts(EvalResult left, EvalResult right) {
-        return new EvalResult((int) left.getValue() > (int) right.getValue(), "boolean");
-    }
-
-    public EvalResult compareFloats(EvalResult left, EvalResult right) {
-        return new EvalResult(parseFloat(left) > parseFloat(right), "boolean");
+    @Override
+    public List<String> getDiagnostics() {
+        return _diagnostics;
     }
 }
+
+// Refactor these four to something reusable

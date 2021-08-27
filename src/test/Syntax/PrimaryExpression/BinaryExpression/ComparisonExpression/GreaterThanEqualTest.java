@@ -29,7 +29,7 @@ public class GreaterThanEqualTest {
 
     @Test
     public void testCompareInts() throws Exception {
-        var moreThanExp = new BinaryExpression(left, TokenType.GreaterThanToken, right, dummyLineNumber);
+        var moreThanExp = new BinaryExpression(left, TokenType.GreaterThanEqualToken, right, dummyLineNumber);
         EvalResult result = moreThanExp.evaluate(env);
         assertEquals(result.getValue(), false);
     }
@@ -40,11 +40,11 @@ public class GreaterThanEqualTest {
     public void testCompareFloats() throws Exception {
         left = new FloatExpression(4.0f, dummyLineNumber);
         right = new FloatExpression(2.0f, dummyLineNumber);
-        var moreThanExp = new BinaryExpression(left, TokenType.GreaterThanToken, right, dummyLineNumber);
+        var moreThanExp = new BinaryExpression(left, TokenType.GreaterThanEqualToken, right, dummyLineNumber);
         EvalResult resultFalse = moreThanExp.evaluate(env);
         assertEquals(resultFalse.getValue(), true);
 
-        moreThanExp = new BinaryExpression(right, TokenType.GreaterThanToken, left, dummyLineNumber);
+        moreThanExp = new BinaryExpression(right, TokenType.GreaterThanEqualToken, left, dummyLineNumber);
         EvalResult resultTrue = moreThanExp.evaluate(env);
         assertEquals(resultTrue.getValue(), false);
     }
@@ -53,7 +53,7 @@ public class GreaterThanEqualTest {
     @Test(expected = InvalidOperationException.class)
     public void testCompareInvalidTypesThrowsInvalidOperationException() throws Exception {
         right = new BoolExpression(true, dummyLineNumber);
-        var lessThanExpression = new BinaryExpression(left, TokenType.LessThanToken, right, dummyLineNumber);
+        var lessThanExpression = new BinaryExpression(left, TokenType.GreaterThanEqualToken, right, dummyLineNumber);
         lessThanExpression.evaluate(env);
     }
 
