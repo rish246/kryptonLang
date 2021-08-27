@@ -41,6 +41,13 @@ public class ComparisonOperatorImpl implements ComparisonOperator {
         if (_operatorToken  == TokenType.GreaterThanEqualToken)
             return new GreaterThanEqualOperator();
 
+        if (_operatorToken  == TokenType.EqualityToken)
+            return new EqualityOperator();
+
+
+        if (_operatorToken  == TokenType.NotEqualsToken)
+            return new NonEqualityOperator();
+
         throw new InvalidOperationException("Invalid comparison operator " + _operatorToken);
     }
 

@@ -3,6 +3,7 @@ package com.Krypton.Utilities.BinaryOperators.ComparisonOperators;
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.PrimaryExpressions.BinaryExpression;
 import com.Krypton.Utilities.Environment;
+import com.Krypton.Utilities.Typing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ public class MoreThanOperator implements ComparisonOperator {
 
     @Override
     public EvalResult operateOn(BinaryExpression binExp, Environment env) throws Exception {
-        _evaluator = new ComparisonFunctionEvaluator(binExp,  (left, right) -> left > right);
+        _evaluator = new ComparisonFunctionEvaluator(binExp,  (left, right) -> Typing.parseFloat(left) > Typing.parseFloat(right));
 
         try {
             return _evaluator.evaluate(env);

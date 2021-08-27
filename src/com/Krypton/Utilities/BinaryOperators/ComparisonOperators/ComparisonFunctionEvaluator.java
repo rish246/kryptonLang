@@ -28,10 +28,14 @@ public class ComparisonFunctionEvaluator {
         _lineNumber = expression.getLineNumber();
     }
 
+    // If (leftRes -> rightRes)
     public EvalResult evaluate(Environment env) throws Exception {
         try {
             EvalResult leftRes = _left.evaluate(env);
             EvalResult rightRes = _right.evaluate(env);
+
+            if (_operator == TokenType.EqualityToken || _operator == TokenType.NotEqualsToken)
+                return _comparator.compareObjects(leftRes, rightRes);
 
             if ( Typing.isFloatOrInt(leftRes) && Typing.isFloatOrInt(rightRes))
                 return _comparator.compareFloats(leftRes, rightRes);

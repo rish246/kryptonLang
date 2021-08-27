@@ -30,4 +30,10 @@ public class EvalResult {
         return false;
     }
 
+    @Override
+    public String toString() {
+        if (_value == null)
+            return "null";
+        return _value.toString();
+    }
 }

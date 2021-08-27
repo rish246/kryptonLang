@@ -41,8 +41,8 @@ public class Typing {
     }
 
 
-    public static Float parseFloat(EvalResult o) {
-        return Float.parseFloat(o.getValue().toString());
+    public static Float parseFloat(Object o) {
+        return Float.parseFloat(o.toString());
     }
 
 }
