@@ -13,6 +13,7 @@ public class ListExpression extends Expression {
     public List<Expression> _elements;
     public List<String> _diagnostics;
 
+
     public ListExpression(List<Expression> elements, int lineNumber) {
         super(ExpressionType.ListExpression, lineNumber);
         _elements = elements;
@@ -46,5 +47,10 @@ public class ListExpression extends Expression {
     public List<String> getDiagnostics() {
         return _diagnostics;
     }
+
+    public List<Expression> getElements() {
+        return _elements;
+    }
+
 
 }

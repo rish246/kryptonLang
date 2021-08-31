@@ -177,9 +177,12 @@ class Parser {
         if (unaryOperatorPrec != 0 && unaryOperatorPrec >= parentPrecedence)
             left = new UnaryExpression(NextToken()._type, parseExpression(unaryOperatorPrec), CurrentLineNumber());
         else {
-            left = parsePrimaryExp();
+            left = parsePostFixExpression();
         }
 
+        // 2 operators right here
+        // Thats why its failing
+        // 1 [ 0 ] [ 0 ]
 
         while(_position < _tokens.length
         && CurrentToken()._type != TokenType.EndOfLineToken) {
@@ -200,12 +203,6 @@ class Parser {
 
 
             Expression right = parseExpression(curPrecedence);
-
-
-            if(binOperator == TokenType.AssignmentToken)
-            {
-                return new AssignmentExpression(left, binOperator, right, CurrentLineNumber());
-            }
 
             left = new BinaryExpression(left, binOperator, right, CurrentLineNumber());
 
@@ -406,7 +403,7 @@ class Parser {
 
     private ForEachStatement parseForeachStatement(Expression iterator) {
         match(TokenType.InKeyword);
-        Expression iterable = parsePrimaryExp(); // This will do it
+        Expression iterable = parsePostFixExpression(); // This will do it
         match(TokenType.ClosedParensToken);
         SyntaxTree foreachBody = parse();
 
@@ -466,12 +463,6 @@ class Parser {
             case IdentifierToken: {
                 Token currentToken = match(TokenType.IdentifierToken);
 
-                if(CurrentToken()._type == TokenType.OpenSquareBracketToken
-                        || CurrentToken()._type == TokenType.OpenParensToken
-                        || CurrentToken()._type == TokenType.DotOperatorToken) {
-                    return parseArrayAccessExpression(currentToken);
-                }
-
                 return new IdentifierExpression(currentToken._lexeme, CurrentLineNumber()); // just value of 1
             }
 
@@ -522,13 +513,37 @@ class Parser {
     private ReadInputExpression parseReadInputExpression() {
         match(TokenType.InputKeyword);
         match(TokenType.OpenParensToken);
-        String dataType = ((IdentifierExpression) parsePrimaryExp())._lexeme;
+        String dataType = ((IdentifierExpression) parsePostFixExpression())._lexeme;
         match(TokenType.CommaSeparatorToken);
-        String prompt = ((StringExpression) parsePrimaryExp())._value;
+        String prompt = ((StringExpression) parsePostFixExpression())._value;
         match(TokenType.ClosedParensToken);
 
         return new ReadInputExpression(dataType, prompt, CurrentLineNumber());
     }
+
+    private Expression parsePostFixExpression() {
+        Expression left = parsePrimaryExp();
+
+        while(CurrentToken().getType() == TokenType.OpenSquareBracketToken) {
+            ListExpression index = parseListExpression();
+            left = new ArrayAccessExpression(left, index, CurrentLineNumber());
+        }
+
+        return left;
+    }
+
+//    private ListExpression parseArrayAccessExpression(Token currentToken) {
+//        while(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
+//            return parseListExpression();
+//        }
+//
+//        if(indices.size() == 0) {
+//            _diagnostics.add("Subscript operator cannot be empty");
+//            return null;
+//        }
+//
+//        return new ArrayAccessExpression(currentToken, indices, CurrentLineNumber());
+//    }
 
     private LambdaExpression parseLambdaExpression() {
         match(TokenType.LambdaExpressionToken);
@@ -584,22 +599,7 @@ class Parser {
         return new ListExpression(listElements, CurrentLineNumber());
     }
 
-    private ArrayAccessExpression parseArrayAccessExpression(Token currentToken) {
-        List<Expression> indices = new ArrayList<>();
-        while(CurrentToken()._type == TokenType.OpenSquareBracketToken
-                || CurrentToken()._type == TokenType.OpenParensToken
-                || CurrentToken()._type == TokenType.DotOperatorToken) {
-            Expression Index = parseChainedExpression();
-            indices.add(Index);
-        }
 
-        if(indices.size() == 0) {
-            _diagnostics.add("Subscript operator cannot be empty");
-            return null;
-        }
-
-        return new ArrayAccessExpression(currentToken, indices, CurrentLineNumber());
-    }
 
     private BoolExpression parseBoolExpression() {
         Token currentToken = match(TokenType.BoolTokenKeyword); // it does

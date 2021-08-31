@@ -47,7 +47,7 @@ public class AssignmentExpression extends Expression {
         try {
             EvalResult rightRes = _right.evaluate(env);
             evaluator.Bind(_left, rightRes, env);
-            return rightRes;
+            return rightRes; // Rewrite the whole assignmentExpressionHere
         } catch (Exception e) {
             _diagnostics.addAll(_right.getDiagnostics());
             _diagnostics.addAll(evaluator.get_diagnostics());

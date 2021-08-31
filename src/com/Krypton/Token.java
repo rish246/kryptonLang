@@ -5,9 +5,13 @@ public class Token {
     public String _lexeme;
     public Object _value;
 
-    Token(TokenType type, String lexeme, Object value) {
+    public Token(TokenType type, String lexeme, Object value) {
         _type = type;
         _lexeme = lexeme;
         _value = value;
+    }
+
+    public TokenType getType() {
+        return _type;
     }
 }

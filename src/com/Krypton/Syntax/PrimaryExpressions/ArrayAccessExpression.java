@@ -4,10 +4,9 @@ package com.Krypton.Syntax.PrimaryExpressions;
 import com.Krypton.EvalResult;
 import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
-import com.Krypton.SyntaxTree;
 import com.Krypton.Token;
+import com.Krypton.Utilities.ArrayAccessUtils.Extractor;
 import com.Krypton.Utilities.Environment;
-import com.Krypton.Utilities.Evaluator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,23 +14,47 @@ import java.util.List;
 public class ArrayAccessExpression extends Expression {
 
     public Token _identifier;
-    public Expression[] _indices;
     public List<String> _diagnostics = new ArrayList<>();
-    public Evaluator evaluator;
+    public Expression _index;
+    public Expression _body;
 
-    public ArrayAccessExpression(Token identifierToken, List<Expression> indices, int lineNumber) {
+    public Expression getIndex() {
+        return _index;
+    }
+
+    public void setIndex(Expression _index) {
+        this._index = _index;
+    }
+
+    public Expression getBody() {
+        return _body;
+    }
+
+    public void setBody(Expression _body) {
+        this._body = _body;
+    }
+
+    private Extractor extractor;
+
+    public ArrayAccessExpression(Expression body, Expression index, int lineNumber) {
         super(ExpressionType.ArrayAccessExpression, lineNumber);
-        _identifier = identifierToken;
-        _indices = indices.toArray(new Expression[0]);
-        evaluator = new Evaluator(lineNumber);
-
+        _body = body;
+        _index = index;
+        _lineNumber = lineNumber;
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
         try {
-            return evaluator.EvaluateArrayAccessExpression(env, this);
+            EvalResult arrayBody = _body.evaluate(env);
+            EvalResult indexVal = _index.evaluate(env);
+            List<EvalResult> indices = (List) indexVal.getValue();
+            extractor = Extractor.getRightExtractor(arrayBody.getType(), _lineNumber);
+            return extractor.extract(arrayBody, indices);
         } catch (Exception e) {
-            _diagnostics.addAll(evaluator.get_diagnostics());
+            _diagnostics.addAll(_body.getDiagnostics());
+            _diagnostics.addAll(_index.getDiagnostics());
+            _diagnostics.addAll(extractor.getDiagnostics());
+            _diagnostics.add(e.getMessage());
             throw e;
         }
     }
@@ -39,18 +62,14 @@ public class ArrayAccessExpression extends Expression {
     public void prettyPrint(String indent) {
         System.out.println("Array Access");
         System.out.print(indent + "|-");
-        System.out.println(_identifier._value);
+        _body.prettyPrint(indent + "    ");
         System.out.println(indent + "|-");
         System.out.println(indent + "|");
         System.out.print(indent + "|_");
-        for(SyntaxTree index : _indices) {
-            index.prettyPrint(indent + "    ");
-        }
+        _index.prettyPrint(indent + "    ");
     }
 
     public List<String> getDiagnostics() {
         return _diagnostics;
     }
 }
-
-// Nice.. Time to start working on the ErrorHandlingAspectOFKrypton()

@@ -1,4 +1,4 @@
-package com.Krypton.Utilities.BinaryOperators.ComparisonOperators;
+package com.Krypton.Utilities.BinaryOperators.ComparisonOperators.Utilities;
 
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 

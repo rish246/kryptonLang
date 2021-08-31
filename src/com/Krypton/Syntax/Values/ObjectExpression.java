@@ -18,6 +18,9 @@ public class ObjectExpression extends Expression {
         _diagnostics = new ArrayList<>();
     }
 
+    public Map<Expression, Expression> getContents() {
+        return _contents;
+    }
 
     @Override
     public void prettyPrint(String indent) {

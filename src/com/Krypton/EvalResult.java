@@ -1,5 +1,7 @@
 package com.Krypton;
 
+import java.util.Objects;
+
 public class EvalResult {
 
     public Object getValue() {
@@ -24,6 +26,8 @@ public class EvalResult {
 
         if (o instanceof EvalResult) {
             EvalResult oE = (EvalResult) o;
+            if (oE.getValue() == null && Objects.equals(oE.getType(), "null") )
+                return (this.getValue() == null && this.getType().equals("null"));
             return oE.getValue().equals(this.getValue()) && oE.getType().equals(this.getType());
         }
 

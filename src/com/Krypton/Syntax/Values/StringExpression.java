@@ -8,6 +8,10 @@ import com.Krypton.Utilities.Environment;
 public class StringExpression extends Expression {
     public String _value;
 
+    public String getValue() {
+        return _value;
+    }
+
     public StringExpression(String value, int lineNumber) {
         super(ExpressionType.StringExpression, lineNumber);
         _value = value;

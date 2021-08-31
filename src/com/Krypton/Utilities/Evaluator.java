@@ -3,10 +3,12 @@ package com.Krypton.Utilities;
 import com.Krypton.EvalResult;
 import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
-import com.Krypton.Syntax.PrimaryExpressions.*;
+import com.Krypton.Syntax.PrimaryExpressions.ArrayAccessExpression;
+import com.Krypton.Syntax.PrimaryExpressions.IdentifierExpression;
+import com.Krypton.Syntax.PrimaryExpressions.MemberAccessExpression;
+import com.Krypton.Syntax.PrimaryExpressions.ParensExpression;
 import com.Krypton.Syntax.Values.*;
 import com.Krypton.SyntaxTree;
-import com.Krypton.Token;
 
 import java.util.*;
 
@@ -20,34 +22,6 @@ public class Evaluator {
 
     /* Keep the code not related to ArrayExpression.java and restJustSendBackThere  */
     /* More generalization along the way */
-    public EvalResult EvaluateArrayAccessExpression (Environment env, ArrayAccessExpression expression) throws Exception {
-        Token identifier = expression._identifier;
-        String identifierName = identifier._lexeme;
-        EvalResult ourIdentifierEntry = env.get(identifierName);
-        if(ourIdentifierEntry == null) {
-            _diagnostics.add("Undefined Symbol " + identifier._lexeme + " at line number " + lineNumber);
-            return null;
-        }
-        Expression[] _indices = expression._indices;
-        EvalResult Result = ourIdentifierEntry;
-        for (Expression index : _indices) { // We'll Have to catch that at a higher level I guess
-            Result = EvaluateIndexInEnv(env, Result, index);
-            if(Result == null) break;
-        }
-        return Result;
-    }
-
-    private EvalResult EvaluateIndexInEnv(Environment env, EvalResult Result, Expression index) throws Exception {
-        if (isRaisingNullPointerException(Result)) return null;
-
-        if(index.getType() == ExpressionType.ParensExpression)
-            Result = callFunction(Result, index, env);
-        else if(index.getType() == ExpressionType.MemberAccessExpression)
-            Result = getMemberFromClassEnv(Result, (MemberAccessExpression) index);
-        else
-            Result = getValue(Result, index, env);
-        return Result;
-    }
 
     public EvalResult getValue(EvalResult curIterable, Expression indexI, Environment env) throws Exception {
         EvalResult indexRes = indexI.evaluate(env); // a[x] -> evaluated in current env
@@ -224,24 +198,10 @@ public class Evaluator {
     }
 
     private EvalResult evaluateCurrentIndex(Environment env, ArrayAccessExpression curExp, EvalResult Result) throws Exception {
-        for(Expression index : curExp._indices) {
-            if(isNull(Result)) {
-                _diagnostics.add("NullPointerException: Cannot access property from null, at line number " + lineNumber);
-                return null;
-            }
-            Result = evaluateCurrentIndex(env, Result, index);
-        }
+        Result = curExp._index.evaluate(env);
         return Result;
     }
 
-    private EvalResult evaluateCurrentIndex(Environment env, EvalResult Result, Expression index) throws Exception {
-        /* Refactor this First... Then we'll have to think about Refactoring these two */
-        if(index.getType() == ExpressionType.MemberAccessExpression)
-            Result = evaluateMemberAccessExpression(Result, (MemberAccessExpression) index);
-        else
-            Result = getValue(Result, index, env);
-        return Result;
-    }
 
     private static EvalResult evaluateMemberAccessExpression(EvalResult Result, MemberAccessExpression index) {
         Environment objEnv = (Environment) Result._value;

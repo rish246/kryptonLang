@@ -1,4 +1,4 @@
-package com.Krypton.Utilities.BinaryOperators.ComparisonOperators;
+package com.Krypton.Utilities.BinaryOperators.ComparisonOperators.Utilities;
 
 import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
@@ -6,41 +6,40 @@ import com.Krypton.Syntax.PrimaryExpressions.BinaryExpression;
 import com.Krypton.TokenType;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.Environment;
-import com.Krypton.Utilities.Typing;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComparisonFunctionEvaluator {
+public class ComparsionOperationEvaluator {
     private final Expression _left;
     private final Expression _right;
     private final List<String> _diagnostics = new ArrayList<>();
-    private final Comparator _comparator;
+    private Comparator _comparator;
     private final int _lineNumber;
     private final TokenType _operator;
 
 
-    ComparisonFunctionEvaluator(BinaryExpression expression, ComparisonFunc fn) {
+    public ComparsionOperationEvaluator(BinaryExpression expression) {
         _left = expression.getLeft();
         _right = expression.getRight();
-        _comparator = new Comparator(fn);
         _operator = expression.getOperatorToken();
         _lineNumber = expression.getLineNumber();
     }
 
     // If (leftRes -> rightRes)
-    public EvalResult evaluate(Environment env) throws Exception {
+    public EvalResult evaluate(ComparisonFunc fn, Environment env) throws Exception {
+//        _comparator = new Comparator();
         try {
             EvalResult leftRes = _left.evaluate(env);
             EvalResult rightRes = _right.evaluate(env);
-
-            if (_operator == TokenType.EqualityToken || _operator == TokenType.NotEqualsToken)
-                return _comparator.compareObjects(leftRes, rightRes);
-
-            if ( Typing.isFloatOrInt(leftRes) && Typing.isFloatOrInt(rightRes))
-                return _comparator.compareFloats(leftRes, rightRes);
-
-            throw new InvalidOperationException("Invalid operator '" + _operator + "' for type " + leftRes.getType() + " and " + rightRes.getType() + " at line number " + _lineNumber);
+            return new EvalResult(fn.compare(leftRes, rightRes), "boolean");
+//            if (_operator == TokenType.EqualityToken || _operator == TokenType.NotEqualsToken)
+//                return _comparator.compareObjects(fn, leftRes, rightRes);
+//
+//            if ( Typing.isFloatOrInt(leftRes) && Typing.isFloatOrInt(rightRes))
+//                return _comparator.compareFloats(fn, leftRes, rightRes);
+//
+//            throw new InvalidOperationException("Invalid operator '" + _operator + "' for type " + leftRes.getType() + " and " + rightRes.getType() + " at line number " + _lineNumber);
         }
         catch (InvalidOperationException e) {
             _diagnostics.add(e.getMessage());
@@ -57,3 +56,6 @@ public class ComparisonFunctionEvaluator {
         return _diagnostics;
     }
 }
+
+// Depending on dataTypes()
+// TheComparsionNeedsToBeIndividualToFunctionAndNotEvaluator

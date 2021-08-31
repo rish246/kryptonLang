@@ -17,6 +17,10 @@ public class IdentifierExpression extends Expression {
         _lexeme = lexeme;
     }
 
+    public String getLexeme() {
+        return _lexeme;
+    }
+
     @Override
     public void prettyPrint(String indent) {
         System.out.println(_lexeme);
