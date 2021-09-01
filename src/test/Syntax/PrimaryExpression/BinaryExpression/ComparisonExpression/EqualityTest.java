@@ -9,12 +9,14 @@ import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationEx
 import com.Krypton.Utilities.Environment;
 import org.junit.Before;
 import org.junit.Test;
+import test.TestUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class EqualityTest {
     protected Expression left;
@@ -200,6 +202,19 @@ public class EqualityTest {
         var equalityExpression = new BinaryExpression(left, TokenType.EqualityToken, right, dummyLineNumber);
         EvalResult result = equalityExpression.evaluate(env);
         assertEquals(result.getValue(), false);
+    }
+
+    @Test
+    public void testCompareInvalidExpressionsReturnsError() throws Exception {
+        left = TestUtil.Id("noParam");
+        right = TestUtil.Int(1);
+
+        var sumExpression = TestUtil.Equals(left, right);
+        try {
+            sumExpression.evaluate(env);
+        } catch (Exception e) {
+            assertTrue(sumExpression.getDiagnostics().size() > 0);
+        }
     }
 }
 

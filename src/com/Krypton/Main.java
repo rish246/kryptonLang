@@ -121,9 +121,13 @@ public class Main {
                 }
 
                 // We are trying to capture runtime exceptions
-                evaluateParseTree(parentEnv, result);
-
+                try {
+                    evaluateParseTree(parentEnv, result);
+                } catch (Exception e) {
+                    printDiagnostics(result.getDiagnostics());
+                }
             } catch (Exception e1) {
+
                 System.out.println(e1.getMessage());
             }
 

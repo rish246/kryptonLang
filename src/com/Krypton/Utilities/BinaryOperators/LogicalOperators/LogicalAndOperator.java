@@ -25,7 +25,7 @@ public class LogicalAndOperator implements LogicalBinaryOperator {
         _right = binExp.getRight();
         try {
             return evaluateLogicalOperatorUnder(env);
-        } catch (InvalidOperationException e) {
+        } catch (Exception e) {
             _diagnostics.addAll(_left.getDiagnostics());
             _diagnostics.addAll(_right.getDiagnostics());
             throw e;
@@ -34,7 +34,7 @@ public class LogicalAndOperator implements LogicalBinaryOperator {
 
     public EvalResult evaluateLogicalOperatorUnder(Environment env) throws Exception {
         EvalResult leftRes = evaluateExpression(_left, env);
-        if (Typing.isBoolAndFalse(leftRes))
+        if ( Typing.isBoolAndFalse(leftRes) )
             return new EvalResult(leftRes.getValue(), leftRes.getType());
 
         return evaluateExpression(_right, env);

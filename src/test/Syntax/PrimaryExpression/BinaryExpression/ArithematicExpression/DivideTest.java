@@ -10,8 +10,10 @@ import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationEx
 import com.Krypton.Utilities.Environment;
 import org.junit.Before;
 import org.junit.Test;
+import test.TestUtil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DivideTest {
     protected Expression left;
@@ -58,5 +60,18 @@ public class DivideTest {
         right = new NumberExpression(0, dummyLineNumber);
         var sumExpression = new BinaryExpression(left, TokenType.DivToken, right, dummyLineNumber);
         sumExpression.evaluate(env);
+    }
+
+    @Test
+    public void testAddInvalidExpressionsReturnsError() throws Exception {
+        left = TestUtil.Id("noParam");
+        right = TestUtil.Int(1);
+
+        var sumExpression = TestUtil.Divide(left, right);
+        try {
+            sumExpression.evaluate(env);
+        } catch (Exception e) {
+            assertTrue(sumExpression.getDiagnostics().size() > 0);
+        }
     }
 }

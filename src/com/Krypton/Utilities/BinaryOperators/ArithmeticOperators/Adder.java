@@ -24,7 +24,7 @@ public class Adder implements ArithmeticOperator {
         _lineNumber = exp.getLineNumber();
 
         try {
-            EvalResult leftRes = _left.evaluate(env);
+            EvalResult leftRes = _left.evaluate(env); // this should throw an error
             EvalResult rightRes = _right.evaluate(env);
             return operateOnValues(leftRes, rightRes);
         } catch (Exception e) {
@@ -93,16 +93,4 @@ public class Adder implements ArithmeticOperator {
         concatenatedList.addAll(rightListCopy);
         return new EvalResult(concatenatedList, "list");
     }
-
-
-
-//    @Override
-//    public EvalResult operateOn(Expression left, Expression right, Environment env) throws Exception {
-//        return null; // We'll have to think about iit
-//    }
-//
-//    @Override
-//    public List<String> getDiagnostics() {
-//        return null;
-//    }
 }

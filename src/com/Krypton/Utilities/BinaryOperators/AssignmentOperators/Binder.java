@@ -10,6 +10,7 @@ import com.Krypton.Syntax.Values.ObjectExpression;
 import com.Krypton.Syntax.Values.StringExpression;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.BadAssignmentException;
 import com.Krypton.Utilities.Environment;
+import com.Krypton.Utilities.Printer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ public class Binder {
         if (leftSide.getType() == ExpressionType.ArrayAccessExpression)
             return bind((ArrayAccessExpression) leftSide, rightRes, env);
 
+
         throw new BadAssignmentException("Invalid operator '=' for type " + leftSide.getType() + " and " + rightRes.getType() + " at line number " + _lineNumber);
     }
 
@@ -65,7 +67,6 @@ public class Binder {
     }
 
     private EvalResult bind(ObjectExpression leftSide, EvalResult rightRes, Environment env) throws Exception {
-
         Map<Expression, Expression> leftObject = leftSide.getContents();
         Map<String, EvalResult> rightObject = (HashMap) rightRes.getValue();
 
@@ -75,7 +76,7 @@ public class Binder {
                 Expression leftValue = leftObject.get(key);
                 EvalResult rightValue = rightObject.get(keyString);
                 if (rightValue == null)
-                    throw new NullPointerException(keyString);
+                    throw new BadAssignmentException(keyString);
 
                 bindExpressionToEvalResult(leftValue, rightValue, env);
             }

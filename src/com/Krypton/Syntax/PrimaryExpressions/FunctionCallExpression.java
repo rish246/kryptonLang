@@ -39,16 +39,16 @@ public class FunctionCallExpression extends Expression {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
+        // f
+        //
+        EvalResult function = _function.evaluate(env);
+        ClosureExpression functionClosure = (ClosureExpression) function.getValue();
         try {
-            EvalResult function = _function.evaluate(env);
-            ClosureExpression functionClosure = (ClosureExpression) function.getValue();
             Environment functionEvalEnv = functionClosure.bindFormalArgsWithActualArgs(_actualArguments, env);
             return functionClosure.evaluate(functionEvalEnv);
         } catch (Exception e) {
             _diagnostics.add(e.getMessage());
-            _diagnostics.addAll(_function.getDiagnostics());
-            // Add all the diagnostics from functionClosure
-
+            _diagnostics.addAll(functionClosure.getDiagnostics()); // Error reporting by functions -> Take care next
             throw e;
         }
     }

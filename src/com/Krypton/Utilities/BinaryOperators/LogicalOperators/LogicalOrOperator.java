@@ -25,7 +25,7 @@ public class LogicalOrOperator implements LogicalBinaryOperator {
         _right = binExp.getRight();
         try {
             return evaluateLogicalOperatorUnder(env);
-        } catch (InvalidOperationException e) {
+        } catch (Exception e) {
             _diagnostics.addAll(_left.getDiagnostics());
             _diagnostics.addAll(_right.getDiagnostics());
             throw e;

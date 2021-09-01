@@ -23,13 +23,9 @@ public class LambdaExpression extends Expression {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-
         Environment closureEnv = new Environment(env._table, env._ParentEnv);
-
         ClosureExpression funcClosure = new ClosureExpression(null, _body, closureEnv, _formalArgs, getLineNumber());
-
         return new EvalResult(funcClosure, "Closure");
-
     }
 
     public void prettyPrint(String indent) {

@@ -38,6 +38,5 @@ public class MemberAccessExpression extends Expression {
     }
 
 }
-// a.m() ->
-//  -> a.m -> It will be evaluated in an environment where this will be bound to a
-//      a.m
+
+// Do this after implementing class instance

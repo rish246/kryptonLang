@@ -12,8 +12,10 @@ import com.Krypton.Utilities.Environment;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import test.TestUtil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SubtractTest {
     protected Expression left;
@@ -62,4 +64,16 @@ public class SubtractTest {
         expression.evaluate(env);
     }
 
+    @Test
+    public void testAddInvalidExpressionsReturnsError() throws Exception {
+        left = TestUtil.Id("noParam");
+        right = TestUtil.Int(1);
+
+        var sumExpression = TestUtil.Subtract(left, right);
+        try {
+            sumExpression.evaluate(env);
+        } catch (Exception e) {
+            assertTrue(sumExpression.getDiagnostics().size() > 0);
+        }
+    }
 }

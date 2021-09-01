@@ -8,11 +8,13 @@ import com.Krypton.TokenType;
 import com.Krypton.Utilities.Environment;
 import org.junit.Before;
 import org.junit.Test;
+import test.TestUtil;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AddTest {
     protected Expression left;
@@ -162,6 +164,18 @@ public class AddTest {
 
     }
 
+    @Test
+    public void testAddInvalidExpressionsReturnsError() throws Exception {
+        left = TestUtil.Id("noParam");
+        right = TestUtil.Int(1);
+
+        var sumExpression = TestUtil.Add(left, right);
+        try {
+            sumExpression.evaluate(env);
+        } catch (Exception e) {
+            assertTrue(sumExpression.getDiagnostics().size() > 0);
+        }
+    }
 }
     // Minor refactor first
 

@@ -5,7 +5,6 @@ import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Token;
 import com.Krypton.Utilities.Environment;
-import com.Krypton.Utilities.Evaluator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +15,10 @@ public class CreateClassInstance extends Expression {
     public Expression _constructorCall;
     public List<String> _diagnostics = new ArrayList<>();
     public Environment _objectState;
-    private Evaluator evaluator;
     public CreateClassInstance(Token className, Expression initConstructorCall, int lineNumber) {
         super(ExpressionType.ClassInstanceExpression, lineNumber);
         _className = className;
         _constructorCall = initConstructorCall;
-        evaluator = new Evaluator(lineNumber);
     }
 
     @Override

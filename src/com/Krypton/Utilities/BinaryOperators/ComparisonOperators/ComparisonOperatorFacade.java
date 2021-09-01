@@ -17,7 +17,6 @@ public class ComparisonOperatorFacade implements BinaryOperator {
     private final TokenType _operatorToken;
     ComparsionOperationEvaluator _evaluator;
 
-
     public ComparisonOperatorFacade(TokenType operatorToken) {
         _operatorToken = operatorToken;
     }
@@ -28,7 +27,7 @@ public class ComparisonOperatorFacade implements BinaryOperator {
         _evaluator = new ComparsionOperationEvaluator(binExp);
         try {
             return _evaluator.evaluate(comparisonFunc, env);
-        } catch (InvalidOperationException e) {
+        } catch (Exception e) {
             _diagnostics.addAll(_evaluator.getDiagnostics());
             throw e;
         }

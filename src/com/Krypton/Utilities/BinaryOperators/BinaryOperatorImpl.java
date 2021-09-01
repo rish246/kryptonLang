@@ -61,8 +61,8 @@ public class BinaryOperatorImpl implements BinaryOperator {
         binaryOperator = getRightOperator(binaryExpression); // We have our LogicalBinaryOperatorHere
         try {
             return binaryOperator.operateOn(binaryExpression, env);
-        } catch (InvalidOperationException e) {
-            addDiagnostics(binaryOperator.getDiagnostics());
+        } catch (Exception e) {
+            _diagnostics.addAll(binaryOperator.getDiagnostics());
             throw e;
         }
     }

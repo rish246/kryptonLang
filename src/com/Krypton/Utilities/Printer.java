@@ -46,5 +46,9 @@ public class Printer {
             return bodyOp._value;
         }
     }
-    
+
+    public static void printDiagnostics(List<String> Diagnostics) {
+        for(String diagnostic : Diagnostics)
+            System.out.println(diagnostic);
+    }
 }

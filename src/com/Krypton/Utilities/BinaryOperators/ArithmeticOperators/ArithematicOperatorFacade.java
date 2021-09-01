@@ -19,12 +19,12 @@ public class ArithematicOperatorFacade implements BinaryOperator {
 
     @Override
     public EvalResult operateOn(BinaryExpression binExp, Environment env) throws Exception {
-        ArithmeticOperator arithematicOperator = getRightOperator();
+        ArithmeticOperator arithmeticOperator = getRightOperator();
 
         try {
-            return arithematicOperator.operateOn(binExp, env);
+            return arithmeticOperator.operateOn(binExp, env);
         } catch (Exception e) {
-            _diagnostics.addAll(arithematicOperator.getDiagnostics());
+            _diagnostics.addAll(arithmeticOperator.getDiagnostics());
             _diagnostics.add(e.getMessage());
             throw e;
         }

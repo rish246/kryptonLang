@@ -93,20 +93,29 @@ public class FunctionCallTest {
     @Test
     public void testFunctionCallReturnsCorrectErrorMessage() throws Exception {
         /*
-            f(a) { return x; } - raise error
+            f(a) { noParam = noParam + 1; } - raise error
          */
         String funcName = "increment";
-        var functionBody = new ReturnStatement(Add(Id("noParam"), Int(1)), dummyLineNumber);
+        var functionBody = Assign(Id("noParam11"), Add(Id("noParam11"), Int(1)));
         List<Expression> formalArgs = Arrays.asList(Id("a"));
         incrementFunction = new FunctionStatement(funcName, functionBody, formalArgs, dummyLineNumber);
 
         List<Expression> actualArgs = Arrays.asList(Int(1));
         incrementFunction.evaluate(env);
         var functionCall = new FunctionCallExpression(Id("increment"), actualArgs, dummyLineNumber);
-        functionCall.evaluate(env);
-        assertTrue(functionCall.getDiagnostics().size() > 0);
+        try {
+            functionCall.evaluate(env);
+        } catch (Exception e) {
+        }
+        finally {
+            assertTrue(functionCall.getDiagnostics().size() > 0);
+        }
     }
 
+
+    private BinaryExpression Assign(Expression left, Expression right) {
+        return new BinaryExpression(left, TokenType.AssignmentToken, right, dummyLineNumber);
+    }
 
 
     private ReturnStatement Return() {
@@ -117,6 +126,7 @@ public class FunctionCallTest {
         return new ReturnStatement(body, dummyLineNumber);
     }
 
+    // we are not handling the diagnostics in left and right exp
 
 
     private IfStatement If() {

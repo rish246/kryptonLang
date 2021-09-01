@@ -10,8 +10,10 @@ import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationEx
 import com.Krypton.Utilities.Environment;
 import org.junit.Before;
 import org.junit.Test;
+import test.TestUtil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ModuloTest {
     protected Expression left;
@@ -45,5 +47,18 @@ public class ModuloTest {
         right = new FloatExpression(0.3f, dummyLineNumber);
         var moduloExpression = new BinaryExpression(left, TokenType.ModuloToken, right, dummyLineNumber);
         moduloExpression.evaluate(env);
+    }
+
+    @Test
+    public void testAddInvalidExpressionsReturnsError() throws Exception {
+        left = TestUtil.Id("noParam");
+        right = TestUtil.Int(1);
+
+        var sumExpression = TestUtil.Modulo(left, right);
+        try {
+            sumExpression.evaluate(env);
+        } catch (Exception e) {
+            assertTrue(sumExpression.getDiagnostics().size() > 0);
+        }
     }
 }

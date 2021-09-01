@@ -11,8 +11,10 @@ import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationEx
 import com.Krypton.Utilities.Environment;
 import org.junit.Before;
 import org.junit.Test;
+import test.TestUtil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LogicalAndTest {
     protected Expression left;
@@ -87,5 +89,18 @@ public class LogicalAndTest {
         var logicalAndExpression = new BinaryExpression(left, TokenType.LogicalAndToken, right, dummyLineNumber);
         EvalResult result = logicalAndExpression.evaluate(env);
         System.out.println(result.getValue());
+    }
+
+    @Test
+    public void testCompareInvalidExpressionsReturnsError() throws Exception {
+        left = TestUtil.Id("noParam");
+        right = TestUtil.Int(1);
+
+        var sumExpression = TestUtil.LogicalAnd(left, right);
+        try {
+            sumExpression.evaluate(env);
+        } catch (Exception e) {
+            assertTrue(sumExpression.getDiagnostics().size() > 0);
+        }
     }
 }

@@ -11,8 +11,10 @@ import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationEx
 import com.Krypton.Utilities.Environment;
 import org.junit.Before;
 import org.junit.Test;
+import test.TestUtil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LessThanTest {
     protected Expression left;
@@ -65,6 +67,19 @@ public class LessThanTest {
             lessThanExpression.evaluate(env);
         } catch (InvalidOperationException e) {
             assertEquals(e.getMessage(), expectedMessage);
+        }
+    }
+
+    @Test
+    public void testCompareInvalidExpressionsReturnsError() throws Exception {
+        left = TestUtil.Id("noParam");
+        right = TestUtil.Int(1);
+
+        var sumExpression = TestUtil.LessThan(left, right);
+        try {
+            sumExpression.evaluate(env);
+        } catch (Exception e) {
+            assertTrue(sumExpression.getDiagnostics().size() > 0);
         }
     }
 }

@@ -29,13 +29,12 @@ public class ClosureExpression extends Expression {
 
     public EvalResult evaluate(Environment env) throws Exception {
         try {
-//            _closureEnv._ParentEnv = env; /// This is technically wrong
             return _functionBody.evaluate(env);
         } catch (Exception e) {
             _diagnostics.add(e.getMessage());
             _diagnostics.addAll(_functionBody.getDiagnostics());
+            throw e;
         }
-        return new EvalResult(null, "functionExpression");
     }
 
     public Environment bindFormalArgsWithActualArgs(List<Expression> actualArgs, Environment env) throws Exception {
@@ -55,6 +54,7 @@ public class ClosureExpression extends Expression {
         catch (Exception e) {
             _diagnostics.add(e.getMessage());
             _diagnostics.addAll(binder.getDiagnostics());
+            _diagnostics.addAll(_functionBody.getDiagnostics());
             throw e;
         }
     }

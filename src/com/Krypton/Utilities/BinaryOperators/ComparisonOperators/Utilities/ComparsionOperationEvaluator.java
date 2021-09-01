@@ -6,6 +6,7 @@ import com.Krypton.Syntax.PrimaryExpressions.BinaryExpression;
 import com.Krypton.TokenType;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.Environment;
+import com.Krypton.Utilities.Printer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +29,10 @@ public class ComparsionOperationEvaluator {
 
     // If (leftRes -> rightRes)
     public EvalResult evaluate(ComparisonFunc fn, Environment env) throws Exception {
-//        _comparator = new Comparator();
         try {
             EvalResult leftRes = _left.evaluate(env);
             EvalResult rightRes = _right.evaluate(env);
             return new EvalResult(fn.compare(leftRes, rightRes), "boolean");
-//            if (_operator == TokenType.EqualityToken || _operator == TokenType.NotEqualsToken)
-//                return _comparator.compareObjects(fn, leftRes, rightRes);
-//
-//            if ( Typing.isFloatOrInt(leftRes) && Typing.isFloatOrInt(rightRes))
-//                return _comparator.compareFloats(fn, leftRes, rightRes);
-//
-//            throw new InvalidOperationException("Invalid operator '" + _operator + "' for type " + leftRes.getType() + " and " + rightRes.getType() + " at line number " + _lineNumber);
         }
         catch (InvalidOperationException e) {
             _diagnostics.add(e.getMessage());

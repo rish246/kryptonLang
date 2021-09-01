@@ -10,11 +10,13 @@ import com.Krypton.Utilities.Environment;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import test.TestUtil;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MultiplyTest {
     protected Expression left;
@@ -93,6 +95,18 @@ public class MultiplyTest {
         prodExpression.evaluate(env);
     }
 
+    @Test
+    public void testAddInvalidExpressionsReturnsError() throws Exception {
+        left = TestUtil.Id("noParam");
+        right = TestUtil.Int(1);
+
+        var sumExpression = TestUtil.Multiply(left, right);
+        try {
+            sumExpression.evaluate(env);
+        } catch (Exception e) {
+            assertTrue(sumExpression.getDiagnostics().size() > 0);
+        }
+    }
 }
 
 /*

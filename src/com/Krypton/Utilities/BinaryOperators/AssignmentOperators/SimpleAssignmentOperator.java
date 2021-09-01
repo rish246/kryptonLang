@@ -36,6 +36,6 @@ public class SimpleAssignmentOperator implements BinaryOperator {
 
     @Override
     public List<String> getDiagnostics() {
-        return null;
+        return _diagnostics;
     }
 }

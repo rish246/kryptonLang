@@ -5,8 +5,8 @@ import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Syntax.Statement;
 import com.Krypton.SyntaxTree;
+import com.Krypton.Utilities.BinaryOperators.AssignmentOperators.Binder;
 import com.Krypton.Utilities.Environment;
-import com.Krypton.Utilities.Evaluator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ public class ForEachStatement extends Statement {
     public Expression _iterator;
     public Expression _iterable;
     public SyntaxTree _body;
-    private Evaluator evaluator;
+    private Binder _binder;
     public List<String> _diagnostics = new ArrayList<>();
 
     public ForEachStatement(Expression iterator, Expression iterable, SyntaxTree body, int lineNumber){
@@ -25,16 +25,17 @@ public class ForEachStatement extends Statement {
         _iterator = iterator;
         _iterable = iterable;
         _body = body;
-        evaluator = new Evaluator(lineNumber);
+        _binder = new Binder(lineNumber);
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
         EvalResult ourIterable = _iterable.evaluate(env);
         _diagnostics.addAll(_iterable.getDiagnostics());
-        if(_diagnostics.size() > 0) {
+
+        if (_diagnostics.size() > 0) {
             return null;
         }
-        if(ourIterable._type == "list" || ourIterable._type == "object") {
+        if ( ourIterable._type.equals("list") || ourIterable._type.equals("object") ) {
             return Bind(_iterator, env, ourIterable);
         }
         else {
@@ -49,11 +50,11 @@ public class ForEachStatement extends Statement {
 
     private EvalResult Bind(Expression left, Environment env, EvalResult right) throws Exception {
 
-        if(right._type == "list") {
+        if( right._type.equals("list") ) {
             return iterateList(left, env, right);
         }
 
-        if(right._type == "object") {
+        if( right._type.equals("object") ) {
             return iterateObject(left, env, right);
         }
         return null;
@@ -64,7 +65,7 @@ public class ForEachStatement extends Statement {
 
         for (EvalResult element : ourList) {
 //            AssignmentExpression.Bind(_iterator, element, env, _diagnostics, getLineNumber());
-            evaluator.Bind(_iterator, element, env);
+            _binder.bindExpressionToEvalResult(_iterator, element, env);
             EvalResult bodyResult = _body.evaluate(env);
 
             _diagnostics.addAll(_body.getDiagnostics());
@@ -85,7 +86,7 @@ public class ForEachStatement extends Statement {
 
         for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
             EvalResult keyValuePair = getKeyValuePair(binding);
-            evaluator.Bind(_iterator, keyValuePair, env);
+            _binder.bindExpressionToEvalResult(_iterator, keyValuePair, env);
 
             if(_diagnostics.size() > 0)
                 return null;
