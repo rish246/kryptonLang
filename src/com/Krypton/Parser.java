@@ -6,7 +6,10 @@ import com.Krypton.Syntax.Statement;
 import com.Krypton.Syntax.Statements.*;
 import com.Krypton.Syntax.Values.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 class Parser {
@@ -524,26 +527,21 @@ class Parser {
     private Expression parsePostFixExpression() {
         Expression left = parsePrimaryExp();
 
-        while(CurrentToken().getType() == TokenType.OpenSquareBracketToken) {
-            ListExpression index = parseListExpression();
-            left = new ArrayAccessExpression(left, index, CurrentLineNumber());
+        while(CurrentToken().getType() == TokenType.OpenSquareBracketToken
+        ||    CurrentToken().getType() == TokenType.OpenParensToken) {
+            if (CurrentToken().getType() == TokenType.OpenSquareBracketToken) {
+                ListExpression index = parseListExpression();
+                left = new ArrayAccessExpression(left, index, CurrentLineNumber());
+            }
+            else if(CurrentToken().getType() == TokenType.OpenParensToken) {
+                match(TokenType.OpenParensToken);
+                List<Expression> actualArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
+                match(TokenType.ClosedParensToken);
+                left = new FunctionCallExpression(left, actualArgs, CurrentLineNumber());
+            }
         }
-
         return left;
     }
-
-//    private ListExpression parseArrayAccessExpression(Token currentToken) {
-//        while(CurrentToken()._type == TokenType.OpenSquareBracketToken) {
-//            return parseListExpression();
-//        }
-//
-//        if(indices.size() == 0) {
-//            _diagnostics.add("Subscript operator cannot be empty");
-//            return null;
-//        }
-//
-//        return new ArrayAccessExpression(currentToken, indices, CurrentLineNumber());
-//    }
 
     private LambdaExpression parseLambdaExpression() {
         match(TokenType.LambdaExpressionToken);

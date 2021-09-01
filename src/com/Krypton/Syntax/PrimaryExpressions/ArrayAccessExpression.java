@@ -51,10 +51,10 @@ public class ArrayAccessExpression extends Expression {
             extractor = Extractor.getRightExtractor(arrayBody.getType(), _lineNumber);
             return extractor.extract(arrayBody, indices);
         } catch (Exception e) {
+            _diagnostics.add(e.getMessage());
             _diagnostics.addAll(_body.getDiagnostics());
             _diagnostics.addAll(_index.getDiagnostics());
             _diagnostics.addAll(extractor.getDiagnostics());
-            _diagnostics.add(e.getMessage());
             throw e;
         }
     }

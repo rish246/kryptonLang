@@ -4,6 +4,7 @@ import com.Krypton.EvalResult;
 import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.SyntaxTree;
+import com.Krypton.Utilities.BinaryOperators.AssignmentOperators.Binder;
 import com.Krypton.Utilities.Environment;
 
 import java.util.ArrayList;
@@ -25,14 +26,37 @@ public class ClosureExpression extends Expression {
         _formalArgs = formalArgs;
     }
 
+
     public EvalResult evaluate(Environment env) throws Exception {
         try {
-            System.out.println("I am here");
-            _functionBody.evaluate(_closureEnv);
+//            _closureEnv._ParentEnv = env; /// This is technically wrong
+            return _functionBody.evaluate(env);
         } catch (Exception e) {
+            _diagnostics.add(e.getMessage());
             _diagnostics.addAll(_functionBody.getDiagnostics());
         }
         return new EvalResult(null, "functionExpression");
+    }
+
+    public Environment bindFormalArgsWithActualArgs(List<Expression> actualArgs, Environment env) throws Exception {
+        Environment functionArgsEnv = new Environment(null);
+        Binder binder = new Binder(getLineNumber());
+
+        try {
+            for(int i=0; i<actualArgs.size(); i++) {
+                Expression curActualArg = actualArgs.get(i);
+                Expression curFormalArg = _formalArgs.get(i);
+                EvalResult actualArgRes = curActualArg.evaluate(env);
+                binder.bindExpressionToEvalResult(curFormalArg, actualArgRes, functionArgsEnv);
+            }
+            functionArgsEnv._ParentEnv = _closureEnv;
+            return functionArgsEnv;
+        }
+        catch (Exception e) {
+            _diagnostics.add(e.getMessage());
+            _diagnostics.addAll(binder.getDiagnostics());
+            throw e;
+        }
     }
 
     public void prettyPrint(String indent) {
@@ -40,8 +64,6 @@ public class ClosureExpression extends Expression {
         System.out.println(indent + "|");
         System.out.print(indent + "|-");_functionBody.prettyPrint(indent + "    ");
     }
-
-    // Do i want the refactor... Absolutely yes
 
     public List<String> getDiagnostics() {
         return _diagnostics;

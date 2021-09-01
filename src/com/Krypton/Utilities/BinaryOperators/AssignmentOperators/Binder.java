@@ -11,22 +11,32 @@ import com.Krypton.Syntax.Values.StringExpression;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.BadAssignmentException;
 import com.Krypton.Utilities.Environment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Binder {
     private int _lineNumber;
+    private List<String> _diagnostics = new ArrayList<>();
+
     public Binder(int lineNumber) {
         _lineNumber = lineNumber;
     }
 
     public EvalResult bind(Expression leftSide, Expression rightSide, Environment env) throws Exception {
-        EvalResult rightRes = rightSide.evaluate(env);
-        return bindExpressionToEvalResult(leftSide, rightRes, env);
+        try {
+            EvalResult rightRes = rightSide.evaluate(env);
+            return bindExpressionToEvalResult(leftSide, rightRes, env);
+        } catch (Exception e) {
+            _diagnostics.add(e.getMessage());
+            _diagnostics.addAll(rightSide.getDiagnostics());
+            _diagnostics.addAll(leftSide.getDiagnostics());
+            throw e;
+        }
     }
 
-    private EvalResult bindExpressionToEvalResult(Expression leftSide, EvalResult rightRes,Environment env) throws Exception {
+    public EvalResult bindExpressionToEvalResult(Expression leftSide, EvalResult rightRes, Environment env) throws Exception {
         if ( leftSide.getType() == ExpressionType.IdentifierExpression)
             return bind((IdentifierExpression) leftSide, rightRes, env);
 
@@ -41,6 +51,11 @@ public class Binder {
 
         throw new BadAssignmentException("Invalid operator '=' for type " + leftSide.getType() + " and " + rightRes.getType() + " at line number " + _lineNumber);
     }
+
+    public List<String> getDiagnostics() {
+        return _diagnostics;
+    }
+
 
     private EvalResult bind(ArrayAccessExpression leftSide, EvalResult rightRes, Environment env) throws Exception {
         EvalResult leftRes = leftSide.evaluate(env);
@@ -90,6 +105,7 @@ public class Binder {
         String identifierName = leftExp.getLexeme();
         return env.set(identifierName, rightRes);
     }
+
 
 
 }
