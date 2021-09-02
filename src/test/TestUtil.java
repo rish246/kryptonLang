@@ -96,7 +96,9 @@ public class TestUtil {
         return new BinaryExpression(left, TokenType.LogicalOrToken, right, dummyLineNumber);
     }
 
-
+    public static BinaryExpression Assign(Expression left, Expression right) {
+        return new BinaryExpression(left, TokenType.AssignmentToken, right, dummyLineNumber);
+    }
 
 
 }

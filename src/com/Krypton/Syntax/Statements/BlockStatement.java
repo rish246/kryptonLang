@@ -21,29 +21,28 @@ public class BlockStatement extends Statement {
     public EvalResult evaluate(Environment env) throws Exception {
         // Create a new Env and as a parent, add the env
         Environment currentBlockEnv = new Environment(env);
-
         for(SyntaxTree exp : _expressionList) {
-            if(exp == null) {
+            if ( exp == null )
                 return new EvalResult(null, "null");
-            }
 
-            EvalResult curExpResult = exp.evaluate(currentBlockEnv);
-            _diagnostics.addAll(exp.getDiagnostics());
-
-            if(_diagnostics.size() > 0) {
-                _diagnostics.add("Error in the block at line number " + getLineNumber());
-                return null;
-            }
-
-            if(exp.isStatement() && curExpResult != null){
-                if(curExpResult._value != null) {
-                    return curExpResult;
-                }
-            }
-
+            EvalResult curExpResult = evaluateCurTree(currentBlockEnv, exp);
+            if ( !curExpResult.equals(new EvalResult(null, "null")) )
+                return curExpResult;
         }
-
         return new EvalResult(null, "null");
+    }
+
+    private EvalResult evaluateCurTree(Environment currentBlockEnv, SyntaxTree exp) throws Exception {
+        try {
+            EvalResult curExpResult = exp.evaluate(currentBlockEnv);
+            if ( exp.isStatement() && curExpResult != null ) {
+                if ( curExpResult.getValue() != null ) return curExpResult;
+            }
+            return new EvalResult(null, "null");
+        } catch (Exception e) {
+            _diagnostics.addAll(exp.getDiagnostics());
+            throw e;
+        }
     }
 
     public void prettyPrint(String indent) {

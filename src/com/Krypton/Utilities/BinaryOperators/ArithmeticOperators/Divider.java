@@ -52,5 +52,7 @@ public class Divider implements ArithmeticOperator {
 
         return new EvalResult(Typing.parseFloat(left) / Typing.parseFloat(right), "float");
     }
-
 }
+/*
+
+ */

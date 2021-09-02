@@ -6,6 +6,7 @@ import com.Krypton.Syntax.Expression;
 import com.Krypton.Syntax.Statement;
 import com.Krypton.SyntaxTree;
 import com.Krypton.Utilities.BinaryOperators.AssignmentOperators.Binder;
+import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.Environment;
 
 import java.util.ArrayList;
@@ -29,27 +30,29 @@ public class ForEachStatement extends Statement {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-        EvalResult ourIterable = _iterable.evaluate(env);
-        _diagnostics.addAll(_iterable.getDiagnostics());
+        try {
+            EvalResult ourIterable = _iterable.evaluate(env);
+            switch (ourIterable.getType()) {
+                case "list":
+                case "object":
+                case "string":
+                    return Bind(_iterator, env, ourIterable);
+                default:
+                    throw new InvalidOperationException("Object of type " + ourIterable.getType() + " is not iterable, error at line " + getLineNumber());
+            }
 
-        if (_diagnostics.size() > 0) {
-            return null;
+        } catch (InvalidOperationException e) {
+            _diagnostics.add(e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            _diagnostics.addAll(_iterable.getDiagnostics());
+            throw e;
         }
-        if ( ourIterable._type.equals("list") || ourIterable._type.equals("object") ) {
-            return Bind(_iterator, env, ourIterable);
-        }
-        else {
-            _diagnostics.add("Items of type " + ourIterable._type + " are not iterable");
-        }
-
-        return new EvalResult(null, "forEachExpression");
-
     }
 
     /////////////////////////////////////////////////////////////////////////////////
 
     private EvalResult Bind(Expression left, Environment env, EvalResult right) throws Exception {
-
         if( right._type.equals("list") ) {
             return iterateList(left, env, right);
         }
@@ -63,56 +66,46 @@ public class ForEachStatement extends Statement {
     private EvalResult iterateList(Expression _iterator, Environment env, EvalResult ourIterable) throws Exception {
         List<EvalResult> ourList = (List) ourIterable._value;
 
-        for (EvalResult element : ourList) {
-//            AssignmentExpression.Bind(_iterator, element, env, _diagnostics, getLineNumber());
-            _binder.bindExpressionToEvalResult(_iterator, element, env);
-            EvalResult bodyResult = _body.evaluate(env);
-
+        try {
+            for (EvalResult element : ourList) {
+                _binder.bindExpressionToEvalResult(_iterator, element, env);
+                EvalResult bodyResult = _body.evaluate(env);
+                if (!bodyResult.equals(new EvalResult(null, "null")))
+                    return bodyResult;
+            }
+            return new EvalResult(null, "null");
+        } catch (Exception e) {
             _diagnostics.addAll(_body.getDiagnostics());
-            if(_diagnostics.size() > 0) {
-                return null;
-            }
-
-            if(bodyResult._value != null) {
-                return bodyResult;
-            }
+            throw e;
         }
-        return null;
     }
 
     // Iterate through the object
     private EvalResult iterateObject(Expression left, Environment env, EvalResult ourIterable) throws Exception {
         Map<String, EvalResult> ourObject = (HashMap) ourIterable._value;
-
-        for(Map.Entry<String, EvalResult> binding : ourObject.entrySet()) {
-            EvalResult keyValuePair = getKeyValuePair(binding);
-            _binder.bindExpressionToEvalResult(_iterator, keyValuePair, env);
-
-            if(_diagnostics.size() > 0)
-                return null;
-
-            EvalResult bodyResult = _body.evaluate(env);
+        try {
+            for(String key : ourObject.keySet()) {
+                _binder.bindExpressionToEvalResult(_iterator, new EvalResult(key, "string"), env);
+                EvalResult bodyResult = _body.evaluate(env);
+                if(!bodyResult.equals(new EvalResult(null, "null")))
+                    return bodyResult;
+            }
+            return new EvalResult(null, "null");
+        } catch (Exception e) {
             _diagnostics.addAll(_body.getDiagnostics());
-
-            if(_diagnostics.size() > 0)
-                return null;
-
-            if(bodyResult._value != null)
-                return bodyResult;
-
+            throw e;
         }
-        return null;
     }
 
-    private EvalResult getKeyValuePair(Map.Entry<String, EvalResult> binding) {
-        EvalResult key = new EvalResult(binding.getKey(), "string");
-        EvalResult value = binding.getValue();
-
-        List<EvalResult> keyValueBinding = new ArrayList<>();
-        keyValueBinding.add(key);
-        keyValueBinding.add(value);
-        return new EvalResult(keyValueBinding, "list");
-    }
+//    private EvalResult getKeyValuePair(Map.Entry<String, EvalResult> binding) {
+//        EvalResult key = new EvalResult(binding.getKey(), "string");
+//        EvalResult value = binding.getValue();
+//
+//        List<EvalResult> keyValueBinding = new ArrayList<>();
+//        keyValueBinding.add(key);
+//        keyValueBinding.add(value);
+//        return new EvalResult(keyValueBinding, "list");
+//    }
 
     public void prettyPrint(String indent) {
         System.out.println("ForEachExpression");

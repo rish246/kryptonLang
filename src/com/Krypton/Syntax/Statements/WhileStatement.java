@@ -9,7 +9,6 @@ import com.Krypton.Utilities.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class WhileStatement extends Statement {
     public Expression _conditionalBranch;
@@ -25,31 +24,24 @@ public class WhileStatement extends Statement {
 
     public EvalResult evaluate(Environment env) throws Exception {
         // evaluate conditionalBranch
-        EvalResult condBranchResult = _conditionalBranch.evaluate(env);
-        _diagnostics.addAll(_conditionalBranch.getDiagnostics());
+        try {
+            EvalResult condBranchResult = _conditionalBranch.evaluate(env);
+            if (!condBranchResult.getType().equals("boolean"))
+                throw new Exception("Conditional expression in while loop should be of type 'boolean', instead got " + condBranchResult.getType() + ", error at line number " + getLineNumber());
 
-        if(_diagnostics.size() > 0)
-            return null;
+            while((boolean) _conditionalBranch.evaluate(env).getValue()) {
+                EvalResult bodyResult = _body.evaluate(env);
+                if (!bodyResult.equals(new EvalResult(null, "null")))
+                    return bodyResult;
+            }
 
-        if (!condBranchResult._type.equals("boolean")) {
-            _diagnostics.add("The conditional branch in while expression need to be of type boolean"+ " at line number " + getLineNumber());
-            return null;
-        }
-
-        while((boolean) _conditionalBranch.evaluate(env)._value) {
-            EvalResult bodyResult = _body.evaluate(env);
+            return new EvalResult(null, "null");
+        } catch (Exception e) {
+            _diagnostics.addAll(_conditionalBranch.getDiagnostics());
             _diagnostics.addAll(_body.getDiagnostics());
-            if(_diagnostics.size() > 0) {
-                return null;
-            }
-
-            if(bodyResult._value != null && !Objects.equals(bodyResult._type, "null")) {
-                return bodyResult;
-            }
+            _diagnostics.add(e.getMessage());
+            throw e;
         }
-
-        return new EvalResult(null, "null");
-
     }
 
     public void prettyPrint(String indent) {

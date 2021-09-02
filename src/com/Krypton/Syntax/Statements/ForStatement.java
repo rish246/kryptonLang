@@ -1,12 +1,11 @@
 package com.Krypton.Syntax.Statements;
 
 import com.Krypton.EvalResult;
-import com.Krypton.Syntax.Expression;
 import com.Krypton.ExpressionType;
+import com.Krypton.Syntax.Expression;
 import com.Krypton.Syntax.Statement;
 import com.Krypton.SyntaxTree;
 import com.Krypton.Utilities.Environment;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,48 +27,29 @@ public class ForStatement extends Statement {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-        // evaluate conditionalBranch
-        // Create a new env
-        Environment newEnv = new Environment(env);
 
-        _initializationCond.evaluate(newEnv);
-        _diagnostics.addAll(_initializationCond.getDiagnostics());
+        try {
+            Environment newEnv = new Environment(env);
+            _initializationCond.evaluate(newEnv);
+            EvalResult haltCondResult = _haltingCondition.evaluate(newEnv);
 
-        EvalResult haltCondResult = _haltingCondition.evaluate(newEnv);
-        _diagnostics.addAll(_haltingCondition.getDiagnostics());
+            while((boolean)haltCondResult.getValue()) {
+                EvalResult bodyResult = _body.evaluate(newEnv);
 
-        if(_diagnostics.size() > 0) {
-            _diagnostics.add("Error in the for loop body"+ " at line number " + getLineNumber());
-            return null;
-        }
+                if(!bodyResult.equals(new EvalResult(null, "null")))
+                    return bodyResult;
 
-        while((boolean)haltCondResult._value) {
-            EvalResult bodyResult = _body.evaluate(newEnv);
-            _diagnostics.addAll(_body.getDiagnostics());
-
-            if(bodyResult == null) {
-                return null;
+                _progressExp.evaluate(newEnv);
+                haltCondResult = _haltingCondition.evaluate(newEnv);
             }
-
-            if(bodyResult._value != null) {
-                return bodyResult;
-            }
-
-            _progressExp.evaluate(newEnv);
-            _diagnostics.addAll(_progressExp.getDiagnostics());
-
-
-            haltCondResult = _haltingCondition.evaluate(newEnv);
+            return new EvalResult(null, "null");
+        } catch (Exception e) {
+            _diagnostics.addAll(_initializationCond.getDiagnostics());
             _diagnostics.addAll(_haltingCondition.getDiagnostics());
-
-            if(_diagnostics.size() > 0) {
-                return null;
-            }
-
+            _diagnostics.addAll(_body.getDiagnostics());
+            _diagnostics.addAll(_progressExp.getDiagnostics());
+            throw e;
         }
-
-        return new EvalResult(null, "null");
-
     }
 
     public void prettyPrint(String indent) {

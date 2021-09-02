@@ -26,47 +26,27 @@ public class IfStatement extends Statement {
 
     public EvalResult evaluate(Environment env) throws Exception {
         // evaluate conditionalBranch
-        EvalResult condBranchResult = _conditionalBranch.evaluate(env);
-        _diagnostics.addAll(_conditionalBranch.getDiagnostics());
+        try {
+            EvalResult condBranchResult = _conditionalBranch.evaluate(env);
+            if (!condBranchResult.getType().equals("boolean"))
+                throw new Exception("The conditional branch in if expression need to be of type boolean"+ " at line number " + getLineNumber());
 
-        if (condBranchResult == null) {
-            _diagnostics.add("Error in the conditional branch of the if Expression"+ " at line number " + getLineNumber());
-            return null;
-        }
-        else if (!condBranchResult._type.equals("boolean")) {
-            _diagnostics.add("The conditional branch in if expression need to be of type boolean"+ " at line number " + getLineNumber());
-            return null;
-        } else if(_thenBranch == null) {
-            _diagnostics.add("Then branch of If expression can not be null"+ " at line number " + getLineNumber());
-            return null;
-        }
+            boolean condBranchOutput = (boolean) condBranchResult.getValue();
 
+            if (condBranchOutput)
+                return _thenBranch.evaluate(env);
 
-        boolean condBranchOutput = (boolean) condBranchResult._value;
+            if (_elseBranch != null)
+                return _elseBranch.evaluate(env);
 
-        if (condBranchOutput) {
-            EvalResult ifExpResult = _thenBranch.evaluate(env);
+            return new EvalResult(null, "null");
+        } catch (Exception e) {
+            _diagnostics.addAll(_conditionalBranch.getDiagnostics());
             _diagnostics.addAll(_thenBranch.getDiagnostics());
-
-            if(_diagnostics.size() > 0) {
-                return null;
-            }
-
-            return ifExpResult;
-        }
-        else if (_elseBranch != null) {
-            EvalResult ifExpResult = _elseBranch.evaluate(env);
             _diagnostics.addAll(_elseBranch.getDiagnostics());
-            if(_diagnostics.size() > 0) {
-                return null;
-            }
-
-            return ifExpResult;
+            _diagnostics.add(e.getMessage());
+            throw e;
         }
-
-
-        return new EvalResult(null, "ifExpression");
-
     }
 
     public void prettyPrint(String indent) {
@@ -87,3 +67,7 @@ public class IfStatement extends Statement {
     }
 
 }
+
+/*
+    IfStatementNext()
+ */
