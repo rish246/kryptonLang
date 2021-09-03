@@ -32,7 +32,7 @@ public class ObjectAccessExpression {
         objectMap.put(Str("hello"), Str("world"));
         objectMap.put(Int(1), Str("tweet"));
         object = new ObjectExpression(objectMap, dummyLineNumber);
-        index = Index(Int(1));
+        index = Int(1);
         env = new Environment(null);
     }
 
@@ -55,27 +55,16 @@ public class ObjectAccessExpression {
         /*
             object[4] -> null
          */
-        index = Index(Int(4));
+        index = Int(4);
         var listAccessExp = new ArrayAccessExpression(object, index, dummyLineNumber);
         EvalResult result = listAccessExp.evaluate(env);
         assertEquals(result, NullRes()); // This is giving npe
     }
-//
-    @Test
-    public void testHandleMultipleIndicesSuccess() throws Exception {
-        /*
-            object[1, "hello"] = ["tweet", "world"]
-         */
-        index = new ListExpression(Arrays.asList(Int(1), Str("hello")), dummyLineNumber);
-        var listAccessExp = new ArrayAccessExpression(object, index, dummyLineNumber);
-        var result = listAccessExp.evaluate(env);
-        var expectedResult = new EvalResult(Arrays.asList(StrRes("tweet"), StrRes("world")), "list");
-        assertEquals(result, expectedResult);
-    }
+
 
     @Test(expected = InvalidOperationException.class)
-    public void testHandleEmptyIndexInvalidOperationException() throws Exception {
-        index = new ListExpression(Arrays.asList(), dummyLineNumber);
+    public void testHandleNullIndexInvalidOperationException() throws Exception {
+        index = Null();
         var listAccessExp = new ArrayAccessExpression(object, index, dummyLineNumber);
         listAccessExp.evaluate(env);
     }

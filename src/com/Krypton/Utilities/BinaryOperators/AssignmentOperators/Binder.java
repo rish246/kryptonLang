@@ -9,13 +9,12 @@ import com.Krypton.Syntax.PrimaryExpressions.MemberAccessExpression;
 import com.Krypton.Syntax.Values.ListExpression;
 import com.Krypton.Syntax.Values.ObjectExpression;
 import com.Krypton.Syntax.Values.StringExpression;
+import com.Krypton.Token;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.BadAssignmentException;
+import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.Environment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Binder {
     private int _lineNumber;
@@ -58,10 +57,16 @@ public class Binder {
     }
 
     private EvalResult bind(MemberAccessExpression leftSide, EvalResult rightRes, Environment env) throws Exception {
-        EvalResult leftRes = leftSide.evaluate(env);
-        leftRes._value = rightRes.getValue();
-        leftRes._type = rightRes.getType();
-        return leftRes;
+        Expression object = leftSide._object;
+        Token member = leftSide._memberName;
+        var memberExp = new StringExpression(member._lexeme, _lineNumber);
+        EvalResult bodyRes = object.evaluate(env);
+        switch (bodyRes.getType()) {
+            case "object":
+                return updateObjectValue(rightRes, env, bodyRes, memberExp);
+            default:
+                throw new InvalidOperationException("Object of type " + object.getType() + " is not updatable, error at line number " + _lineNumber);
+        }
     }
 
     public List<String> getDiagnostics() {
@@ -69,11 +74,39 @@ public class Binder {
     }
 
     private EvalResult bind(ArrayAccessExpression leftSide, EvalResult rightRes, Environment env) throws Exception {
-        EvalResult leftRes = leftSide.evaluate(env);
-        leftRes._value = rightRes.getValue();
-        leftRes._type = rightRes.getType();
-        return leftRes;
+        Expression body = leftSide._body;
+        Expression index = leftSide.getIndex();
+        EvalResult bodyRes = body.evaluate(env);
+        switch (bodyRes.getType()) {
+            case "object":
+                return updateObjectValue(rightRes, env, bodyRes, index);
+            case "list":
+                return updateListIthValue(rightRes, env, bodyRes, index);
+            default:
+                throw new InvalidOperationException("Object of type " + body.getType() + " is not updatable, error at line number " + _lineNumber);
+        }
     }
+
+    private EvalResult updateObjectValue(EvalResult rightRes, Environment env, EvalResult bodyRes, Expression index) throws Exception {
+        Map<String, EvalResult> bodyMap = (HashMap) bodyRes.getValue();
+        EvalResult indexRes = index.evaluate(env);
+        try {
+            return bodyMap.put(indexRes.getValue().toString(), rightRes);
+        } catch (Exception e) {
+            _diagnostics.add("Expression of type " + indexRes.getType() + " is not hashable, error at line number " + _lineNumber);
+            throw e;
+        }
+    }
+
+    private EvalResult updateListIthValue(EvalResult rightRes, Environment env, EvalResult bodyRes, Expression index) throws Exception {
+        List<EvalResult> leftList = (List) bodyRes.getValue();
+        EvalResult indexRes = index.evaluate(env);
+        if ( !Objects.equals(indexRes.getType(), "int") )
+            throw new Exception("Expected an 'int', instead got " + indexRes.getType() + ", error at line number " + _lineNumber);
+        return leftList.set((int) indexRes.getValue(), rightRes);
+
+    }
+
 
     private EvalResult bind(ObjectExpression leftSide, EvalResult rightRes, Environment env) throws Exception {
         Map<Expression, Expression> leftObject = leftSide.getContents();

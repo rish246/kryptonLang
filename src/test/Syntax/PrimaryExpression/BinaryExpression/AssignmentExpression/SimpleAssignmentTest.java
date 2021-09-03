@@ -235,7 +235,7 @@ public class SimpleAssignmentTest {
         env.set("a", list);
 
         // index = [0]
-        var index = List(Int(0));
+        var index = Int(0);
 
         // leftExp -> a[0]
         var leftExp = new ArrayAccessExpression(Id("a"), index, dummyLineNumber);
@@ -264,7 +264,7 @@ public class SimpleAssignmentTest {
         env.set("a", list);
 
         // index = [0]
-        var index = List(Int(0));
+        var index = Int(0);
 
         // leftExp -> a[0]
         var leftExp = new ArrayAccessExpression(Id("a"), index, dummyLineNumber);

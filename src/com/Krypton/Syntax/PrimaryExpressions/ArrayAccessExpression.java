@@ -6,6 +6,7 @@ import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Token;
 import com.Krypton.Utilities.ArrayAccessUtils.Extractor;
+import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.Environment;
 
 import java.util.ArrayList;
@@ -47,15 +48,32 @@ public class ArrayAccessExpression extends Expression {
         try {
             EvalResult arrayBody = _body.evaluate(env);
             EvalResult indexVal = _index.evaluate(env);
-            List<EvalResult> indices = (List) indexVal.getValue();
+            if (!isValidIndex(indexVal))
+                throw new InvalidOperationException("Invalid index type " + indexVal.getType() + ", error at line number " + getLineNumber());
+
             extractor = Extractor.getRightExtractor(arrayBody.getType(), _lineNumber);
-            return extractor.extract(arrayBody, indices);
-        } catch (Exception e) {
+            return extractor.extract(arrayBody, indexVal);
+        }
+        catch (InvalidOperationException e) {
             _diagnostics.add(e.getMessage());
+            throw e;
+        }
+        catch (Exception e) {
             _diagnostics.addAll(_body.getDiagnostics());
             _diagnostics.addAll(_index.getDiagnostics());
             _diagnostics.addAll(extractor.getDiagnostics());
             throw e;
+        }
+    }
+
+    private boolean isValidIndex(EvalResult indexVal) {
+        switch (indexVal.getType()) {
+            case "string":
+            case "int":
+                return true;
+
+                default:
+                    return false;
         }
     }
 

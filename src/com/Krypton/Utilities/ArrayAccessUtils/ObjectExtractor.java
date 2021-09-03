@@ -19,31 +19,18 @@ public class ObjectExtractor implements Extractor {
         return _diagnostics;
     }
 
-    public EvalResult extract(EvalResult object, List<EvalResult> indices) throws Exception {
-
-        if (indices.size() == 0)
-            throw new InvalidOperationException("InvalidOperation: indices can't be an empty list, error at line number " + _lineNumber);
-
+    public EvalResult extract(EvalResult object, EvalResult index) throws Exception {
         try {
-            return extractValueFromObject(object, indices);
+            return extractValueFromObject(object, index);
         } catch (Exception e) {
             _diagnostics.add(e.getMessage());
             throw e;
         }
     }
 
-    private EvalResult extractValueFromObject(EvalResult objectBody, List<EvalResult> indices) throws InvalidOperationException {
+    private EvalResult extractValueFromObject(EvalResult objectBody, EvalResult index) throws InvalidOperationException {
         Map<String, EvalResult> objectMap = (HashMap) objectBody.getValue();
-
-        if ( indices.size() == 1 ) {
-            EvalResult key = indices.get(0);
-            return extractValue(objectMap, key);
-        }
-
-        var result = new ArrayList<EvalResult>();
-        for (EvalResult index : indices)
-            result.add(extractValue(objectMap, index));
-        return new EvalResult(result, "list");
+        return extractValue(objectMap, index);
     }
 
     private EvalResult extractValue(Map<String, EvalResult> objectBody, EvalResult key) throws InvalidOperationException {

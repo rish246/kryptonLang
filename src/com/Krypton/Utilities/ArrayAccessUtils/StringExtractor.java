@@ -1,7 +1,6 @@
 package com.Krypton.Utilities.ArrayAccessUtils;
 
 import com.Krypton.EvalResult;
-import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.CustomExceptions.IndexOutOfBoundException;
 
 import java.util.ArrayList;
@@ -20,13 +19,10 @@ public class StringExtractor implements Extractor {
     }
 
     @Override
-    public EvalResult extract(EvalResult string, List<EvalResult> indices) throws Exception {
-        if (indices.size() == 0)
-            throw new InvalidOperationException("InvalidOperation: indices can't be an empty string, error at line number " + _lineNumber);
-
+    public EvalResult extract(EvalResult string, EvalResult index) throws Exception {
         String stringBody = (String) string.getValue();
         try {
-            return extractValuesFromIndices(stringBody, indices);
+            return extractValuesFromIndices(stringBody, index);
         } catch (Exception e) {
             _diagnostics.add(e.getMessage());
             throw e;
@@ -34,16 +30,8 @@ public class StringExtractor implements Extractor {
     }
 
 //
-    private EvalResult extractValuesFromIndices(String string, List<EvalResult> indices) throws IndexOutOfBoundException {
-        List<EvalResult> result = new ArrayList<>();
-
-        for(EvalResult i : indices)
-            result.add(getIthValueFromString(string, i));
-
-        if (result.size() == 1)
-            return result.get(0);
-
-        return new EvalResult(result, "list");
+    private EvalResult extractValuesFromIndices(String string, EvalResult index) throws IndexOutOfBoundException {
+        return getIthValueFromString(string, index);
     }
 
     private EvalResult getIthValueFromString(String string, EvalResult index) throws IndexOutOfBoundException {

@@ -18,5 +18,5 @@ public interface Extractor {
         throw new Exception("Expression of type " + operandType + " is not extractable, error at line number " + lineNumber);
     }
     List<String> getDiagnostics();
-    EvalResult extract(EvalResult extractable, List<EvalResult> indices) throws Exception;
+    EvalResult extract(EvalResult extractable, EvalResult index) throws Exception;
 }

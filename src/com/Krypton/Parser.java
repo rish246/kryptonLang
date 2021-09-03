@@ -524,6 +524,13 @@ class Parser {
         return new ReadInputExpression(dataType, prompt, CurrentLineNumber());
     }
 
+
+    private Expression parseArrayAccessIndex() {
+        match(TokenType.OpenSquareBracketToken);
+        Expression index = parsePrimaryExp();
+        match(TokenType.ClosedSquareBracketToken);
+        return index;
+    }
     private Expression parsePostFixExpression() {
         Expression left = parsePrimaryExp();
 
@@ -531,8 +538,7 @@ class Parser {
         ||    CurrentToken().getType() == TokenType.OpenParensToken
         ||    CurrentToken().getType() == TokenType.DotOperatorToken) {
             if (CurrentToken().getType() == TokenType.OpenSquareBracketToken) {
-                ListExpression index = parseListExpression();
-                left = new ArrayAccessExpression(left, index, CurrentLineNumber());
+                left = new ArrayAccessExpression(left, parseArrayAccessIndex(), CurrentLineNumber());
             }
             else if(CurrentToken().getType() == TokenType.OpenParensToken) {
                 match(TokenType.OpenParensToken);

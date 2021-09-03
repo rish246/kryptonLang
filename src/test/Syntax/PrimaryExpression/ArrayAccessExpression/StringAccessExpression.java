@@ -30,7 +30,7 @@ public class StringAccessExpression {
     @Before
     public void setUp() {
         string = Str("hello");
-        index = Index(Int(1));
+        index = Int(1);
         env = new Environment(null);
     }
 
@@ -46,7 +46,7 @@ public class StringAccessExpression {
 //
     @Test(expected = IndexOutOfBoundException.class)
     public void testGetElementFromStringThrowsOutBoundException() throws Exception {
-        index = Index(Int(8));
+        index = Int(8);
         var listAccessExp = new ArrayAccessExpression(string, index, dummyLineNumber);
         listAccessExp.evaluate(env);
     }
@@ -54,7 +54,7 @@ public class StringAccessExpression {
 //
     @Test
     public void testHandleNegativeIndexReturnsValuesFromLast() throws Exception {
-        index = Index(Int(-1));
+        index = Int(-1);
         var listAccessExp = new ArrayAccessExpression(string, index, dummyLineNumber);
         var result = listAccessExp.evaluate(env);
         assertEquals(result, new EvalResult("o", "string"));
@@ -62,31 +62,16 @@ public class StringAccessExpression {
 //
     @Test(expected = IndexOutOfBoundException.class)
     public void testHandleNegativeIndexThrowsIndexOutOfBoundException() throws Exception {
-        index = Index(Int(-6));
+        index = Int(-6);
         var listAccessExp = new ArrayAccessExpression(string, index, dummyLineNumber);
         listAccessExp.evaluate(env);
 //        assertEquals(result, new EvalResult("world", "string"));
     }
-//
-    @Test
-    public void testHandleMultipleIndicesSuccess() throws Exception {
-        index = new ListExpression(Arrays.asList(Int(1), Int(2), Int(3)), dummyLineNumber);
-        var listAccessExp = new ArrayAccessExpression(string, index, dummyLineNumber);
-        var result = listAccessExp.evaluate(env);
-        var expectedResult = new EvalResult(Arrays.asList(StrRes("e"), StrRes("l"), StrRes("l")), "list");
-        assertEquals(result, expectedResult);
-    }
-//
-    @Test(expected = IndexOutOfBoundException.class)
-    public void testHandleMultipleIndicesThrowsIndexOutOfBoundException() throws Exception {
-        index = new ListExpression(Arrays.asList(Int(1), Int(4), Int(7)), dummyLineNumber);
-        var listAccessExp = new ArrayAccessExpression(string, index, dummyLineNumber);
-        listAccessExp.evaluate(env);
-    }
+
 //
 //
     @Test(expected = InvalidOperationException.class)
-    public void testHandleEmptyIndexInvalidOperationException() throws Exception {
+    public void testHandleNullIndexInvalidOperationException() throws Exception {
         index = new ListExpression(Arrays.asList(), dummyLineNumber);
         var listAccessExp = new ArrayAccessExpression(string, index, dummyLineNumber);
         listAccessExp.evaluate(env);

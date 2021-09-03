@@ -4,11 +4,12 @@ import com.Krypton.EvalResult;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Syntax.PrimaryExpressions.ArrayAccessExpression;
 import com.Krypton.Syntax.Values.ListExpression;
+import com.Krypton.Syntax.Values.NullExpression;
 import com.Krypton.Syntax.Values.NumberExpression;
 import com.Krypton.Syntax.Values.StringExpression;
-import com.Krypton.Utilities.CustomExceptions.BinaryOperators.InvalidOperationException;
 import com.Krypton.Utilities.CustomExceptions.IndexOutOfBoundException;
 import com.Krypton.Utilities.Environment;
+import com.Krypton.Utilities.Printer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ public class ListAccessExpression {
     public void setUp() {
         list = new ListExpression(Arrays.asList(Int(1), Int(2), Str("hello"), Str("world")),
                 dummyLineNumber);
-        index = Index(Int(1));
+        index = Int(1);
         env = new Environment(null);
     }
 
@@ -47,7 +48,7 @@ public class ListAccessExpression {
 
     @Test(expected = IndexOutOfBoundException.class)
     public void testGetElementFromListThrowsOutBoundException() throws Exception {
-        index = Index(Int(4));
+        index = Int(4);
         var listAccessExp = new ArrayAccessExpression(list, index, dummyLineNumber);
         listAccessExp.evaluate(env);
     }
@@ -55,7 +56,7 @@ public class ListAccessExpression {
 
     @Test
     public void testHandleNegativeIndexReturnsValuesFromLast() throws Exception {
-        index = Index(Int(-1));
+        index = Int(-1);
         var listAccessExp = new ArrayAccessExpression(list, index, dummyLineNumber);
         var result = listAccessExp.evaluate(env);
         assertEquals(result, new EvalResult("world", "string"));
@@ -63,34 +64,23 @@ public class ListAccessExpression {
 
     @Test(expected = IndexOutOfBoundException.class)
     public void testHandleNegativeIndexThrowsIndexOutOfBoundException() throws Exception {
-        index = Index(Int(-5));
+        index = Int(-5);
         var listAccessExp = new ArrayAccessExpression(list, index, dummyLineNumber);
         var result = listAccessExp.evaluate(env);
         assertEquals(result, new EvalResult("world", "string"));
     }
 
-    @Test
-    public void testHandleMultipleIndicesSuccess() throws Exception {
-        index = new ListExpression(Arrays.asList(Int(1), Int(2), Int(3)), dummyLineNumber);
-        var listAccessExp = new ArrayAccessExpression(list, index, dummyLineNumber);
-        var result = listAccessExp.evaluate(env);
-        var expectedResult = new EvalResult(Arrays.asList(IntRes(2), StrRes("hello"), StrRes("world")), "list");
-        assertEquals(result, expectedResult);
-    }
 
-    @Test(expected = IndexOutOfBoundException.class)
-    public void testHandleMultipleIndicesThrowsIndexOutOfBoundException() throws Exception {
-        index = new ListExpression(Arrays.asList(Int(1), Int(4), Int(3)), dummyLineNumber);
+    @Test(expected = Exception.class)
+    public void testHandleNullIndexInvalidOperationException() throws Exception {
+        index = new NullExpression(dummyLineNumber);
         var listAccessExp = new ArrayAccessExpression(list, index, dummyLineNumber);
-        listAccessExp.evaluate(env);
-    }
-
-
-    @Test(expected = InvalidOperationException.class)
-    public void testHandleEmptyIndexInvalidOperationException() throws Exception {
-        index = new ListExpression(Arrays.asList(), dummyLineNumber);
-        var listAccessExp = new ArrayAccessExpression(list, index, dummyLineNumber);
-        listAccessExp.evaluate(env);
+        try {
+            listAccessExp.evaluate(env);
+        } catch (Exception e) {
+            Printer.printDiagnostics(listAccessExp.getDiagnostics());
+            throw e;
+        }
     }
 
     private NumberExpression Int(int value) {
