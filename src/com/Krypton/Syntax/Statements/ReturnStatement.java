@@ -24,7 +24,6 @@ public class ReturnStatement extends Statement {
         System.out.println("Return expression");
         System.out.println(indent + "|");
         System.out.print(indent + "├──");
-//        _left.prettyPrint(indent + "    ");
         _body.prettyPrint(indent + "    ");
     }
 
@@ -35,24 +34,17 @@ public class ReturnStatement extends Statement {
 
 
     public EvalResult evaluate(Environment env) throws Exception {
-
-        EvalResult bodyResult = _body.evaluate(env);
-        _diagnostics.addAll(_body.getDiagnostics());
-
-        if(bodyResult == null) {
-            _diagnostics.add("Error in the body of return statement"+ " at line number " + getLineNumber());
-            return null;
+        try {
+            return _body.evaluate(env);
+        } catch (Exception e) {
+            _diagnostics.addAll(_body.getDiagnostics());
+            throw e;
         }
-
-
-        if(bodyResult._value == null && bodyResult._type != "null") {
-            _diagnostics.add("Error in the body of return statement"+ " at line number " + getLineNumber());
-            return null;
-        }
-
-        return bodyResult;
-
     }
-
-
 }
+/*
+def even_or_odd(x) {
+		if(x % 2 == 0) { return null; }
+		return "odd";
+	}
+ */

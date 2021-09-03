@@ -171,17 +171,4 @@ public class IfStatementTest {
         }
     }
 
-
-
 }
-
-/*
-def filterEvens(vals) {
-		result = [];
-		for(val in vals) {
-			if (isEven(val)) { result = result + val; }
-		}
-		return result;
-	}
-
- */

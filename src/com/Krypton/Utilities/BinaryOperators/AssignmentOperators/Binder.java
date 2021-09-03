@@ -5,12 +5,12 @@ import com.Krypton.ExpressionType;
 import com.Krypton.Syntax.Expression;
 import com.Krypton.Syntax.PrimaryExpressions.ArrayAccessExpression;
 import com.Krypton.Syntax.PrimaryExpressions.IdentifierExpression;
+import com.Krypton.Syntax.PrimaryExpressions.MemberAccessExpression;
 import com.Krypton.Syntax.Values.ListExpression;
 import com.Krypton.Syntax.Values.ObjectExpression;
 import com.Krypton.Syntax.Values.StringExpression;
 import com.Krypton.Utilities.CustomExceptions.BinaryOperators.BadAssignmentException;
 import com.Krypton.Utilities.Environment;
-import com.Krypton.Utilities.Printer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,14 +50,23 @@ public class Binder {
         if (leftSide.getType() == ExpressionType.ArrayAccessExpression)
             return bind((ArrayAccessExpression) leftSide, rightRes, env);
 
+        if (leftSide.getType() == ExpressionType.MemberAccessExpression)
+            return bind((MemberAccessExpression) leftSide, rightRes, env);
+
 
         throw new BadAssignmentException("Invalid operator '=' for type " + leftSide.getType() + " and " + rightRes.getType() + " at line number " + _lineNumber);
+    }
+
+    private EvalResult bind(MemberAccessExpression leftSide, EvalResult rightRes, Environment env) throws Exception {
+        EvalResult leftRes = leftSide.evaluate(env);
+        leftRes._value = rightRes.getValue();
+        leftRes._type = rightRes.getType();
+        return leftRes;
     }
 
     public List<String> getDiagnostics() {
         return _diagnostics;
     }
-
 
     private EvalResult bind(ArrayAccessExpression leftSide, EvalResult rightRes, Environment env) throws Exception {
         EvalResult leftRes = leftSide.evaluate(env);

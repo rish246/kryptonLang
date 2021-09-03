@@ -113,6 +113,17 @@ public class FunctionCallTest {
     }
 
 
+    @Test
+    public void testFunctionNameInvalidReturnsErrorMessage() throws Exception {
+        var invalidFuncName = Id("Invalid");
+        List<Expression> actualArgs = List.of();
+        var funcCall = new FunctionCallExpression(invalidFuncName, actualArgs, dummyLineNumber);
+        try {
+            funcCall.evaluate(env);
+        } catch (Exception e) {
+            assertTrue(funcCall.getDiagnostics().size() > 0);
+        }
+    }
     private BinaryExpression Assign(Expression left, Expression right) {
         return new BinaryExpression(left, TokenType.AssignmentToken, right, dummyLineNumber);
     }

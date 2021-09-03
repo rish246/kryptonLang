@@ -528,7 +528,8 @@ class Parser {
         Expression left = parsePrimaryExp();
 
         while(CurrentToken().getType() == TokenType.OpenSquareBracketToken
-        ||    CurrentToken().getType() == TokenType.OpenParensToken) {
+        ||    CurrentToken().getType() == TokenType.OpenParensToken
+        ||    CurrentToken().getType() == TokenType.DotOperatorToken) {
             if (CurrentToken().getType() == TokenType.OpenSquareBracketToken) {
                 ListExpression index = parseListExpression();
                 left = new ArrayAccessExpression(left, index, CurrentLineNumber());
@@ -538,7 +539,12 @@ class Parser {
                 List<Expression> actualArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
                 match(TokenType.ClosedParensToken);
                 left = new FunctionCallExpression(left, actualArgs, CurrentLineNumber());
+            } else if(CurrentToken().getType() == TokenType.DotOperatorToken) {
+                match(TokenType.DotOperatorToken);
+                Token memberName = match(TokenType.IdentifierToken);
+                left = new MemberAccessExpression(left, memberName, CurrentLineNumber());
             }
+
         }
         return left;
     }
@@ -638,40 +644,6 @@ class Parser {
 
         return new ParensExpression(left, body, right, CurrentLineNumber());
     }
-
-    private Expression parseChainedExpression() {
-        Expression result;
-
-        switch(CurrentToken()._type) {
-            case OpenSquareBracketToken: {
-                match(TokenType.OpenSquareBracketToken);
-                result = parseExpression(0);
-                match(TokenType.ClosedSquareBracketToken);
-
-                return result;
-            }
-
-            case OpenParensToken: {
-                Token left = match(TokenType.OpenParensToken);
-                List<Expression> actualArgs = parseCommaSeparatedExpressions(TokenType.ClosedParensToken);
-                var actualArgsList = new ListExpression(actualArgs, CurrentLineNumber());
-                Token right = match(TokenType.ClosedParensToken);
-                return new ParensExpression(left, actualArgsList, right, CurrentLineNumber());
-            }
-
-            case DotOperatorToken: {
-                match(TokenType.DotOperatorToken);
-                Token memberName = NextToken();
-                return new MemberAccessExpression(memberName, CurrentLineNumber());
-            }
-
-            // DotOperatorToken -> . identifierExpression
-        }
-
-
-        return null;
-    }
-
 }
 
 // Lets refactor the parser

@@ -35,9 +35,8 @@ public class BlockStatement extends Statement {
     private EvalResult evaluateCurTree(Environment currentBlockEnv, SyntaxTree exp) throws Exception {
         try {
             EvalResult curExpResult = exp.evaluate(currentBlockEnv);
-            if ( exp.isStatement() && curExpResult != null ) {
-                if ( curExpResult.getValue() != null ) return curExpResult;
-            }
+            if ( exp.isStatement() )
+                return curExpResult;
             return new EvalResult(null, "null");
         } catch (Exception e) {
             _diagnostics.addAll(exp.getDiagnostics());
@@ -51,7 +50,6 @@ public class BlockStatement extends Statement {
             System.out.print(indent + "├──");
             exp.prettyPrint(indent + "    ");
             System.out.println(indent + "|");
-
         }
     }
 

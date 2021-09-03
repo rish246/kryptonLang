@@ -30,15 +30,14 @@ public class PrintStatement extends Statement {
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-        EvalResult bodyOp = _body.evaluate(env);
-        _diagnostics.addAll(_body.getDiagnostics());
-
-        if(bodyOp == null || _diagnostics.size() > 0) {
-            return null;
+        try {
+            EvalResult bodyOp = _body.evaluate(env);
+            Printer.print(bodyOp);
+            return new EvalResult(null, "null");
+        } catch (Exception e) {
+            _diagnostics.addAll(_body.getDiagnostics());
+            throw e;
         }
-
-        Printer.print(bodyOp);
-        return new EvalResult(null, null);
     }
 
 

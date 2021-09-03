@@ -7,26 +7,41 @@ import com.Krypton.Token;
 import com.Krypton.Utilities.Environment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MemberAccessExpression extends Expression {
-    public EvalResult _objectEnv = null;
     public Token _memberName;
+    public Expression _object;
     public List<String> _diagnostics = new ArrayList<>();
-    public MemberAccessExpression(Token memberName, int lineNumber) {
+    public MemberAccessExpression(Expression object, Token memberName, int lineNumber) {
         super(ExpressionType.MemberAccessExpression, lineNumber);
+        _object = object;
         _memberName = memberName;
     }
 
     public EvalResult evaluate(Environment env) throws Exception {
-        EvalResult entry = env.get(_memberName._lexeme);
-        // insert node
-        if(entry == null) {
-            _diagnostics.add("Unknown member " + _memberName._lexeme + " at line number " + getLineNumber());
-            return null;
+        try {
+            String memberName = _memberName._lexeme;
+            EvalResult objectRes = _object.evaluate(env);
+            return getMemberFromObject(memberName, objectRes);
+        } catch (Exception e) {
+            _diagnostics.addAll(_object.getDiagnostics());
+            _diagnostics.add(e.getMessage());
+            throw e;
         }
+    }
+    /*
+    write some tests for this too
+     */
 
-        return entry;
+    private EvalResult getMemberFromObject(String memberName, EvalResult objectRes) {
+        Map<String, EvalResult> objectMap = (HashMap) objectRes.getValue();
+        EvalResult result = objectMap.get(memberName);
+        if (result == null)
+            result = objectMap.put(memberName, new EvalResult(null, "null"));
+        return result;
     }
 
     public void prettyPrint(String indent) {
@@ -38,5 +53,28 @@ public class MemberAccessExpression extends Expression {
     }
 
 }
+/*
+def newNode(data, next) {
+    return { data, next };
+}
 
-// Do this after implementing class instance
+tail = newNode(3, null);
+middle = newNode(2, tail);
+head = newNode(1, middle);
+
+def reverse(head) {
+		[prev, cur] = [null, head];
+		while (cur != null) {
+		    print(cur.data);
+			next = cur.next;
+			cur.next = prev;
+			prev = cur;
+			cur = next;
+		}
+		return prev;
+	}
+
+
+
+
+ */
