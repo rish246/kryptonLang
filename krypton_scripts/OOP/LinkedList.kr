@@ -1,36 +1,50 @@
-class ListNode {
-    def init(value) {
-        this.value = value;
-        this.next = null;
-        this.lenList = 1;
-    }
-
-    def flatten() {
-        result = "" + this.value;
-        if(this.next != null) {
-            result = result + " -> " + this.next.flatten();
-        }
-        else {
-            result = result + " -> " + "null";
-        }
-        return result;
-    }
-
-    def length() {
-		if ( this.next == null ) {
-			return 1;
-		}
-		return 1 + this.next.length();
+class Node {
+    def init(val) {
+        self.val = val;
+        self.next = null;
     }
 };
 
-def main() {
-    head = new ListNode(3);
-    head.next = new ListNode(4);
-    head.next.next = new ListNode(5);
+class List {
 
-    print(head.flatten());
-    print("Length of list " + head.length());
+    def init() { 
+        self.head = null;
+    }
+
+    def add(val) {
+        if (self.head == null) {
+            self.head = new Node(val);
+        } else {
+            temp = self.head;
+            while (temp.next != null) {
+                temp = temp.next;
+            }
+            temp.next = new Node(val);
+        }
+    }
+
+    def reverse() {
+        [prev, cur] = [null, self.head];
+        while (cur != null) {
+            [cur.next, prev, cur] = [prev, cur, cur.next];
+        }
+        self.head = prev;
+    }
+
+    def show() {
+        # this is causing when length of list is exceeding 3
+        for(temp = self.head; temp != null; temp = temp.next) {
+            print(temp.val);
+        }
+    }
+};
+
+print("\n\n");
+list = new List();
+for(i=0; i<3; i=i+1) {
+    list.add(i);
 }
+list.show();
 
-main();
+
+

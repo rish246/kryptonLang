@@ -1,33 +1,26 @@
-class Vehicle {
-    def init(name, nWheels) {
-        this.name = name;
-        this.nWheels = nWheels;
+class T {
+    def init(val) {
+        self.val = val;
+        self.next = null;
     }
 
-    def run(val) {
-        print("Vehicle " + this.name + " is running on " + this.nWheels + " wheels.");
-    }
-
-    def race(otherVehicle) {
-        print("" + this.name + " is racing " + otherVehicle.name);
+    def update(val) {
+        if (self.next == null) { # Right here () -> () ??
+            self.next = new T(val);
+        } else {
+            temp = self;
+            while (temp.next != null) {
+                temp = temp.next;
+            }
+            temp.next = new T(val);
+        }
     }
 };
 
+t = new T(4);
+t.update(0);
+t.update(1);
+t.update(2);
+t.update(3);
 
-class Car extends Vehicle {
-    # def init(name) {
-    #     this.name = name;
-    #     this.nWheels = 4;
-    # }
-};
-
-def main() {
-    myCar = new Car("honda", 4);
-    # myCar.run();
-
-    arunCar = new Car("ferrari", 4);
-    arunCar.race(myCar);
-
-}
-
-main();
+# what the hell bro...

@@ -2,36 +2,33 @@ class Real {
 	def init(num, den) {
 		
 		# do some initial configuration too
-		if(den == 0) {
+		if(floor(den) == 0) {
 			print("OOPS.. denominator can't be 0");
 			return -1;
 		}
 
-		this.num = num;
-		this.den = den;	
+		self.num = num;
+		self.den = den;	
 
-		if (this.den < 0) {	
-			this.num = this.num * -1;
-			this.den = this.den * -1;
+		if (self.den < 0) {	
+			self.num = self.num * -1;
+			self.den = self.den * -1;
 		}
 		
-		this.reduce();
+		self.reduce();
 	}
 
 	def get_gcd(x, y) {
-		if (y == 0) {
+		if (floor(y) == 0) {
 			return x;
 		}
-
 		return get_gcd(y, x % y);
 	}
 
 
 	def add(other_complex) {
-		result_den = this.den * other_complex.den;
-
-		result_num = this.num * other_complex.den + other_complex.num * this.den;
-
+		result_den = self.den * other_complex.den;
+		result_num = self.num * other_complex.den + other_complex.num * self.den;
 		return new Real(result_num, result_den);
 
 	}
@@ -39,22 +36,28 @@ class Real {
 
 	def reduce() {
 		# divide both numerator and denominator with gcd
-		gcd_of_n_and_d = get_gcd(this.num, this.den);
-		this.num = this.num / gcd_of_n_and_d;
-		this.den = this.den / gcd_of_n_and_d;
+		gcd_of_n_and_d = get_gcd(self.num, self.den);
+		self.num = self.num / gcd_of_n_and_d;
+		self.den = self.den / gcd_of_n_and_d;
 	}
 
 	def toString() {
-		result = "" + this.num;
-		print(this.den);
-		if(this.den != 1) {
-			result = result + "\\" + this.den;
+		result = "" + self.num;
+		if(floor(self.den) != 1) {
+			result = result + "\\" + self.den;
 		}
 		return result;
 	}
 
 
 };
+
+
+def floor(val) {
+	i = 0;
+	for(i=1; i<val; i=i+1) {}
+	return i - 1; 
+}
 
 def printEquation(fractions) {
 	##################	Print the resulting equation	###################3
@@ -89,6 +92,7 @@ def addFractions(nFractions, fractions) {
 
 	for(fraction in fractions) {
 		result = result.add(fraction);
+		print("Reached here");
 	}
 
 	return result;
@@ -104,8 +108,9 @@ def main() {
 	realNums = getFractionsFromUser(nFractions);
 	printEquation(realNums);
 
-	
 	result = addFractions(nFractions, realNums);
+#	print("Reached here");
+
 	print("Result -> " + result.toString());
 }
 

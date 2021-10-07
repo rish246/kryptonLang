@@ -1,0 +1,36 @@
+def new_node(val) {
+    return {val, "next" : null};
+}
+
+List = {
+    "init" : lambda() { List.head = null; },
+
+    "add" : lambda (val) {
+        if (List.head == null) {
+            List.head = new_node(val);
+        } else {
+            temp = List.head;
+            while (temp.next != null) {
+                temp = temp.next;
+            }
+            temp.next = new_node(val);
+        }
+    },
+
+    "show" : lambda() {
+        # this is causing when length of list is exceeding 3
+        for(temp = List.head; temp != null; temp = temp.next) {
+            print(temp.val);
+        }
+    }
+}
+
+# Can't make more than 3 calls... why??
+
+List.init();
+
+for(i=0; i<5; i=i+1) {
+    List.add(i);
+}
+
+List.show();
